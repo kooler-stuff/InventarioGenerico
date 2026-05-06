@@ -1,0 +1,157 @@
+body{
+    background-color: #121212;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+.container{ 
+    background-image: url(../Client/Media/COM_Logo.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: cover; 
+    width: 25%;
+    margin: auto;
+    padding: 20px;
+    padding-top: 100px;
+    padding-bottom: 100px;
+    margin-top: 12.5%;
+    border: none;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #797979;
+}
+
+.logo{
+    width: 45%;
+    height: auto;
+    margin-top: -50px;
+}
+
+.ButtonGeneric{
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #2e2e2e;
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    
+}
+.ButtonGeneric::placeholder {
+    color: rgb(173, 173, 173);
+    opacity: 1;
+}
+.ButtonSubmit{
+    background-color: rgb(18, 13, 90);
+    color: rgb(255, 255, 255);
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    width: 110%;
+    font-size: 20px;
+}
+
+.ButtonSubmit:hover{
+    background-color: rgb(15, 11, 58);
+    color: rgb(255, 255, 255);
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    width: 110%;
+    font-size: 22px;
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.container-main {
+    width: 80% !important;
+    margin-top: 5% !important;
+}
+
+/* Estructura Grid */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+/* Tarjetas de inventario */
+.inventory-item {
+    background-color: #2e2e2e; 
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+    border-left: 5px solid rgb(18, 13, 90);
+    transition: transform 0.2s;
+}
+
+.inventory-item:hover {
+    transform: translateY(-5px);
+    background-color: #3d3d3d;
+}
+
+.inventory-item h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+.inventory-item p {
+    margin: 5px 0;
+    font-weight: bold;
+    color: #a5a5a5;
+}
+
+.inventory-item small {
+    color: #797979;
+}
+
+.titler1 {
+    margin-top: -50px;
+    margin-bottom: 15px;
+}
+
+.navbar {
+    width: 100%;
+    background-color: #2e2e2e;
+    padding: 25px 0;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    border-bottom: 2px solid rgb(18, 13, 90); 
+}
+
+.navbar a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+    color: #a5a5a5;
+    text-decoration: underline;
+}
+
+#error-container {
+    position: relative;
+}
+
+#error-message {
+    color: #f57373; /* El color que ya elegiste */
+    word-wrap: break-word;     /* Corta palabras largas si es necesario */
+    white-space: normal;       /* Permite que el texto baje a la siguiente línea */
+    max-width: 100%;           /* No deja que sea más ancho que el formulario */
+    text-align: center;        /* Lo centra para que se vea prolijo */
+    margin-top: 10px;
+}

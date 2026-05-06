@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/styles/MainStyle.css">
+        <link rel="icon" href="/media/icon.ico">
+        <title>Gestor de inventario COM</title>
+    </head>
+
+    <body>
+        <div class="container">
+            <img class="logo" src="/media/COM_Logo.png" alt="Logo">
+            <br><br><br>
+            <h1 class="titler1">Ingrese su cuenta</h1>
+            <form action="/auth" method="POST" class="login-form">
+                <input class="ButtonGeneric" type="text" id="Usuario" name="Usuario" placeholder="Usuario" required>  <br>
+                <input class="ButtonGeneric" type="password" id = "Contraseña" name="Contraseña" placeholder="Contraseña" required> <br>
+                <button class="ButtonSubmit" type="submit" value="LogIn">Iniciar sesión </button>
+            </form>
+        </div>
+    <script>
+        const form = document.querySelector('form'); // Asegúrate de que sea tu formulario de login
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); // IMPORTANTE: Evita que la página se recargue o cambie a /auth
+
+            const formData = new URLSearchParams(new FormData(form));
+            
+            try {
+            const response = await fetch('/auth', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                window.location.href = result.redirect;
+            } else {
+                /* // en caso de q convenga usar div pre existente o algo yo q se 
+                const divElement = document.querySelector('.WarningMsg');
+                divElement.textContent = 'Mensaje de Error!!!';
+                */               
+                let errorDiv = document.getElementById('error-message');
+                if (!errorDiv) {
+                errorDiv = document.createElement('p');
+                errorDiv.id = 'error-message';
+                errorDiv.style.color = '#ffffff';
+                errorDiv.style.margin = '0';
+                errorDiv.style.overflowWrap = 'break-word'; 
+                errorDiv.style.width = '100%';
+                errorDiv.style.fontSize = '20px';
+                errorDiv.style.padding = '-45px';
+                form.appendChild(errorDiv);
+                }
+                errorDiv.innerText = result.message;
+            }
+            } catch (err) {
+            console.error("Error en la conexión");
+            }
+        });
+    </script>
+    </body>
+</html>
