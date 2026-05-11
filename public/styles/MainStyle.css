@@ -1,9 +1,14 @@
+@font-face {
+  font-family: fuente1; 
+  src: url(../pages/Lato-Bold.ttf);
+}
+
 body{
-    background-color: #121212;
-    font-family: Arial, sans-serif;
+    background-color: #181818;
+    font-family: fuente1;
     color: #ffffff;
     margin: 0;
-    padding: 0;
+    padding: 0;   
 }
 
 .container{ 
@@ -17,12 +22,13 @@ body{
     padding-top: 100px;
     padding-bottom: 100px;
     margin-top: 12.5%;
-    border: none;
+    border: 3px solid rgb(95, 70, 93);
     border-radius: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #797979;
+    background-color: #4e424c;
+    box-shadow: #000000 5px  5px 22px;
 }
 
 .logo{
@@ -47,7 +53,7 @@ body{
     opacity: 1;
 }
 .ButtonSubmit{
-    background-color: rgb(18, 13, 90);
+    background-color: rgb(57, 0, 131);
     color: rgb(255, 255, 255);
     width: 100%;
     padding: 10px;
@@ -58,7 +64,7 @@ body{
 }
 
 .ButtonSubmit:hover{
-    background-color: rgb(15, 11, 58);
+    background-color: rgb(35, 0, 82);
     color: rgb(255, 255, 255);
     width: 100%;
     padding: 10px;
@@ -70,9 +76,26 @@ body{
     transition: transform 0.3s ease;
 }
 
+.button-container {
+    background-color: #555;
+    display: flex;
+    width: 100%;
+    gap: 0px;
+    margin-top: 10px;
+}
+
 .container-main {
     width: 80% !important;
     margin-top: 5% !important;
+}
+
+.container-small {
+    width: 20%;
+    max-width: 450px;
+    min-width: 200px;
+    margin-top: 7%;
+    padding-top: 75px;
+    padding-bottom: 40px;
 }
 
 /* Estructura Grid */
@@ -84,13 +107,12 @@ body{
     margin-bottom: 30px;
 }
 
-/* Tarjetas de inventario */
 .inventory-item {
     background-color: #2e2e2e; 
     padding: 20px;
     border-radius: 10px;
     text-align: left;
-    border-left: 5px solid rgb(18, 13, 90);
+    border-left: 5px solid rgb(75, 11, 105);
     transition: transform 0.2s;
 }
 
@@ -115,6 +137,69 @@ body{
     color: #797979;
 }
 
+.inventory-item .btn-delete {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background-color: #c23b3b;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.inventory-item .btn-delete:hover {
+    background-color: #a12f2f;
+    transform: translateY(-1px);
+}
+
+.inventory-item .btn-modify {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background-color: #3b8bc2;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.inventory-item .btn-modify:hover {
+    background-color: #2f7aa1;
+    transform: translateY(-1px);
+}
+
+.inventory-item .btn-save {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: rgb(18, 13, 90);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.inventory-item .btn-save:hover {
+    background-color: rgb(15, 11, 58);
+}
+
+.inventory-item .btn-cancel {
+    margin-top: 8px;
+    margin-left: 8px;
+    padding: 8px 12px;
+    background-color: #666;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.inventory-item .btn-cancel:hover {
+    background-color: #555;
+}
+
 .titler1 {
     margin-top: -50px;
     margin-bottom: 15px;
@@ -123,11 +208,25 @@ body{
 .navbar {
     width: 100%;
     background-color: #2e2e2e;
-    padding: 25px 0;
+    padding: 25px 35px;
     display: flex;
-    justify-content: center;
-    gap: 30px;
-    border-bottom: 2px solid rgb(18, 13, 90); 
+    align-items: center;
+    justify-content: flex-start;
+    gap: 50px;
+    border-bottom: 3px solid rgb(56, 7, 54); 
+}
+
+.navbar .nav-logo img {
+    height: 45px;
+    width: auto;
+}
+
+.nav-currently-selected {
+    background-color: rgba(192, 0, 182, 0.322);
+    background-size: cover;
+    border-radius: 0px;
+    color: rgb(61, 0, 45);
+    font-weight: bold;
 }
 
 .navbar a {
@@ -139,8 +238,8 @@ body{
 }
 
 .navbar a:hover {
-    color: #a5a5a5;
-    text-decoration: underline;
+    color: #ae00d1;
+    text-decoration: solid;
 }
 
 #error-container {
@@ -148,10 +247,58 @@ body{
 }
 
 #error-message {
-    color: #f57373; /* El color que ya elegiste */
-    word-wrap: break-word;     /* Corta palabras largas si es necesario */
-    white-space: normal;       /* Permite que el texto baje a la siguiente línea */
-    max-width: 100%;           /* No deja que sea más ancho que el formulario */
-    text-align: center;        /* Lo centra para que se vea prolijo */
+    color: #f57373; 
+    word-wrap: break-word;   
+    white-space: normal;       
+    max-width: 100%;           
+    text-align: center;        
     margin-top: 10px;
+}
+
+.tab-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #444;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    background-color: #2e2e2e;
+    color: #a5a5a5;
+    border: none;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.tab-btn.active {
+    background-color: rgb(57, 0, 131);
+    color: #ffffff;
+    border-bottom: 3px solid rgb(18, 13, 90);
+}
+
+.tab-btn:hover {
+    color: #ffffff;
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.inventory-list {
+    background-color: #2e2e2e;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+.inventory-registry {
+    padding: 15px;
 }
