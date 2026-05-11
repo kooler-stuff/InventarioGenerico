@@ -5,19 +5,70 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../Styles/MainStyle.css">
         <link rel="icon" href="../Media/icon.ico">
-
-        <title>Agregar</title>
+        <title>Agregar Insumo</title>
     </head>
 
     <body>
         <nav class="navbar">
+            <a href="../main_menu.html" class="nav-logo"><img src="../media/COM_Logo.png" alt="COM2"></a>
             <a href="../main_menu.html">Inventario</a>
-            <a href="registro.html">Registro</a>
-            <a href="remove.html">Borrar</a>
-            <a href="modify.html">Modificar</a>
+            <a href="../pages/registro.html">Registro</a>
+            <a href="../pages/add.html" class="nav-currently-selected">Agregar</a>
         </nav>
-        <div class="container">
+
+        <div class="container container-small">
+            <h1 class="titler1">Agregar Nuevo Insumo</h1>
             
+            <form id="form-add" class="inventory-form">
+                <div class="form-group">
+                    <label>Insumo:</label>
+                    <input type="text" id="insumo" class="ButtonGeneric" placeholder="Ej: Resma A4" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Categoría:</label>
+                    <input type="text" id="categoria" class="ButtonGeneric" placeholder="Ej: Librería" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Unidades:</label>
+                    <input type="number" id="unidades" class="ButtonGeneric" placeholder="0" min="0" max="9999" required>
+                </div>
+
+                <button type="submit" class="ButtonSubmit">Guardar en Inventario</button>
+            </form>
         </div>
+
+        <script>
+            document.getElementById('form-add').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const nuevoInsumo = {
+                    categoria: document.getElementById('categoria').value,
+                    insumo: document.getElementById('insumo').value,
+                    unidades: parseInt(document.getElementById('unidades').value),
+                };
+
+                try {
+                    const response = await fetch('/insumo', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(nuevoInsumo)
+                    });
+
+                    const resData = await response.json();
+
+                    if (resData.success) {
+                        alert("¡Insumo guardado correctamente!");
+                        document.getElementById('form-add').reset();
+                    } else {
+                        alert("Error: " + resData.message);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Error al conectar con el servidor");
+                }
+            });
+        </script>
     </body>
 </html>

@@ -6,17 +6,214 @@
         <link rel="stylesheet" href="../Styles/MainStyle.css">
         <link rel="icon" href="../Media/icon.ico">
 
-        <title>Registro de auditoría</title>
+        <title>Registro</title>
     </head>
 
     <body>
         <nav class="navbar">
+            <a href="../main_menu.html" class="nav-logo"><img src="../media/COM_Logo.png" alt="COM2"></a>
             <a href="../main_menu.html">Inventario</a>
-            <a href="remove.html">Borrar</a>
+            <a href="registro.html" class="nav-currently-selected">Registro</a>
             <a href="add.html">Agregar</a>
-            <a href="modify.html">Modificar</a>
         </nav>
-        <div class="container">
+        <div class="container container-main">
+            <h1 class="titler1">Registro</h1>
+            
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="pedidos">Insumos Pedidos</button>
+                <button class="tab-btn" data-tab="prestados">Insumos Prestados</button>
+                <button class="tab-btn" data-tab="historial">Historial</button>
+            </div>
+
+            <div id="pedidos" class="tab-content active">
+                <h2>Insumos Pedidos</h2>
+                <form id="form-pedido" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="ped-insumo" class="ButtonGeneric" placeholder="Insumo" required style="flex: 1; min-width: 150px;">
+                    <input type="number" id="ped-cantidad" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
+                    <input type="text" id="ped-area" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
+                    <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button>
+                </form>
+                <div id="pedidos-grid" class="inventory-grid"></div>
+            </div>
+
+            <div id="prestados" class="tab-content">
+                <h2>Insumos Prestados</h2>
+                <form id="form-prestado" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="pres-insumo" class="ButtonGeneric" placeholder="Insumo" required style="flex: 1; min-width: 150px;">
+                    <input type="number" id="pres-cantidad" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
+                    <input type="text" id="pres-area" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
+                    <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px;">Registrar</button>
+                </form>
+                <div id="prestados-grid" class="inventory-grid"></div>
+            </div>
+
+            <div id="historial" class="tab-content">
+                <h2>Historial de Préstamos</h2>
+                <div id="historial-list" class="inventory-list"></div>
+            </div>
         </div>
+
+        <script>
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.tab).classList.add('active');
+                    
+                    if (btn.dataset.tab === 'pedidos') loadPedidos();
+                    if (btn.dataset.tab === 'prestados') loadPrestados();
+                    if (btn.dataset.tab === 'historial') loadHistorial();
+                });
+            });
+
+            document.getElementById('form-pedido').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await fetch('/api/pedidos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            insumo: document.getElementById('ped-insumo').value,
+                            cantidad: parseInt(document.getElementById('ped-cantidad').value),
+                            area: document.getElementById('ped-area').value
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        document.getElementById('form-pedido').reset();
+                        loadPedidos();
+                    } else {
+                        alert('Error al registrar.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error al conectar.');
+                }
+            });
+
+            document.getElementById('form-prestado').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await fetch('/api/prestados', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            insumo: document.getElementById('pres-insumo').value,
+                            cantidad: parseInt(document.getElementById('pres-cantidad').value),
+                            area: document.getElementById('pres-area').value
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        document.getElementById('form-prestado').reset();
+                        loadPrestados();
+                    } else {
+                        alert('Error al registrar.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error al conectar.');
+                }
+            });
+
+            async function loadPedidos() {
+                const grid = document.getElementById('pedidos-grid');
+                grid.innerHTML = '';
+                try {
+                    const response = await fetch('/api/pedidos');
+                    const pedidos = await response.json();
+                    
+                    if (!Array.isArray(pedidos) || pedidos.length === 0) {
+                        grid.innerHTML = '<p>No hay insumos pedidos.</p>';
+                        return;
+                    }
+
+                    pedidos.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'inventory-item';
+                        card.innerHTML = `
+                            <h3>${item.insumo}</h3>
+                            <p>Cantidad: ${item.cantidad}</p>
+                            <small>Área: ${item.area}</small>
+                            <p style="color: #a5a5a5; font-size: 12px;">Fecha: ${new Date(item.fecha).toLocaleDateString()}</p>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } catch (error) {
+                    console.error('Error al cargar pedidos:', error);
+                    grid.innerHTML = '<p>Error al conectar.</p>';
+                }
+            }
+
+            async function loadPrestados() {
+                const grid = document.getElementById('prestados-grid');
+                grid.innerHTML = '';
+                try {
+                    const response = await fetch('/api/prestados');
+                    const prestados = await response.json();
+                    
+                    if (!Array.isArray(prestados) || prestados.length === 0) {
+                        grid.innerHTML = '<p>No hay insumos prestados.</p>';
+                        return;
+                    }
+
+                    prestados.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'inventory-item';
+                        card.innerHTML = `
+                            <h3>${item.insumo}</h3>
+                            <p>Cantidad: ${item.cantidad}</p>
+                            <small>Área: ${item.area}</small>
+                            <p style="color: #a5a5a5; font-size: 12px;">Desde: ${new Date(item.fecha).toLocaleDateString()}</p>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } catch (error) {
+                    console.error('Error al cargar prestados:', error);
+                    grid.innerHTML = '<p>Error al conectar.</p>';
+                }
+            }
+
+            async function loadHistorial() {
+                const list = document.getElementById('historial-list');
+                list.innerHTML = '';
+                try {
+                    
+                    const response = await fetch('/api/historial');
+                    const historial = await response.json();
+                    
+                    if (!Array.isArray(historial) || historial.length === 0) {
+                        list.innerHTML = '<p>No hay registros.</p>';
+                        return;
+                    }
+
+                    let html = '<table style="width:100%; border-collapse: collapse;"><thead><tr><th>Insumo</th><th>Cantidad</th><th>Área</th><th>Tipo</th><th>Fecha</th></tr></thead><tbody>';
+                    const historialOrdenado = historial.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+                    historialOrdenado.forEach(item => {
+                        html += `<tr style="border-bottom: 1px solid #444;">
+                            <td class="inventory-registry">${item.insumo}</td>
+                            <td class="inventory-registry">${item.cantidad}</td>
+                            <td class="inventory-registry">${item.area}</td>
+                            <td class="inventory-registry">${item.tipo}</td>
+                            <td class="inventory-registry">${new Date(item.fecha).toLocaleDateString()}</td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    list.innerHTML = html;
+                } catch (error) {
+                    console.error('Error al cargar historial:', error);
+                    list.innerHTML = '<p>Error al conectar.</p>';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', loadPedidos);
+        </script>
+
     </body>
 </html>
