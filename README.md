@@ -18,6 +18,10 @@ para nota personal, este proyecto esta usando:
 
 falta preparar:
 
-- MongoDB 
+- MongoDB (implementado 08/05)
 
--- lista ultima vez actualizada 06/05
+11/05: 
+
+Ahora necesario revisar el diseño de la página, y deberia arreglarse que se pueda hacer bypass al login si simplemente escribis /main_menu.html en la direccion web?
+
+-- lista ultima vez actualizada 11/05
