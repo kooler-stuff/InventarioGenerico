@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="Styles/MainStyle.css">
+        <link rel="icon" href="Media/icon.ico">
+        <title>Menú Principal - Inventario</title>
+    </head>
+    <script>
+        function CreateElement(Item, Stock, Category) {
+            var grid = document.getElementById('inventory-grid');
+            var BaseDiv = document.createElement('div');
+            BaseDiv.className = 'inventory-item';
+            BaseDiv.innerHTML = `
+                <h3>${Item}</h3>
+                <p>Stock: ${Stock}</p>
+                <small>Categoría: ${Category}</small> 
+            `;
+            grid.appendChild(BaseDiv);
+        }
+
+        function LoadInventory() {
+            // Esta función ahora es manejada por menu.js
+        }
+    </script>
+    <body>
+        <nav class="navbar">
+            <a href="main_menu.html" class="nav-logo"><img src="media/COM_Logo.png" alt="COM2"></a>
+            <a href="Pages/registro.html">Registro</a>
+            <a href="Pages/remove.html">Borrar</a>
+            <a href="Pages/add.html">Agregar</a>
+            <a href="Pages/modify.html">Modificar</a>
+        </nav>
+
+        <div class="container container-main">
+            <h1 class="titler1">Inventario de insumos</h1>
+            <input id="search-input" type="text" class="ButtonGeneric" placeholder="Buscar por nombre..." style="max-width: 420px; margin-bottom: 20px;">
+            <div id="inventory-grid" class="inventory-grid"></div>
+        </div>
+        <script src="./pages/menu.js"></script>
+    </body>
+</html>

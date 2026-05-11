@@ -1,43 +1,182 @@
-
 <!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="Styles/MainStyle.css">
-        <link rel="icon" href="Media/icon.ico">
+        <link rel="stylesheet" href="styles/MainStyle.css">
+        <link rel="icon" href="media/icon.ico">
+
         <title>Menú Principal - Inventario</title>
     </head>
+     <script>
+        function CreateElement(Item, Stock, Category) {
+            var grid = document.getElementById('inventory-grid');
+            var BaseDiv = document.createElement('div');
+            BaseDiv.className = 'inventory-item';
+            BaseDiv.innerHTML = `
+                <h3>${Item}</h3>
+                <p>Stock: ${Stock}</p>
+                <small>Categoría: ${Category}</small> 
+            `;
+            grid.appendChild(BaseDiv);
+        }
+
+        function LoadInventory() {
+            // Esta función ahora es manejada por menu.js
+        }
+    </script>
     <body>
         <nav class="navbar">
-            <a href="Pages/registro.html">Registro</a>
-            <a href="Pages/remove.html">Borrar</a>
-            <a href="Pages/add.html">Agregar</a>
-            <a href="Pages/modify.html">Modificar</a>
+            <a href="main_menu.html" class="nav-logo"><img src="media/COM_Logo.png" alt="COM2"></a>
+            <a href="main_menu.html" class="nav-currently-selected">Inventario</a>
+            <a href="pages/registro.html">Registro</a>
+            <a href="pages/add.html">Agregar</a>
         </nav>
-
         <div class="container container-main">
             <h1 class="titler1">Inventario de insumos</h1>
-
-            <div class="inventory-grid">
-                <div class="inventory-item">
-                    <h3>Laptop Dell</h3>
-                    <p>Stock: 15</p>
-                    <small>Categoría: Hardware</small>
-                </div>
-                
-                <div class="inventory-item">
-                    <h3>Monitor LG 24"</h3>
-                    <p>Stock: 8</p>
-                    <small>Categoría: Periféricos</small>
-                </div>
-
-                <div class="inventory-item">
-                    <h3>Teclado Mecánico</h3>
-                    <p>Stock: 22</p>
-                    <small>Categoría: Periféricos</small>
-                </div>
-            </div>
+            <p>Seleccione el insumo que desea modificar:</p>
+            <input id="search-input" type="text" class="ButtonGeneric" placeholder="Buscar por nombre..." style="max-width: 420px; margin-bottom: 20px;">
+            <div id="inventory-grid" class="inventory-grid"></div>
         </div>
+
+        <script>
+            async function renderInventory(insumos) {
+                const inventoryGrid = document.getElementById('inventory-grid');
+                inventoryGrid.innerHTML = '';
+
+                try {
+                    if (insumos === "GenericLoad") {
+                        const response = await fetch('/api/insumo');
+                        insumos = await response.json();
+                    }
+
+                    if (!Array.isArray(insumos) || insumos.length === 0) {
+                        inventoryGrid.innerHTML = '<p>No hay insumos cargados todavía.</p>';
+                        return;
+                    }
+
+                    insumos.forEach(item => {
+                        const itemCard = document.createElement('div');
+                        itemCard.className = 'inventory-item';
+                        itemCard.dataset.id = item._id;
+                        itemCard.innerHTML = `
+                            <h3>${item.insumo}</h3>
+                            <p>Stock: ${item.unidades}</p>
+                            <small>Categoría: <br> ${item.categoria}</small> <br>
+                            <button class="btn-modify"><img src="../media/pencil-white.svg" alt="Modificar"></button>
+                            <button class="btn-delete"><img src="../media/trash-white.svg" alt="Eliminar"></button>
+                        `;
+
+                        const modifyButton = itemCard.querySelector('.btn-modify');
+                        modifyButton.addEventListener('click', () => {
+                            enterEditMode(itemCard, item);
+                        });
+                        const deleteButton = itemCard.querySelector('.btn-delete');
+                        deleteButton.addEventListener('click', async () => {
+                        const confirmed = confirm(`¿Eliminar el insumo "${item.insumo}"?`);
+                        if (!confirmed) return;
+
+                        try {
+                                const deleteResponse = await fetch('/api/borrarinsumo', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ id: item._id })
+                                });
+
+                                const deleteResult = await deleteResponse.json();
+                                if (deleteResponse.ok && deleteResult.success) {
+                                    await renderInventory("GenericLoad");
+                                } else {
+                                    alert('No se pudo eliminar el insumo.');
+                                }
+                            } catch (error) {
+                                console.error('Error al borrar:', error);
+                                alert('Ocurrió un error al intentar eliminar el insumo.');
+                            }
+                        });
+
+                        inventoryGrid.appendChild(itemCard);
+                    });
+                } catch (error) {
+                    console.error('Error al cargar los datos:', error);
+                    inventoryGrid.innerHTML = '<p>Error al conectar con el servidor.</p>';
+                }
+            }
+
+            function enterEditMode(card, item) {
+                card.innerHTML = `
+                    <input type="text" class="ButtonGeneric edit-categoria" value="${item.categoria}" placeholder="Categoría"> <br>
+                    <input type="text" class="ButtonGeneric edit-insumo" value="${item.insumo}" placeholder="Insumo"> <br>
+                    <input type="number" class="ButtonGeneric edit-unidades" value="${item.unidades}" placeholder="Unidades"> <br>
+                    <button class="btn-save">Guardar</button> <br>
+                    <button class="btn-cancel">Cancelar</button>
+                `;
+
+                const saveButton = card.querySelector('.btn-save');
+                const cancelButton = card.querySelector('.btn-cancel');
+
+                saveButton.addEventListener('click', async () => {
+                    const categoria = card.querySelector('.edit-categoria').value;
+                    const insumo = card.querySelector('.edit-insumo').value;
+                    const unidades = parseInt(card.querySelector('.edit-unidades').value);
+
+                    if (!categoria || !insumo || isNaN(unidades)) {
+                        alert('Por favor, complete todos los campos correctamente.');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/api/modificarinsumo', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: item._id, categoria, insumo, unidades })
+                        });
+
+                        const result = await response.json();
+                        if (response.ok && result.success) {
+                            await renderInventory("GenericLoad");
+                        } else {
+                            alert('No se pudo modificar el insumo.');
+                        }
+                    } catch (error) {
+                        console.error('Error al modificar:', error);
+                        alert('Ocurrió un error al intentar modificar el insumo.');
+                    }
+                });
+
+                cancelButton.addEventListener('click', () => {
+                    renderInventory("GenericLoad");
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                renderInventory("GenericLoad");
+            }); 
+            document.addEventListener('DOMContentLoaded', async () => {
+                try {
+                    const response = await fetch('/api/insumo'); 
+                    allInsumos = await response.json();
+
+                    const searchInput = document.getElementById('search-input');
+                    if (searchInput) {
+                        searchInput.addEventListener('input', () => {
+                            const filter = searchInput.value.trim().toLowerCase();
+                            const filtered = allInsumos.filter(item => (item.insumo || item.objeto_specifico || '').toLowerCase().includes(filter));
+                            renderInventory(filtered);
+                        });
+                    }
+
+                    renderInventory(allInsumos);
+                } catch (error) {
+                    console.error("Error al cargar los datos:", error);
+                    document.getElementById('inventory-grid').innerHTML = "<p>Error al conectar con el servidor.</p>";
+                }
+            });
+            
+            
+        </script>
+        
     </body>
 </html>
