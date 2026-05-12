@@ -45,13 +45,38 @@ body{
     border-radius: 5px;
     background-color: #2e2e2e;
     color: rgb(255, 255, 255);
+    border: 2px solid rgb(95, 95, 95);
     font-size: 16px;
-    
 }
 .ButtonGeneric::placeholder {
     color: rgb(173, 173, 173);
     opacity: 1;
 }
+
+.ButtonGeneric:hover{
+    border: 2px solid rgb(255, 255, 255);
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.ButtonFiles{
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;   
+    border-radius: 5px;
+    border: 1px solid rgb(95, 95, 95);
+    background-color: #2e2e2e;
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+}
+
+.ButtonFiles:hover{
+    border: 1px solid rgb(255, 255, 255);
+}
+
 .ButtonSubmit{
     background-color: rgb(57, 0, 131);
     color: rgb(255, 255, 255);
@@ -114,6 +139,9 @@ body{
     text-align: left;
     border-left: 5px solid rgb(75, 11, 105);
     transition: transform 0.2s;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    white-space: nowrap;
 }
 
 .inventory-item:hover {
@@ -221,14 +249,6 @@ body{
     width: auto;
 }
 
-.nav-currently-selected {
-    background-color: rgba(192, 0, 182, 0.322);
-    background-size: cover;
-    border-radius: 0px;
-    color: rgb(61, 0, 45);
-    font-weight: bold;
-}
-
 .navbar a {
     color: #ffffff;
     text-decoration: none;
@@ -237,10 +257,19 @@ body{
     transition: color 0.3s ease;
 }
 
+.nav-currently-selected {
+    background-size: cover;
+    border-radius: 0px;
+    color: #d400ff;
+    font-weight: bold;
+    font-size: 24px;
+}
+
 .navbar a:hover {
     color: #ae00d1;
     text-decoration: solid;
 }
+
 
 #error-container {
     position: relative;
