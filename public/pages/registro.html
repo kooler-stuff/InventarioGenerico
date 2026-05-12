@@ -3,8 +3,85 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../Styles/MainStyle.css">
-        <link rel="icon" href="../Media/icon.ico">
+        <link rel="stylesheet" href="../styles/MainStyle.css">
+        <link rel="icon" href="../media/icon.ico">
+        <style>
+            .view-image-btn {
+                display: inline-block;
+                margin-top: 10px;
+                padding: 8px 12px;
+                border: 1px solid #d1d1d1;
+                border-radius: 8px;
+                background: #29ac30;
+                color: #111;
+                cursor: pointer;
+                transition: background 0.2s ease;
+                font-size: 0.95rem;
+            }
+            .view-image-btn:hover {
+                background: #f2f2f2;
+            }
+            .image-overlay {
+                position: fixed;
+                inset: 0;
+                display: none;
+                justify-content: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.65);
+                z-index: 9990;
+                padding: 20px;
+                min-width: 55%;
+            }
+            .image-overlay.active {
+                display: flex;
+            }
+            .image-overlay-content {
+                position: relative;
+                max-width: 90%;
+                max-height: 90%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .image-overlay-content img {
+                max-width: 100%;
+                min-width: 75%;
+                max-height: 90vh;
+                border-radius: 12px;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+            }
+
+            .image-overlay-content img:hover{
+                transform: scale(1.05);
+                transition: transform 0.7s ease;
+            }
+
+            .image-overlay-close {
+                position: absolute;
+                top: -20px;
+                right: -20px;
+                width: 34px;
+                height: 34px;
+                border: none;
+                border-radius: 50%;
+                z-index: 9991;
+                background: rgba(255,255,255,0.95);
+                color: #111;
+                cursor: pointer;
+                font-weight: bold;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                font-size: large;
+
+            }
+            .image-overlay-close:hover
+            {
+                background: rgb(255, 44, 44);
+                transform: scale(1.05);
+                transition: transform 0.3s ease ;
+                color: white;
+                font-size: larger;
+            }
+        </style>
 
         <title>Registro</title>
     </head>
@@ -27,10 +104,11 @@
 
             <div id="pedidos" class="tab-content active">
                 <h2>Insumos Pedidos</h2>
-                <form id="form-pedido" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <input type="text" id="ped-insumo" class="ButtonGeneric" placeholder="Insumo" required style="flex: 1; min-width: 150px;">
-                    <input type="number" id="ped-cantidad" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
-                    <input type="text" id="ped-area" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
+                <form id="form-pedido" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
+                    <input type="text" id="ped-insumo" maxlength="40" class="ButtonGeneric" placeholder="Insumo" required style="flex: 1; min-width: 150px;">
+                    <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
+                    <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
+                    <label for="ped-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" width="32px" height="auto"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*">
                     <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button>
                 </form>
                 <div id="pedidos-grid" class="inventory-grid"></div>
@@ -38,11 +116,12 @@
 
             <div id="prestados" class="tab-content">
                 <h2>Insumos Prestados</h2>
-                <form id="form-prestado" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <input type="text" id="pres-insumo" class="ButtonGeneric" placeholder="Insumo" required style="flex: 1; min-width: 150px;">
-                    <input type="number" id="pres-cantidad" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
-                    <input type="text" id="pres-area" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
-                    <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px;">Registrar</button>
+                <form id="form-prestado" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
+                    <input type="text" id="pres-insumo" class="ButtonGeneric" placeholder="Insumo" title="Indique el nombre del insumo" required style="flex: 1; min-width: 150px;">
+                    <input type="number" id="pres-cantidad" class="ButtonGeneric" placeholder="Cantidad" title="Indique la cantidad en números" required style="flex: 1; min-width: 100px;">
+                    <input type="text" id="pres-area" class="ButtonGeneric" placeholder="Área" title="Seleccione el area a la que se le fué prestado el insumo" required style="flex: 1; min-width: 150px;">
+                    <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" width="32px" height="auto"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*">
+                    <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px;">Registrar</button>    
                 </form>
                 <div id="prestados-grid" class="inventory-grid"></div>
             </div>
@@ -74,14 +153,18 @@
             document.getElementById('form-pedido').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 try {
+                    const formData = new FormData();
+                    formData.append('insumo', document.getElementById('ped-insumo').value);
+                    formData.append('cantidad', parseInt(document.getElementById('ped-cantidad').value));
+                    formData.append('area', document.getElementById('ped-area').value);
+                    const imagenFile = document.getElementById('ped-imagen').files[0];
+                    if (imagenFile) {
+                        formData.append('imagen', imagenFile);
+                    }
+
                     const response = await fetch('/api/pedidos', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            insumo: document.getElementById('ped-insumo').value,
-                            cantidad: parseInt(document.getElementById('ped-cantidad').value),
-                            area: document.getElementById('ped-area').value
-                        })
+                        body: formData
                     });
                     const result = await response.json();
                     if (result.success) {
@@ -99,14 +182,18 @@
             document.getElementById('form-prestado').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 try {
+                    const formData = new FormData();
+                    formData.append('insumo', document.getElementById('pres-insumo').value);
+                    formData.append('cantidad', parseInt(document.getElementById('pres-cantidad').value));
+                    formData.append('area', document.getElementById('pres-area').value);
+                    const imagenFile = document.getElementById('pres-imagen').files[0];
+                    if (imagenFile) {
+                        formData.append('imagen', imagenFile);
+                    }
+
                     const response = await fetch('/api/prestados', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            insumo: document.getElementById('pres-insumo').value,
-                            cantidad: parseInt(document.getElementById('pres-cantidad').value),
-                            area: document.getElementById('pres-area').value
-                        })
+                        body: formData
                     });
                     const result = await response.json();
                     if (result.success) {
@@ -136,11 +223,13 @@
                     pedidos.forEach(item => {
                         const card = document.createElement('div');
                         card.className = 'inventory-item';
+                             // <h3>${item._id}</h3> asi le sacas la id 
                         card.innerHTML = `
                             <h3>${item.insumo}</h3>
                             <p>Cantidad: ${item.cantidad}</p>
                             <small>Área: ${item.area}</small>
                             <p style="color: #a5a5a5; font-size: 12px;">Fecha: ${new Date(item.fecha).toLocaleDateString()}</p>
+                            ${item.imagen ? `<button class="view-image-btn" data-image="${item.imagen}"> <img src="../media/pic.svg" alt="foto"></button>` : ''}
                         `;
                         grid.appendChild(card);
                     });
@@ -170,6 +259,7 @@
                             <p>Cantidad: ${item.cantidad}</p>
                             <small>Área: ${item.area}</small>
                             <p style="color: #a5a5a5; font-size: 12px;">Desde: ${new Date(item.fecha).toLocaleDateString()}</p>
+                            ${item.imagen ? `<button class="view-image-btn" data-image="${item.imagen}"> <img src="../media/pic.svg" alt="foto"></button>` : ''}
                         `;
                         grid.appendChild(card);
                     });
@@ -211,6 +301,39 @@
                     list.innerHTML = '<p>Error al conectar.</p>';
                 }
             }
+
+            const overlay = document.createElement('div');
+            overlay.className = 'image-overlay';
+            overlay.id = 'image-overlay';
+            overlay.innerHTML = `
+                <div class="image-overlay-content">
+                    <button type="button" class="image-overlay-close" id="overlay-close">×</button>
+                    <img id="overlay-img" src="" alt="Imagen ampliada">
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            function handleImageClick(event) {
+                const button = event.target.closest('.view-image-btn');
+                if (!button) return;
+                const src = button.dataset.image;
+                const overlayImg = document.getElementById('overlay-img');
+                overlayImg.src = src;
+                overlay.classList.add('active');
+            }
+
+            document.getElementById('prestados-grid').addEventListener('click', handleImageClick);
+            document.getElementById('pedidos-grid').addEventListener('click', handleImageClick);
+
+            document.getElementById('overlay-close').addEventListener('click', () => {
+                overlay.classList.remove('active');
+            });
+
+            overlay.addEventListener('click', (event) => {
+                if (event.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
 
             document.addEventListener('DOMContentLoaded', loadPedidos);
         </script>
