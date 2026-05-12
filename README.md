@@ -11,10 +11,10 @@ para nota personal, este proyecto esta usando:
 -JavaScript (06/05)
 -Node.js (06/05)
 -api.REST (06/05)
--Express (06/05)
+-Express (+ Express-session) (06/05)
 - ENV (06/05)
 - BabelJS (06/05 implementado pero no lo estamos usando realmente?)
-- CORS (06/05 instalado aun no se implemento??)
+- CORS (06/05 instalado aun no se implemento??) (12/05 utilizandose)
 
 falta preparar:
 
@@ -24,4 +24,10 @@ falta preparar:
 
 Ahora necesario revisar el diseño de la página, y deberia arreglarse que se pueda hacer bypass al login si simplemente escribis /main_menu.html en la direccion web?
 
--- lista ultima vez actualizada 11/05
+12/05: 
+
+arreglado ese tal bypass al login, es la que vaaaaa
+Agregado funcion para subir y ver imagenes, se optó por guardar las imagenes localmente 
+Faltaría unicamente diseño?
+
+-- lista ultima vez actualizada 12/05

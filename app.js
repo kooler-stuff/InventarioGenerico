@@ -10,8 +10,31 @@ const Prestado = require('./models/prestado');
 const Historial = require('./models/historial');
 
 const express = require('express');
+const multer = require("multer");
+
+const storagePrestados = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, path.join(__dirname, 'media_images', 'prestados')),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const storagePedidos = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, path.join(__dirname, 'media_images', 'pedidos')),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const uploadLent = multer({ storage: storagePrestados });
+const uploadOrders = multer({ storage: storagePedidos });
+
 const app = express();
 const port = 3000;
+
+
 
 // BD
 mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/inventario_com')
@@ -56,6 +79,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static('public'));
+app.use('/media_images', express.static(path.join(__dirname, 'media_images')));
 
 //RUTAS
 
@@ -154,10 +178,12 @@ app.get('/api/pedidos', async (req, res) => {
   }
 });
 
-app.post('/api/pedidos', async (req, res) => {
+app.post('/api/pedidos', uploadOrders.single('imagen'), async (req, res) => {
   try {
     const { insumo, cantidad, area } = req.body;
-    const nuevoPedido = new Pedido({ insumo, cantidad, area });
+    const imagen = req.file ? `/media_images/pedidos/${req.file.filename}` : undefined;
+
+    const nuevoPedido = new Pedido({ insumo, cantidad, area, imagen });
     await nuevoPedido.save();
     await Historial.create({ insumo, cantidad, area, tipo: 'Pedido' });
     res.json({ success: true, data: nuevoPedido });
@@ -175,10 +201,12 @@ app.get('/api/prestados', async (req, res) => {
   }
 });
 
-app.post('/api/prestados', async (req, res) => {
+app.post('/api/prestados', uploadLent.single('imagen'), async (req, res) => {
   try {
     const { insumo, cantidad, area } = req.body;
-    const nuevoPrestamo = new Prestado({ insumo, cantidad, area });
+    const imagen = req.file ? `/media_images/prestados/${req.file.filename}` : undefined;
+
+    const nuevoPrestamo = new Prestado({ insumo, cantidad, area, imagen });
     await nuevoPrestamo.save();
     await Historial.create({ insumo, cantidad, area, tipo: 'Préstamo' });
     res.json({ success: true, data: nuevoPrestamo });
