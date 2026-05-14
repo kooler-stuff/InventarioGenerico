@@ -4,8 +4,14 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../styles/MainStyle.css">
+        
         <link rel="icon" href="../media/icon.ico">
         <style>
+            @font-face {
+                font-family: fuente1; 
+                src: url(../pages/Lato-Bold.ttf);
+            }
+
             .view-image-btn {
                 display: inline-block;
                 margin-top: 10px;
@@ -94,13 +100,16 @@
             <a href="add.html">Agregar</a>
         </nav>
         <div class="container container-main">
-            <h1 class="titler1">Registro</h1>
-            
-            <div class="tab-buttons">
-                <button class="tab-btn active" data-tab="pedidos">Insumos Pedidos</button>
-                <button class="tab-btn" data-tab="prestados">Insumos Prestados</button>
-                <button class="tab-btn" data-tab="historial">Historial</button>
+            <div style="display: flex;align-items:center; justify-content:space-between;gap: 15px;margin-bottom:15px;width:100%; margin-top: -80px; margin-bottom: 100px;"> 
+                <h1 class="titler1" style="margin:0;flex-shrink:0;">Registro</h1>
+                
+                <div class="tab-buttons" style="margin:0;border:none;flex-shrink:0;">
+                    <button class="tab-btn active" data-tab="pedidos">Insumos Pedidos</button>
+                    <button class="tab-btn" data-tab="prestados">Insumos Prestados</button>
+                    <button class="tab-btn" data-tab="historial">Historial</button>
+                </div>
             </div>
+
 
             <div id="pedidos" class="tab-content active">
                 <h2>Insumos Pedidos</h2>
@@ -108,7 +117,7 @@
                     <input type="text" id="ped-insumo" maxlength="40" class="ButtonGeneric" placeholder="Insumo" required style="flex: 1; min-width: 150px;">
                     <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
                     <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
-                    <label for="ped-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" width="32px" height="auto"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*">
+                    <label for="ped-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*">
                     <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button>
                 </form>
                 <div id="pedidos-grid" class="inventory-grid"></div>
@@ -120,7 +129,7 @@
                     <input type="text" id="pres-insumo" class="ButtonGeneric" placeholder="Insumo" title="Indique el nombre del insumo" required style="flex: 1; min-width: 150px;">
                     <input type="number" id="pres-cantidad" class="ButtonGeneric" placeholder="Cantidad" title="Indique la cantidad en números" required style="flex: 1; min-width: 100px;">
                     <input type="text" id="pres-area" class="ButtonGeneric" placeholder="Área" title="Seleccione el area a la que se le fué prestado el insumo" required style="flex: 1; min-width: 150px;">
-                    <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" width="32px" height="auto"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*">
+                    <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="auto"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*">
                     <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px;">Registrar</button>    
                 </form>
                 <div id="prestados-grid" class="inventory-grid"></div>
@@ -208,6 +217,12 @@
                 }
             });
 
+            function OrdenarTabla(tabla) {
+                const TablaOrdenada = tabla.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                return TablaOrdenada 
+            }
+
+
             async function loadPedidos() {
                 const grid = document.getElementById('pedidos-grid');
                 grid.innerHTML = '';
@@ -220,7 +235,9 @@
                         return;
                     }
 
-                    pedidos.forEach(item => {
+                    const Ordenada = OrdenarTabla(pedidos)
+
+                    Ordenada.forEach(item => {
                         const card = document.createElement('div');
                         card.className = 'inventory-item';
                              // <h3>${item._id}</h3> asi le sacas la id 
@@ -251,7 +268,9 @@
                         return;
                     }
 
-                    prestados.forEach(item => {
+                    const Ordenada = OrdenarTabla(prestados)
+
+                    Ordenada.forEach(item => {
                         const card = document.createElement('div');
                         card.className = 'inventory-item';
                         card.innerHTML = `
@@ -282,16 +301,16 @@
                         return;
                     }
 
-                    let html = '<table style="width:100%; border-collapse: collapse;"><thead><tr><th>Insumo</th><th>Cantidad</th><th>Área</th><th>Tipo</th><th>Fecha</th></tr></thead><tbody>';
-                    const historialOrdenado = historial.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                    let html = '<table class="historial"><thead><tr><th>Insumo</th><th>Cantidad</th><th>Área</th><th>Tipo</th><th>Fecha</th></tr></thead><tbody>';
+                    const Ordenada = OrdenarTabla(historial)
 
-                    historialOrdenado.forEach(item => {
+                    Ordenada.forEach(item => {
                         html += `<tr style="border-bottom: 1px solid #444;">
-                            <td class="inventory-registry">${item.insumo}</td>
-                            <td class="inventory-registry">${item.cantidad}</td>
-                            <td class="inventory-registry">${item.area}</td>
-                            <td class="inventory-registry">${item.tipo}</td>
-                            <td class="inventory-registry">${new Date(item.fecha).toLocaleDateString()}</td>
+                            <td>${item.insumo}</td>
+                            <td>${item.cantidad}</td>
+                            <td>${item.area}</td>
+                            <td>${item.tipo}</td>
+                            <td>${new Date(item.fecha).toLocaleDateString()}</td>
                         </tr>`;
                     });
                     html += '</tbody></table>';
