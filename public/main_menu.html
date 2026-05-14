@@ -5,11 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="styles/MainStyle.css">
         <link rel="icon" href="media/icon.ico">
-
+        <style>
+            @font-face {
+                font-family: fuente1; 
+                src: url(../pages/Lato-Bold.ttf);
+            }
+        </style>
         <title>Menú Principal - Inventario</title>
     </head>
      <script>
-        function CreateElement(Item, Stock, Category) {
+        function CreateElement(Item, Stock, Category) { 
             var grid = document.getElementById('inventory-grid');
             var BaseDiv = document.createElement('div');
             BaseDiv.className = 'inventory-item';
@@ -33,16 +38,45 @@
             <a href="pages/add.html">Agregar</a>
         </nav>
         <div class="container container-main">
-            <h1 class="titler1">Inventario de insumos</h1>
-            <p>Seleccione el insumo que desea modificar:</p>
-            <input id="search-input" type="text" class="ButtonGeneric" placeholder="Buscar por nombre..." style="max-width: 420px; margin-bottom: 20px;">
-            <div id="inventory-grid" class="inventory-grid"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-80px 0 120px 0;padding-top:-50px;width:100%;">
+                <span style="font-size:20px;font-weight:600;">Inventario</span>
+                <div> 
+                    <p style="margin:0 auto;text-align:center;flex:1;min-width:0; margin-bottom:10px">Seleccione el insumo que desea modificar:</p>
+                    <input id="search-input" type="text" class="ButtonGeneric" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
+                </div>
+                <div class="tab-buttons" style="margin:0;border:none;flex-shrink:0;">
+                    <button class="tab-btn active" data-tab="inventario">Inventario</button>
+                    <button class="tab-btn" data-tab="historial">Historial de Cambios</button>
+                </div>
+            </div>
+            <div id="inventory-grid" class="inventory-grid2 active"></div>
+            <div id="historial" class="history-list"> </div>
         </div>
 
         <script>
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    const element = document.getElementById(btn.dataset.tab);
+                    if (element) element.classList.add('active');
+                    
+                    if (btn.dataset.tab === 'inventario') renderInventory("GenericLoad");
+                    if (btn.dataset.tab === 'historial') loadHistorialInventario();
+                });
+            });
             async function renderInventory(insumos) {
+                const list = document.getElementById('historial');
                 const inventoryGrid = document.getElementById('inventory-grid');
+                inventoryGrid.classList.add('active');
+                list.classList.remove('active');
                 inventoryGrid.innerHTML = '';
+                list.innerHTML = '';
 
                 try {
                     if (insumos === "GenericLoad") {
@@ -63,13 +97,18 @@
                             <h3>${item.insumo}</h3>
                             <p>Stock: ${item.unidades}</p>
                             <small>Categoría: <br> ${item.categoria}</small> <br>
-                            <button class="btn-modify"><img src="../media/pencil-white.svg" alt="Modificar"></button>
-                            <button class="btn-delete"><img src="../media/trash-white.svg" alt="Eliminar"></button>
+                            <button class="btn-increase"><img src="media/add_white.svg" alt="Agregar"></button>
+                            <button class="btn-decrease"><img src="media/remove_white.svg" alt="Restar"> </button>
+                            <button class="btn-delete"><img src="media/trash-white.svg" alt="Eliminar"></button>
                         `;
 
-                        const modifyButton = itemCard.querySelector('.btn-modify');
-                        modifyButton.addEventListener('click', () => {
-                            enterEditMode(itemCard, item);
+                        const addButton = itemCard.querySelector('.btn-increase');
+                        addButton.addEventListener('click', () => {
+                            enterEditMode(itemCard, item, "Agregar");
+                        });
+                        const decreaseButton = itemCard.querySelector('.btn-decrease');
+                        decreaseButton.addEventListener('click', () => {
+                            enterEditMode(itemCard, item, "Quitar");
                         });
                         const deleteButton = itemCard.querySelector('.btn-delete');
                         deleteButton.addEventListener('click', async () => {
@@ -105,33 +144,73 @@
                 }
             }
 
-            function enterEditMode(card, item) {
+            async function loadHistorialInventario() {
+                const list = document.getElementById('historial');
+                const inventoryGrid = document.getElementById('inventory-grid');
+                inventoryGrid.classList.remove('active');
+                list.classList.add('active');
+                inventoryGrid.innerHTML = '';
+                list.innerHTML = '';
+                try {
+                    const response = await fetch('/api/historial-inventario');
+                    const historial = await response.json();
+                    console.log(historial)
+                    if (!Array.isArray(historial) || historial.length === 0) {
+                        list.innerHTML = '<p>No hay registros de cambios.</p>';
+                        return;
+                    }
+
+                    let html = '<table class="history-table" style="width:100%; border: 2px solid #444; border-collapse: collapse; border-spacing: 0 20px;"><thead><tr><th>Insumo</th><th>Categoría</th><th>Unidades</th><th>Tipo</th><th>Fecha</th></tr></thead><tbody>';
+
+                    historial.forEach(item => {
+                        html += `<tr style="border: 1px solid #444; padding: 20px;">
+                            <td class="inventory-registry">${item.insumo}</td>
+                            <td class="inventory-registry">${item.categoria}</td>
+                            <td class="inventory-registry">${item.unidades}</td>
+                            <td class="inventory-registry">${item.accion}</td>
+                            <td class="inventory-registry">${new Date(item.fecha).toLocaleDateString()}</td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    list.innerHTML = html;
+                } catch (error) {
+                    console.error('Error al cargar historial:', error);
+                    list.innerHTML = '<p>Error al conectar.</p>';
+                }
+            }
+
+            function enterEditMode(card, item, mode) {
                 card.innerHTML = `
-                    <input type="text" class="ButtonGeneric edit-categoria" value="${item.categoria}" placeholder="Categoría"> <br>
-                    <input type="text" class="ButtonGeneric edit-insumo" value="${item.insumo}" placeholder="Insumo"> <br>
-                    <input type="number" class="ButtonGeneric edit-unidades" value="${item.unidades}" placeholder="Unidades"> <br>
+                    <input type="number" class="ButtonGeneric edit-unidades" value="${0}" placeholder="Unidades"> <br>
                     <button class="btn-save">Guardar</button> <br>
                     <button class="btn-cancel">Cancelar</button>
                 `;
-
                 const saveButton = card.querySelector('.btn-save');
                 const cancelButton = card.querySelector('.btn-cancel');
 
                 saveButton.addEventListener('click', async () => {
-                    const categoria = card.querySelector('.edit-categoria').value;
-                    const insumo = card.querySelector('.edit-insumo').value;
-                    const unidades = parseInt(card.querySelector('.edit-unidades').value);
+                    let unidades = parseInt(card.querySelector('.edit-unidades').value);
+                    const insumo = item.insumo 
+                    const categoria = item.categoria
+                    let UnidadFinal = null;
 
-                    if (!categoria || !insumo || isNaN(unidades)) {
+                    if (isNaN(unidades)) {
                         alert('Por favor, complete todos los campos correctamente.');
                         return;
+                    }
+
+                    if (mode==="Quitar") {
+                        UnidadFinal = item.unidades - unidades;
+                    }
+                    else {
+                        UnidadFinal = item.unidades + unidades;
                     }
 
                     try {
                         const response = await fetch('/api/modificarinsumo', {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: item._id, categoria, insumo, unidades })
+                            body: JSON.stringify({ id: item._id, categoria, insumo, UnidadFinal, mode})
                         });
 
                         const result = await response.json();
@@ -173,9 +252,7 @@
                     console.error("Error al cargar los datos:", error);
                     document.getElementById('inventory-grid').innerHTML = "<p>Error al conectar con el servidor.</p>";
                 }
-            });
-            
-            
+            });  
         </script>
         
     </body>
