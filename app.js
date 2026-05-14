@@ -8,6 +8,7 @@ const Insumo = require('./models/insumo');
 const Pedido = require('./models/pedido');
 const Prestado = require('./models/prestado');
 const Historial = require('./models/historial');
+const HistorialInventario = require('./models/historialInventario');
 
 const express = require('express');
 const multer = require("multer");
@@ -112,6 +113,16 @@ app.post('/insumo', async (req, res) => {
     });
 
     const guardado = await nuevoInsumo.save();
+    
+    const registroHistorial = new HistorialInventario({
+      insumo,
+      categoria,
+      unidades,
+      tipo: 'Agregado',
+      descripcion: `Insumo agregado al inventario`
+    });
+    await registroHistorial.save();
+    
     res.status(201).json({ success: true, data: guardado });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
@@ -121,6 +132,17 @@ app.post('/insumo', async (req, res) => {
 app .post('/api/borrarinsumo', async (req, res) => {
   try {
     const { id } = req.body;
+    const insumoABorrar = await Insumo.findById(id);
+    if (insumoABorrar) {
+      const registroHistorial = new HistorialInventario({
+        insumo: insumoABorrar.insumo,
+        categoria: insumoABorrar.categoria,
+        unidades: insumoABorrar.unidades,
+        tipo: 'Eliminado',
+        descripcion: `Insumo eliminado del inventario`
+      });
+      await registroHistorial.save();
+    }
     await Insumo.findByIdAndDelete(id);
     res.json({ success: true });
   } catch (error) {
@@ -130,13 +152,38 @@ app .post('/api/borrarinsumo', async (req, res) => {
 
 app.put('/api/modificarinsumo', async (req, res) => {
   try {
-    const { id, categoria, insumo, unidades } = req.body;
+    const { id, categoria, insumo, UnidadFinal, accion} = req.body;
+    console.log(req.body)
+
+    let action = "";
+    let unidades = UnidadFinal;
+    
+    if (accion === "Quitar"){
+      action = "Insumos removidos."
+    } else {
+      action = "Insumos agregados."
+    }
+
+    console.log(unidades);
+    console.log("accion:");
+    console.log(action);
+
     const updated = await Insumo.findByIdAndUpdate(id, { categoria, insumo, unidades }, { new: true });
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Insumo no encontrado' });
     }
+   
+    const registroHistorial = new HistorialInventario({
+      insumo: insumo,
+      categoria: categoria,
+      unidades: unidades,
+      accion: action,
+    });
+    await registroHistorial.save();
+    
     res.json({ success: true, data: updated });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ success: false, message: 'Error al modificar el insumo' });
   }
 });
@@ -147,6 +194,15 @@ app.get('/api/insumo', async (req, res) => {
     res.json(todos);
   } catch (error) {
     res.status(500).json({ error: 'No se pudieron obtener los datos' });
+  }
+});
+
+app.get('/api/historial-inventario', async (req, res) => {
+  try {
+    const historial = await HistorialInventario.find()
+    res.json(historial);
+  } catch (error) {
+    res.status(500).json({ error: 'No se pudo obtener el historial' });
   }
 });
 
