@@ -1,10 +1,12 @@
+/*   funciona cuando quiere, no pregunten 
 @font-face {
   font-family: fuente1; 
   src: url(../pages/Lato-Bold.ttf);
 }
+*/ 
 
 body{
-    background-color: #181818;
+    background-color: #131321;
     font-family: fuente1;
     color: #ffffff;
     margin: 0;
@@ -17,12 +19,13 @@ body{
     background-position: top;
     background-size: cover; 
     width: 25%;
-    margin: auto;
+    margin: auto; 
+    margin-bottom: 50px;
     padding: 20px;
     padding-top: 100px;
     padding-bottom: 100px;
     margin-top: 12.5%;
-    border: 3px solid rgb(95, 70, 93);
+    border: 3px solid#3a274c;
     border-radius: 15px;
     display: flex;
     flex-direction: column;
@@ -77,6 +80,11 @@ input[type="file"] {
     border: 1px solid rgb(255, 255, 255);
 }
 
+.ButtonFiles:active{
+    color: #2e2e2e;
+    background-color: rgb(255, 255, 255);
+}
+
 .ButtonSubmit{
     background-color: rgb(57, 0, 131);
     color: rgb(255, 255, 255);
@@ -101,6 +109,17 @@ input[type="file"] {
     transition: transform 0.3s ease;
 }
 
+.ButtonSubmit:active
+{
+    color: #ffffff;
+    background-color: rgb(143, 57, 255);
+    font-weight: 550;
+}
+
+.ButtonSubmitImage:active{
+    content: url(../media/clip-black.svg);
+}
+
 .button-container {
     background-color: #555;
     display: flex;
@@ -111,7 +130,7 @@ input[type="file"] {
 
 .container-main {
     width: 80% !important;
-    margin-top: 5% !important;
+    margin-top: 1% !important;
 }
 
 .container-small {
@@ -132,12 +151,42 @@ input[type="file"] {
     margin-bottom: 30px;
 }
 
+.inventory-grid2{
+    display: none;
+}
+
+.history-list{
+    display: block;
+}
+
+.history-list.active{
+    display: block;
+    grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+    width: 100%;
+    margin-bottom: 30px;
+    background-color: #3a274c;
+    box-shadow: 5px  5px 12px #332242;
+}
+
+.history-list .history-table {
+    padding: 15px;
+    border-spacing: 0 10px;
+}
+
+.inventory-grid2.active {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
 .inventory-item {
     background-color: #2e2e2e; 
     padding: 20px;
     border-radius: 10px;
     text-align: left;
-    border-left: 5px solid rgb(75, 11, 105);
+    border-left: 5px solid #3a274c;
     transition: transform 0.2s;
     overflow: hidden;
     overflow-wrap: break-word;
@@ -147,6 +196,7 @@ input[type="file"] {
 .inventory-item:hover {
     transform: translateY(-5px);
     background-color: #3d3d3d;
+    border-left: 5px solid #8a5db4;
 }
 
 .inventory-item h3 {
@@ -181,10 +231,10 @@ input[type="file"] {
     transform: translateY(-1px);
 }
 
-.inventory-item .btn-modify {
+.inventory-item .btn-increase {
     margin-top: 12px;
     padding: 10px 14px;
-    background-color: #3b8bc2;
+    background-color: #66dd7a;
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -192,8 +242,24 @@ input[type="file"] {
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.inventory-item .btn-modify:hover {
-    background-color: #2f7aa1;
+.inventory-item .btn-increase:hover {
+    background-color: #40994f;
+    transform: translateY(-1px);
+}
+
+.inventory-item .btn-decrease {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background-color: #7a7979;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.inventory-item .btn-decrease:hover {
+    background-color: rgb(114, 56, 56);
     transform: translateY(-1px);
 }
 
@@ -235,38 +301,38 @@ input[type="file"] {
 
 .navbar {
     width: 100%;
-    background-color: #2e2e2e;
-    padding: 25px 35px;
+    background-color: #212f3a;
+    padding: 25px 0px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 50px;
-    border-bottom: 3px solid rgb(56, 7, 54); 
+    border-bottom: 3px solid #6c587a; 
 }
 
 .navbar .nav-logo img {
+    margin-left: 25px;
     height: 45px;
     width: auto;
 }
 
 .navbar a {
+    margin-right: 5px;
     color: #ffffff;
     text-decoration: none;
-    font-size: 22px;
+    font-size: calc(0.25rem + 0.9vw);
     font-weight: bold;
     transition: color 0.3s ease;
 }
 
-.nav-currently-selected {
-    background-size: cover;
-    border-radius: 0px;
-    color: #d400ff;
+.navbar a.nav-currently-selected {
+    color: #85abb1 !important;
     font-weight: bold;
-    font-size: 24px;
+    font-size: calc(0.25rem + 1.15vw);
 }
 
 .navbar a:hover {
-    color: #ae00d1;
+    color: #85abb1;
     text-decoration: solid;
 }
 
@@ -286,6 +352,8 @@ input[type="file"] {
 
 .tab-buttons {
     display: flex;
+    align-items:center;
+    justify-content:space-between;
     gap: 10px;
     margin-bottom: 20px;
     border-bottom: 2px solid #444;
@@ -301,12 +369,13 @@ input[type="file"] {
     font-size: 16px;
     font-weight: bold;
     transition: color 0.3s ease;
+    border-bottom: 3px solid #131321;
 }
 
 .tab-btn.active {
-    background-color: rgb(57, 0, 131);
+    background-color: 	#4a3261;
     color: #ffffff;
-    border-bottom: 3px solid rgb(18, 13, 90);
+    border-bottom: 1px solid #131321;
 }
 
 .tab-btn:hover {
@@ -323,11 +392,95 @@ input[type="file"] {
     display: block;
 }
 
+.history-table {
+    color: #ffffff;
+}
+
 .inventory-list {
     background-color: #2e2e2e;
     border-radius: 5px;
     margin-top: 20px;
+    
 }
-.inventory-registry {
-    padding: 15px;
+
+.inventory-list .historial {
+    width:100%; 
+    max-width:100%; 
+    overflow-x:scroll; 
+    border-collapse: collapse;
+}
+
+@media screen and (max-width: 768px) { /* IsraelGPT salvame */ 
+    /* Ajustamos el contenedor principal que tenías fijo al 80% */
+    .container-main {
+        width: 95% !important;
+        padding: 10px;
+    }
+
+    /* Forzamos a la tabla a no comportarse como tabla */
+    .history-table, 
+    .history-table thead, 
+    .history-table tbody, 
+    .history-table th, 
+    .history-table td, 
+    .history-table tr { 
+        display: block; 
+    }
+
+    /* Escondemos los encabezados originales (th) */
+    .history-table thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .history-table tr {
+        margin-bottom: 15px;
+        background: #2e2e2e;
+        border: 1px solid #444;
+        border-radius: 8px;
+    }
+
+    .history-table td { 
+        /* Hacemos que cada celda actúe como una fila con título */
+        border: none;
+        position: relative;
+        padding-left: 50% !important; 
+        text-align: right !important;
+        border-bottom: 1px solid #3d3d3d;
+        padding: 12px;
+    }
+
+    /* Insertamos los nombres de las columnas usando :before */
+    .history-table td:before { 
+        position: absolute;
+        left: 10px;
+        width: 45%; 
+        padding-right: 10px; 
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: #85abb1;
+        content: attr(data-label); /* IMPORTANTE: Requiere cambio en JS */
+    }
+    
+    .history-table td:last-child {
+        border-bottom: 0;
+    }
+
+    /* Ajuste del header del inventario (busqueda y tabs) */
+    .container-main > div:first-child {
+        flex-direction: column !important;
+        margin-top: 0 !important;
+        gap: 20px !important;
+    }
+}
+
+.inventory-list .historial .historial-item{
+    text-overflow: ellipsis;
+}
+
+#historial {
+    width: 100%;
+    overflow-x: auto;
 }
