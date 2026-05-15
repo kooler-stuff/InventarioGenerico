@@ -79,6 +79,7 @@
                 font-size: large;
 
             }
+            
             .image-overlay-close:hover
             {
                 background: rgb(255, 44, 44);
@@ -295,17 +296,16 @@
                     
                     const response = await fetch('/api/historial');
                     const historial = await response.json();
-                    
                     if (!Array.isArray(historial) || historial.length === 0) {
                         list.innerHTML = '<p>No hay registros.</p>';
                         return;
                     }
 
-                    let html = '<table class="historial"><thead><tr><th>Insumo</th><th>Cantidad</th><th>Área</th><th>Tipo</th><th>Fecha</th></tr></thead><tbody>';
+                    let html = '<table class="history-table" style="width:100%; border: 2px solid #444; border-collapse: collapse; border-spacing: 0 20px;"><thead><tr><th>Insumo</th><th>Cantidad</th><th>Área</th><th>Tipo</th><th>Fecha</th></tr></thead><tbody>';
                     const Ordenada = OrdenarTabla(historial)
 
                     Ordenada.forEach(item => {
-                        html += `<tr style="border-bottom: 1px solid #444;">
+                        html += `<tr style="border-bottom: 1px solid #292229;">
                             <td>${item.insumo}</td>
                             <td>${item.cantidad}</td>
                             <td>${item.area}</td>

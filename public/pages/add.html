@@ -31,6 +31,14 @@
                     <input type="text" id="insumo" class="ButtonGeneric" placeholder="Ej: Resma A4" required>
                 </div>
 
+                <div>
+                    <label>Subir imagen (opcional):</label> <br>
+                    <label for="ped-imagen" class="ButtonFiles" style="align-items: center; width: 32px; height: 32px;" title="Subir imagen">
+                        <img src="../media/clip.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="32px">
+                    </label>
+                    <input type="file" id="ped-imagen" name="imagen" accept="image/*">
+                </div>
+
                 <div class="form-group">
                     <label>Categoría:</label>
                     <input type="text" id="categoria" class="ButtonGeneric" placeholder="Ej: Librería" required>
@@ -48,18 +56,20 @@
         <script>
             document.getElementById('form-add').addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const nuevoInsumo = new FormData()
 
-                const nuevoInsumo = {
-                    categoria: document.getElementById('categoria').value,
-                    insumo: document.getElementById('insumo').value,
-                    unidades: parseInt(document.getElementById('unidades').value),
-                };
+                nuevoInsumo.append('categoria', document.getElementById('categoria').value);
+                nuevoInsumo.append('insumo', document.getElementById('insumo').value);
+                nuevoInsumo.append('unidades', parseInt(document.getElementById('unidades').value));
+                const imagenFile = document.getElementById('ped-imagen').files[0];
+                if (imagenFile) {
+                    nuevoInsumo.append('imagen', imagenFile);
+                }
 
                 try {
                     const response = await fetch('/insumo', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(nuevoInsumo)
+                        body: nuevoInsumo
                     });
 
                     const resData = await response.json();
