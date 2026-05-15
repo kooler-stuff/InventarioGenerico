@@ -12,6 +12,7 @@ const HistorialInventario = require('./models/historialInventario');
 
 const express = require('express');
 const multer = require("multer");
+const str = require("string_decoder")
 
 const storagePrestados = multer.diskStorage({
   destination: (req, file, cb) => cb(null, path.join(__dirname, 'media_images', 'prestados')),
@@ -102,29 +103,31 @@ app.get('/check', (req, res) => {
 });
 
 // POST
-app.post('/insumo', async (req, res) => {
+app.post('/insumo', uploadOrders.single('imagen'), async (req, res) => {
   try {
     const { categoria, insumo, unidades } = req.body;
-    
+    const imagen = req.file ? `/media_images/pedidos/${req.file.filename}` : undefined;
+    console.log(req.body)
     const nuevoInsumo = new Insumo({
       categoria,
       insumo,
-      unidades
+      unidades, 
+      imagen
     });
-
+    
     const guardado = await nuevoInsumo.save();
     
     const registroHistorial = new HistorialInventario({
       insumo,
       categoria,
       unidades,
-      tipo: 'Agregado',
-      descripcion: `Insumo agregado al inventario`
+      accion: 'Insumo agregado al inventario.',
     });
     await registroHistorial.save();
     
     res.status(201).json({ success: true, data: guardado });
   } catch (error) {
+    console.log(error)
     res.status(400).json({ success: false, message: error.message });
   }
 });
@@ -138,14 +141,14 @@ app .post('/api/borrarinsumo', async (req, res) => {
         insumo: insumoABorrar.insumo,
         categoria: insumoABorrar.categoria,
         unidades: insumoABorrar.unidades,
-        tipo: 'Eliminado',
-        descripcion: `Insumo eliminado del inventario`
+        accion: `Insumo eliminado del inventario`, 
       });
       await registroHistorial.save();
     }
     await Insumo.findByIdAndDelete(id);
     res.json({ success: true });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ success: false, message: 'Error al borrar el insumo' });
   }
 });
@@ -157,11 +160,16 @@ app.put('/api/modificarinsumo', async (req, res) => {
 
     let action = "";
     let unidades = UnidadFinal;
-    
-    if (accion === "Quitar"){
-      action = "Insumos removidos."
+    let ac = req.body.action;
+    let act = JSON.stringify(ac); 
+    console.log(accion);
+    console.log(act);
+    if (act === "1"){
+      action = "Insumos removidos.";
+    } else if (act === "2"){
+      action = "Insumos agregados.";
     } else {
-      action = "Insumos agregados."
+      action = "Acción no especificada.";
     }
 
     console.log(unidades);

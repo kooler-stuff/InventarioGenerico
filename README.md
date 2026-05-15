@@ -30,4 +30,14 @@ arreglado ese tal bypass al login, es la que vaaaaa
 Agregado funcion para subir y ver imagenes, se optó por guardar las imagenes localmente 
 Faltaría unicamente diseño?
 
--- lista ultima vez actualizada 12/05
+
+14/05: 
+
+Agregado historial de cambios en stock, siguiendo adelante con algunos retoques a la pag, se debe eliminar la pestaña de añadir y moverla al menu principal/inventario
+
+15/05: 
+
+Haciendo algunos retoques de diseño porque es la que recontra va, ahora se pueden subir y ver imagenes de los objetos del inventario.
+Responsividad de historiales mejorada. 
+
+-- lista ultima vez actualizada 15/05
