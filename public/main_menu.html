@@ -14,6 +14,11 @@
         <title>Menú Principal - Inventario</title>
     </head>
      <script>
+        function OrdenarTabla(tabla) {
+                const TablaOrdenada = tabla.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                return TablaOrdenada 
+            }
+
         function CreateElement(Item, Stock, Category) { 
             var grid = document.getElementById('inventory-grid');
             var BaseDiv = document.createElement('div');
@@ -37,25 +42,36 @@
             <a href="pages/registro.html">Registro</a>
             <a href="pages/add.html">Agregar</a>
         </nav>
-        <div class="container container-main">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-80px 0 120px 0;padding-top:-50px;width:100%;">
-                <span style="font-size:20px;font-weight:600;">Inventario</span>
-                <div> 
-                    <p style="margin:0 auto;text-align:center;flex:1;min-width:0; margin-bottom:10px">Seleccione el insumo que desea modificar:</p>
-                    <input id="search-input" type="text" class="ButtonGeneric" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
+        <div class="container container-main"> 
+                <div style="display:flex;align-items:center;justify-content:space-between; gap:10px; margin:-80px 0 120px 0; padding-top:-50px; width:100%; background-color:rgb(124, 95, 143); border-radius: 15px;">
+                    <span style="font-size:20px;font-weight:600;">Inventario</span>
+                    <div> 
+                        <p style="margin:0 auto;text-align:center;flex:1;min-width:0; margin-bottom:10px">Seleccione el insumo que desea modificar:</p>
+                        <input id="search-input" type="text" class="ButtonGeneric" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
+                    </div>
+                    <div class="tab-buttons" style="margin:0;border:none;flex-shrink:0;">
+                        <button class="tab-btn active" data-tab="inventario">Inventario</button>
+                        <button class="tab-btn" data-tab="historial">Historial de Cambios</button>
+                        <button class="tab-btn" data-tab="AgregarInsumo">Agregar Insumo</button>
+                    </div>
                 </div>
-                <div class="tab-buttons" style="margin:0;border:none;flex-shrink:0;">
-                    <button class="tab-btn active" data-tab="inventario">Inventario</button>
-                    <button class="tab-btn" data-tab="historial">Historial de Cambios</button>
-                </div>
-            </div>
-            <div id="inventory-grid" class="inventory-grid2 active"></div>
-            <div id="historial" class="history-list"> </div>
+                <div id="inventory-grid" class="inventory-grid2 active"></div>
+                <div id="historial" class="history-list"> </div>
         </div>
 
         <script>
             const tabBtns = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
+
+            const overlay = document.createElement('div');
+            overlay.className = 'popup';
+            overlay.id = 'popup';
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <button type="button" class="popup-close" id="popup-close">×</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
 
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -88,13 +104,14 @@
                         inventoryGrid.innerHTML = '<p>No hay insumos cargados todavía.</p>';
                         return;
                     }
-
+                    console.log(insumos)
                     insumos.forEach(item => {
                         const itemCard = document.createElement('div');
                         itemCard.className = 'inventory-item';
                         itemCard.dataset.id = item._id;
                         itemCard.innerHTML = `
-                            <h3>${item.insumo}</h3>
+                            ${item.imagen ? `<img src="${item.imagen}" alt="foto" class="inventory-image">` : ''}
+                            <h3 class="itemname">${item.insumo}</h3>
                             <p>Stock: ${item.unidades}</p>
                             <small>Categoría: <br> ${item.categoria}</small> <br>
                             <button class="btn-increase"><img src="media/add_white.svg" alt="Agregar"></button>
@@ -147,6 +164,7 @@
             async function loadHistorialInventario() {
                 const list = document.getElementById('historial');
                 const inventoryGrid = document.getElementById('inventory-grid');
+
                 inventoryGrid.classList.remove('active');
                 list.classList.add('active');
                 inventoryGrid.innerHTML = '';
@@ -155,6 +173,7 @@
                     const response = await fetch('/api/historial-inventario');
                     const historial = await response.json();
                     console.log(historial)
+                    let TablaOrdenada = OrdenarTabla(historial);
                     if (!Array.isArray(historial) || historial.length === 0) {
                         list.innerHTML = '<p>No hay registros de cambios.</p>';
                         return;
@@ -162,7 +181,7 @@
 
                     let html = '<table class="history-table" style="width:100%; border: 2px solid #444; border-collapse: collapse; border-spacing: 0 20px;"><thead><tr><th>Insumo</th><th>Categoría</th><th>Unidades</th><th>Tipo</th><th>Fecha</th></tr></thead><tbody>';
 
-                    historial.forEach(item => {
+                    TablaOrdenada.forEach(item => {
                         html += `<tr style="border: 1px solid #444; padding: 20px;">
                             <td class="inventory-registry">${item.insumo}</td>
                             <td class="inventory-registry">${item.categoria}</td>
@@ -193,6 +212,7 @@
                     const insumo = item.insumo 
                     const categoria = item.categoria
                     let UnidadFinal = null;
+                    let action = "";
 
                     if (isNaN(unidades)) {
                         alert('Por favor, complete todos los campos correctamente.');
@@ -201,16 +221,18 @@
 
                     if (mode==="Quitar") {
                         UnidadFinal = item.unidades - unidades;
+                        action = 1
                     }
                     else {
                         UnidadFinal = item.unidades + unidades;
+                        action = 2
                     }
 
                     try {
                         const response = await fetch('/api/modificarinsumo', {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: item._id, categoria, insumo, UnidadFinal, mode})
+                            body: JSON.stringify({ id: item._id, categoria, insumo, UnidadFinal, action})
                         });
 
                         const result = await response.json();
