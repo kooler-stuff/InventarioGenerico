@@ -40,4 +40,10 @@ Agregado historial de cambios en stock, siguiendo adelante con algunos retoques 
 Haciendo algunos retoques de diseño porque es la que recontra va, ahora se pueden subir y ver imagenes de los objetos del inventario.
 Responsividad de historiales mejorada. 
 
--- lista ultima vez actualizada 15/05
+18/05: 
+
+funcion de agregar item ahora en menu principal, agregada vista previa de imagen subida, despues hacer que el popup en el que aparece la funcion de subir imagen
+tambien sirva para las funciones de cambiar stock.
+y como siempre, falta diseño
+
+-- lista ultima vez actualizada 18/05
