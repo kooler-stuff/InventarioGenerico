@@ -5,12 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="styles/MainStyle.css">
         <link rel="icon" href="media/icon.ico">
-        <style>
-            @font-face {
-                font-family: fuente1; 
-                src: url(../pages/Lato-Bold.ttf);
-            }
-        </style>
         <title>Menú Principal - Inventario</title>
     </head>
      <script>
@@ -43,13 +37,13 @@
             <a href="pages/add.html">Agregar</a>
         </nav>
         <div class="container container-main"> 
-                <div style="display:flex;align-items:center;justify-content:space-between; gap:10px; margin:-80px 0 120px 0; padding-top:-50px; width:100%; background-color:rgb(124, 95, 143); border-radius: 15px;">
+                <div class="container-navbar">
                     <span style="font-size:20px;font-weight:600;">Inventario</span>
                     <div> 
                         <p style="margin:0 auto;text-align:center;flex:1;min-width:0; margin-bottom:10px">Seleccione el insumo que desea modificar:</p>
                         <input id="search-input" type="text" class="ButtonGeneric" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
                     </div>
-                    <div class="tab-buttons" style="margin:0;border:none;flex-shrink:0;">
+                    <div class="tab-buttons" style="margin:0;border:none;flex: shrink 1;">
                         <button class="tab-btn active" data-tab="inventario">Inventario</button>
                         <button class="tab-btn" data-tab="historial">Historial de Cambios</button>
                         <button class="tab-btn" data-tab="AgregarInsumo">Agregar Insumo</button>
@@ -67,11 +61,85 @@
             overlay.className = 'popup';
             overlay.id = 'popup';
             overlay.innerHTML = `
+                <button type="button" class="popup-close" id="popup-close">×</button>
                 <div class="popup-content">
-                    <button type="button" class="popup-close" id="popup-close">×</button>
+                    <div class="popup-content-title"> Agregar nuevo elemento:</div>
+                    <form id="form-add" class="inventory-form">
+                        <div class="form-group">
+                            <label>Insumo:</label>
+                            <input type="text" id="insumo" class="ButtonGeneric" placeholder="Ej: Resma A4" required>
+                        </div>
+
+                        <div>
+                            <label>Subir imagen (opcional):</label> <br>
+                            <label for="ped-imagen" class="ButtonFiles2" id="DropArea" style="width: 32px; height: 32px;" title="Subir imagen">
+                                <img src="../media/clip.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="32px">
+                            </label>
+                            <div id="previewContainer"></div>
+                            <input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="HandleFile(this.files[0])">
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría:</label>
+                            <input type="text" id="categoria" class="ButtonGeneric" placeholder="Ej: Librería" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Unidades:</label>
+                            <input type="number" id="unidades" class="ButtonGeneric" placeholder="0" min="0" max="9999" required>
+                        </div>
+
+                        <button type="submit" class="ButtonSubmit">Guardar en Inventario</button>
+                    </form>
                 </div>
             `;
             document.body.appendChild(overlay);
+
+            document.getElementById('popup-close').addEventListener('click', () => {
+                overlay.style.display = "none"; 
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const dropArea = document.getElementById("DropArea");
+                const fileInput = document.getElementById("ped-imagen");
+                const previewContainer = document.getElementById("previewContainer");
+
+                // Handle drag and drop
+                dropArea.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                    dropArea.classList.add("highlight");
+                });
+
+                dropArea.addEventListener("dragleave", () => {
+                    dropArea.classList.remove("highlight");
+                });
+
+                dropArea.addEventListener("drop", (e) => {
+                    e.preventDefault();
+                    dropArea.classList.remove("highlight");
+                    const file = e.dataTransfer.files[0];
+                    handleFile(file);
+                });
+
+                // Handle browse button click
+                fileInput.addEventListener("change", (e) => {
+                    console.log("tocaron asi pos nomas");
+                    const file = e.target.files[0];
+                    handleFile(file);
+                });
+
+                function handleFile(file) {
+                    if (file && file.type.startsWith("image/")) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewContainer.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image">`;
+                            previewContainer.querySelector("img").style.display = "block";
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        alert("Please upload a valid image file.");
+                    }
+                }
+            });
 
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -84,15 +152,30 @@
                     
                     if (btn.dataset.tab === 'inventario') renderInventory("GenericLoad");
                     if (btn.dataset.tab === 'historial') loadHistorialInventario();
+                    if (btn.dataset.tab === "AgregarInsumo") AddNewItem();
                 });
             });
+
+            async function ResetSelected(selected) {
+                const lists = [document.getElementById('historial'), document.getElementById('inventory-grid')];
+                for (let i = 0; i < lists.length; i++ ) {
+                    /* console.log("Comparing now:");
+                    console.log(lists[i].className);
+                    console.log(selected.className); */
+                    if (lists[i].className === selected.className){
+                        lists[i].classList.add("active");
+                    } else{ 
+                        lists[i].classList.remove("active");
+                    }
+                    lists[i].innerHTML = "";
+                }
+            }
+
             async function renderInventory(insumos) {
                 const list = document.getElementById('historial');
                 const inventoryGrid = document.getElementById('inventory-grid');
-                inventoryGrid.classList.add('active');
-                list.classList.remove('active');
-                inventoryGrid.innerHTML = '';
-                list.innerHTML = '';
+                
+                ResetSelected(inventoryGrid);
 
                 try {
                     if (insumos === "GenericLoad") {
@@ -165,14 +248,11 @@
                 const list = document.getElementById('historial');
                 const inventoryGrid = document.getElementById('inventory-grid');
 
-                inventoryGrid.classList.remove('active');
-                list.classList.add('active');
-                inventoryGrid.innerHTML = '';
-                list.innerHTML = '';
+                ResetSelected(list);
                 try {
                     const response = await fetch('/api/historial-inventario');
                     const historial = await response.json();
-                    console.log(historial)
+                    /* console.log(historial) */
                     let TablaOrdenada = OrdenarTabla(historial);
                     if (!Array.isArray(historial) || historial.length === 0) {
                         list.innerHTML = '<p>No hay registros de cambios.</p>';
@@ -196,6 +276,11 @@
                     console.error('Error al cargar historial:', error);
                     list.innerHTML = '<p>Error al conectar.</p>';
                 }
+            }
+
+            async function AddNewItem(misc) {
+                console.log("it is time");
+                overlay.style.display = "flex"; 
             }
 
             function enterEditMode(card, item, mode) {
@@ -275,6 +360,38 @@
                     document.getElementById('inventory-grid').innerHTML = "<p>Error al conectar con el servidor.</p>";
                 }
             });  
+
+            document.getElementById('form-add').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const nuevoInsumo = new FormData()
+
+                nuevoInsumo.append('categoria', document.getElementById('categoria').value);
+                nuevoInsumo.append('insumo', document.getElementById('insumo').value);
+                nuevoInsumo.append('unidades', parseInt(document.getElementById('unidades').value));
+                const imagenFile = document.getElementById('ped-imagen').files[0];
+                if (imagenFile) {
+                    nuevoInsumo.append('imagen', imagenFile);
+                }
+
+                try {
+                    const response = await fetch('/insumo', {
+                        method: 'POST',
+                        body: nuevoInsumo
+                    });
+
+                    const resData = await response.json();
+
+                    if (resData.success) {
+                        alert("¡Insumo guardado correctamente!");
+                        document.getElementById('form-add').reset();
+                    } else {
+                        alert("Error: " + resData.message);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Error al conectar con el servidor");
+                }
+            });
         </script>
         
     </body>
