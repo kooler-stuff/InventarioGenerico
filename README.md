@@ -46,4 +46,6 @@ funcion de agregar item ahora en menu principal, agregada vista previa de imagen
 tambien sirva para las funciones de cambiar stock.
 y como siempre, falta diseño
 
+ah, y tener que arreglar esta tontera de que las imagenes subidas como vista previa de insumos se esta subiendo a la carpeta de insumos PRESTADOS, checate eso 
+
 -- lista ultima vez actualizada 18/05
