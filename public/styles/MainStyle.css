@@ -1,7 +1,126 @@
+/* utils */
+
 @font-face {
   font-family: fuente1; 
   src: url(../pages/Lato-Bold.ttf);
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #363636;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4d006b;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b700ff;
+}
+
+::-webkit-scrollbar-button {
+  display: block; 
+  height: 12px;
+  width: 15px;
+  background: #3f0461;
+}
+::-webkit-scrollbar-button:vertical:decrement {
+  background-image: url('../media/arrow_up_white.svg'); /* este e el boton de fecha pa abajo */
+  background-size: cover;
+}
+::-webkit-scrollbar-button:vertical:increment {
+  background-image: url('../media/arrow_down_white.svg'); /* y este el pa arriba */
+  background-size: cover;
+}
+
+::-webkit-scrollbar-button:vertical:increment:hover{
+    background-color: #b700ff;
+}
+
+::-webkit-scrollbar-button:vertical:decrement:hover{
+    background-color: #b700ff;
+}
+
+/* etiquetas del body y asi */
+
+/* elementos q se controlen con media para lo responsive y asi */
+
+@media screen and (max-width: 900px) { /* IsraelGPT salvame */ 
+    /* Ajustamos el contenedor principal que tenías fijo al 80% */
+    .container-main {
+        width: 95% !important;
+        padding: 10px;
+    }
+
+    .container-main .container-navbar {
+        padding-left: 0px;
+    }
+
+    /* Forzamos a la tabla a no comportarse como tabla */
+    .history-table, 
+    .history-table thead, 
+    .history-table tbody, 
+    .history-table th, 
+    .history-table td, 
+    .history-table tr { 
+        display: block; 
+    }
+
+    /* Escondemos los encabezados originales (th) */
+    .history-table thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .history-table tr {
+        margin-bottom: 15px;
+        background: #3a274c;
+        border: 1px solid #c4b7b7;
+        border-radius: 8px;
+    }
+
+    .history-table td { 
+        /* Hacemos que cada celda actúe como una fila con título */
+        border: none;
+        position: relative;
+        padding-left: 50% !important; 
+        text-align: right !important;
+        border-bottom: 1px solid #3d3d3d;
+        padding: 12px;
+    }
+
+    /* Insertamos los nombres de las columnas usando :before */
+    .history-table td:before { 
+        position: absolute;
+        left: 10px;
+        width: 45%; 
+        padding-right: 10px; 
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: #85abb1;
+        content: attr(data-label); /* IMPORTANTE: Requiere cambio en JS */
+    }
+    
+    .history-table td:last-child {
+        border-bottom: 0;
+    }
+
+    /* Ajuste del header del inventario (busqueda y tabs) */
+    .container-main > div:first-child {
+        flex-direction: column !important;
+        margin-top: 0 !important;
+        gap: 20px !important;
+    }
+}
+
+/* contenedores principales body los navbar y asi */
 
 body{
     background-color: #131321;
@@ -37,11 +156,330 @@ body{
     background-position:center;
 }
 
+.container-main {
+    width: 80% !important;
+    margin-top: 1% !important;
+}
+
 .logo{
     width: 45%;
     height: auto;
     margin-top: -50px;
 }
+
+
+.navbar {
+    width: 100%;
+    background-color: #212f3a;
+    padding: 25px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 50px;
+    border-bottom: 3px solid #6c587a; 
+}
+
+.navbar .nav-logo img {
+    margin-left: 25px;
+    height: 45px;
+    width: auto;
+}
+
+.navbar a {
+    margin-right: 5px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: calc(0.25rem + 0.9vw);
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.navbar a.nav-currently-selected {
+    color: #85abb1 !important;
+    font-weight: bold;
+    font-size: calc(0.25rem + 1.15vw);
+}
+
+.navbar a:hover {
+    color: #85abb1;
+    text-decoration: solid;
+}
+
+/* contenedores secundarios */
+
+.container-navbar {
+        display:flex;
+        align-items:center;
+        justify-content:space-between; 
+        gap:10px; margin:-70px 0 110px 0; 
+        padding-top:-50px; padding-left: 37px; 
+        padding-bottom: 13px; 
+        width:100%; 
+        border-radius: 12px;
+        padding-left: 37px;
+    }
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.inventory-grid2{
+    display: none;
+}
+
+.inventory-grid2.active {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+/* elementos creados dinamicamente */
+
+.inventory-item {
+    background-color: #2e2e2e; 
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+    border-left: 5px solid #6929a5;
+    transition: transform 0.2s;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    white-space: nowrap;
+}
+
+.inventory-item .inventory-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    margin-bottom: 12px;
+    background-color: #1f1f1f;
+    box-shadow: 5px 5px 9px #252525;
+    max-height: 200px;
+}
+
+.inventory-item:hover {
+    transform: translateY(-5px);
+    background-color: #3d3d3d;
+    border-left: 5px solid rgb(178, 115, 236);
+}
+
+.inventory-item h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+.inventory-item p {
+    margin: 5px 0;
+    font-weight: bold;
+    color: #a5a5a5;
+}
+
+.inventory-item small {
+    color: #797979;
+}
+
+.inventory-item .itemname {
+    white-space: normal;
+}
+
+/* botones de elementos creados dinamicamente ok??? */
+
+.inventory-item .btn-delete {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background-color: #c23b3b;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.inventory-item .btn-delete:hover {
+    background-color: #a12f2f;
+    transform: translateY(-1px);
+}
+
+.inventory-item .btn-increase {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background-color: #66dd7a;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.inventory-item .btn-increase:hover {
+    background-color: #40994f;
+    transform: translateY(-1px);
+}
+
+.inventory-item .btn-decrease {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background-color: #7a7979;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.inventory-item .btn-decrease:hover {
+    background-color: rgb(114, 56, 56);
+    transform: translateY(-1px);
+}
+
+
+.popup-content2 {
+    position: relative;
+    font-size: medium;
+    width: 410px;
+    height: 260px;
+    max-width: 90%;
+    padding: 50px;
+    padding-left: 15px;
+    margin:20px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    background-color: #3a274c;
+}
+
+.popup .btn-save {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: #6e5e7e;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    border-bottom: 3px solid #131321;
+    margin-right: 20px;
+    margin-left: 20px;
+    box-shadow: 12px rgba(0,0,0,0.2);
+}
+
+.popup .btn-save:hover {
+    background-color: #b090d1;
+}
+
+.popup .btn-save:active {
+    background-color: #ebddeb;
+    color: black;
+    border-bottom: 2px solid black;
+}
+
+.popup .btn-cancel {
+    margin-top: 8px;
+    margin-left: 8px;
+    padding: 8px 12px;
+    background-color: #910d0d;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    border-bottom: 3px solid #131321;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+.popup .btn-cancel:hover {
+    background-color: #dd4848;
+}
+
+.popup .btn-cancel:active {
+    background-color: #ffcaca;
+    color: rgb(0, 0, 0);
+    border-bottom: 2px solid black;
+}
+
+.popup .ButtonGeneric {
+    gap: 20px;
+}
+
+/* pop ups */
+
+.popup {
+    position:absolute; 
+    top: 25%;
+    z-index: 9990;
+    padding: 20px;
+    min-width: 55%;
+    min-height: 55%;
+    justify-self: center;
+    justify-content: center;
+    align-content: center;
+    display: none;
+}
+
+.popup .active{
+    display: flex;
+}
+
+.popup-content { 
+    position: relative;
+    width: 400px;
+    max-width: 90%;
+    padding: 50px;
+    padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    background-color: #3a274c;
+
+    align-items: stretch;
+    justify-content: flex-start;
+}
+
+.popup-content-title {
+    font-size: xx-large;
+}
+
+.popup-close {
+    position: absolute;
+    top: 1px;            
+    right: 290px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    z-index: 9991;
+    background: rgba(255,255,255,0.95);
+    color: #111;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-size: large;
+
+}
+            
+.popup-close:hover{
+    background: rgb(255, 44, 44);
+    transform: scale(1.05);
+    transition: transform 0.3s ease ;
+    color: white;
+    font-size: larger;
+}
+
+/* botones */
 
 .ButtonGeneric{
     width: 100%;
@@ -161,10 +599,7 @@ input[type="file"] {
     margin-top: 10px;
 }
 
-.container-main {
-    width: 80% !important;
-    margin-top: 1% !important;
-}
+/* mmm */
 
 .container-small {
     width: 20%;
@@ -173,19 +608,6 @@ input[type="file"] {
     margin-top: 7%;
     padding-top: 75px;
     padding-bottom: 40px;
-}
-
-/* Estructura Grid */
-.inventory-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    width: 100%;
-    margin-bottom: 30px;
-}
-
-.inventory-grid2{
-    display: none;
 }
 
 .history-list{
@@ -206,173 +628,10 @@ input[type="file"] {
     border-spacing: 0 10px;
 }
 
-.inventory-grid2.active {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    width: 100%;
-    margin-bottom: 30px;
-}
-
-.inventory-item {
-    background-color: #2e2e2e; 
-    padding: 20px;
-    border-radius: 10px;
-    text-align: left;
-    border-left: 5px solid #6929a5;
-    transition: transform 0.2s;
-    overflow: hidden;
-    overflow-wrap: break-word;
-    white-space: nowrap;
-}
-
-.inventory-item:hover {
-    transform: translateY(-5px);
-    background-color: #3d3d3d;
-    border-left: 5px solid rgb(178, 115, 236);
-}
-
-.inventory-item h3 {
-    margin: 0 0 10px 0;
-    font-size: 18px;
-    color: #ffffff;
-}
-
-.inventory-item p {
-    margin: 5px 0;
-    font-weight: bold;
-    color: #a5a5a5;
-}
-
-.inventory-item small {
-    color: #797979;
-}
-
-.inventory-item .btn-delete {
-    margin-top: 12px;
-    padding: 10px 14px;
-    background-color: #c23b3b;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.inventory-item .btn-delete:hover {
-    background-color: #a12f2f;
-    transform: translateY(-1px);
-}
-
-.inventory-item .itemname {
-    white-space: normal;
-}
-
-.inventory-item .btn-increase {
-    margin-top: 12px;
-    padding: 10px 14px;
-    background-color: #66dd7a;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.inventory-item .btn-increase:hover {
-    background-color: #40994f;
-    transform: translateY(-1px);
-}
-
-.inventory-item .btn-decrease {
-    margin-top: 12px;
-    padding: 10px 14px;
-    background-color: #7a7979;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.inventory-item .btn-decrease:hover {
-    background-color: rgb(114, 56, 56);
-    transform: translateY(-1px);
-}
-
-.inventory-item .btn-save {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background-color: rgb(18, 13, 90);
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.inventory-item .btn-save:hover {
-    background-color: rgb(15, 11, 58);
-}
-
-.inventory-item .btn-cancel {
-    margin-top: 8px;
-    margin-left: 8px;
-    padding: 8px 12px;
-    background-color: #666;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.inventory-item .btn-cancel:hover {
-    background-color: #555;
-}
-
 .titler1 {
     margin-top: -50px;
     margin-bottom: 15px;
 }
-
-.navbar {
-    width: 100%;
-    background-color: #212f3a;
-    padding: 25px 0px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 50px;
-    border-bottom: 3px solid #6c587a; 
-}
-
-.navbar .nav-logo img {
-    margin-left: 25px;
-    height: 45px;
-    width: auto;
-}
-
-.navbar a {
-    margin-right: 5px;
-    color: #ffffff;
-    text-decoration: none;
-    font-size: calc(0.25rem + 0.9vw);
-    font-weight: bold;
-    transition: color 0.3s ease;
-}
-
-.navbar a.nav-currently-selected {
-    color: #85abb1 !important;
-    font-weight: bold;
-    font-size: calc(0.25rem + 1.15vw);
-}
-
-.navbar a:hover {
-    color: #85abb1;
-    text-decoration: solid;
-}
-
 
 #error-container {
     position: relative;
@@ -448,88 +707,6 @@ input[type="file"] {
     border-collapse: collapse;
 }
 
-.container-navbar {
-        display:flex;
-        align-items:center;
-        justify-content:space-between; 
-        gap:10px; margin:-70px 0 110px 0; 
-        padding-top:-50px; padding-left: 37px; 
-        padding-bottom: 13px; 
-        width:100%; 
-        border-radius: 12px;
-        padding-left: 37px;
-    }
-
-@media screen and (max-width: 900px) { /* IsraelGPT salvame */ 
-    /* Ajustamos el contenedor principal que tenías fijo al 80% */
-    .container-main {
-        width: 95% !important;
-        padding: 10px;
-    }
-
-    .container-main .container-navbar {
-        padding-left: 0px;
-    }
-
-    /* Forzamos a la tabla a no comportarse como tabla */
-    .history-table, 
-    .history-table thead, 
-    .history-table tbody, 
-    .history-table th, 
-    .history-table td, 
-    .history-table tr { 
-        display: block; 
-    }
-
-    /* Escondemos los encabezados originales (th) */
-    .history-table thead tr { 
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-    }
-
-    .history-table tr {
-        margin-bottom: 15px;
-        background: #3a274c;
-        border: 1px solid #c4b7b7;
-        border-radius: 8px;
-    }
-
-    .history-table td { 
-        /* Hacemos que cada celda actúe como una fila con título */
-        border: none;
-        position: relative;
-        padding-left: 50% !important; 
-        text-align: right !important;
-        border-bottom: 1px solid #3d3d3d;
-        padding: 12px;
-    }
-
-    /* Insertamos los nombres de las columnas usando :before */
-    .history-table td:before { 
-        position: absolute;
-        left: 10px;
-        width: 45%; 
-        padding-right: 10px; 
-        white-space: nowrap;
-        text-align: left;
-        font-weight: bold;
-        color: #85abb1;
-        content: attr(data-label); /* IMPORTANTE: Requiere cambio en JS */
-    }
-    
-    .history-table td:last-child {
-        border-bottom: 0;
-    }
-
-    /* Ajuste del header del inventario (busqueda y tabs) */
-    .container-main > div:first-child {
-        flex-direction: column !important;
-        margin-top: 0 !important;
-        gap: 20px !important;
-    }
-}
-
 .view-image-btn {
     display: inline-block;
     margin-top: 10px;
@@ -543,68 +720,6 @@ input[type="file"] {
     font-size: 0.95rem;
 }
 
-.popup {
-    position:absolute; 
-    top: 25%;
-    z-index: 9990;
-    padding: 20px;
-    min-width: 55%;
-    min-height: 55%;
-    justify-self: center;
-    justify-content: center;
-    align-content: center;
-    display: none;
-}
-
-.popup .active{
-    display: flex;
-}
-
-.popup-content { 
-    position: relative;
-    width: 400px;
-    max-width: 90%;
-    padding: 50px;
-    padding-left: 15px;
-    display: flex;
-    flex-direction: column;
-    border-radius: 15px;
-    background-color: #3a274c;
-
-    align-items: stretch;
-    justify-content: flex-start;
-}
-
-.popup-content-title {
-    font-size: xx-large;
-}
-
-.popup-close {
-    position: absolute;
-    top: 1px;            
-    right: 290px;
-    width: 34px;
-    height: 34px;
-    border: none;
-    border-radius: 50%;
-    z-index: 9991;
-    background: rgba(255,255,255,0.95);
-    color: #111;
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    font-size: large;
-
-}
-            
-.popup-close:hover{
-    background: rgb(255, 44, 44);
-    transform: scale(1.05);
-    transition: transform 0.3s ease ;
-    color: white;
-    font-size: larger;
-}
-
 .inventory-list .historial .historial-item{
     text-overflow: ellipsis;
 }
@@ -612,16 +727,4 @@ input[type="file"] {
 #historial {
     width: 100%;
     overflow-x: auto;
-}
-
-.inventory-item .inventory-image {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 10px;
-    display: block;
-    margin-bottom: 12px;
-    background-color: #1f1f1f;
-    box-shadow: 5px 5px 9px #252525;
-    max-height: 200px;
 }
