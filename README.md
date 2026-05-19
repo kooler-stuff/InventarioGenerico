@@ -50,6 +50,7 @@ ah, y tener que arreglar esta tontera de que las imagenes subidas como vista pre
 
 19/05: 
 
+diseño personalizado de la barra lateral para tirar mas facha
 eso de imagenes arreglado ok 
 
 parece estar funcional pero no me confiaria, hubo mucho problema y renegar con tonterias hoy
