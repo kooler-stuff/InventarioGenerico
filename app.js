@@ -30,8 +30,17 @@ const storagePedidos = multer.diskStorage({
   }
 });
 
+const storageInventory = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, path.join(__dirname, 'media_images', 'inventario')),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
 const uploadLent = multer({ storage: storagePrestados });
 const uploadOrders = multer({ storage: storagePedidos });
+const uploadItems = multer({storage: storageInventory });
 
 const app = express();
 const port = 3000;
@@ -103,10 +112,10 @@ app.get('/check', (req, res) => {
 });
 
 // POST
-app.post('/insumo', uploadOrders.single('imagen'), async (req, res) => {
+app.post('/insumo', uploadItems.single('imagen'), async (req, res) => {
   try {
     const { categoria, insumo, unidades } = req.body;
-    const imagen = req.file ? `/media_images/pedidos/${req.file.filename}` : undefined;
+    const imagen = req.file ? `/media_images/inventario/${req.file.filename}` : undefined;
     console.log(req.body)
     const nuevoInsumo = new Insumo({
       categoria,

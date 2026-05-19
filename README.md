@@ -48,4 +48,10 @@ y como siempre, falta diseño
 
 ah, y tener que arreglar esta tontera de que las imagenes subidas como vista previa de insumos se esta subiendo a la carpeta de insumos PRESTADOS, checate eso 
 
--- lista ultima vez actualizada 18/05
+19/05: 
+
+eso de imagenes arreglado ok 
+
+parece estar funcional pero no me confiaria, hubo mucho problema y renegar con tonterias hoy
+
+-- lista ultima vez actualizada 19/05
