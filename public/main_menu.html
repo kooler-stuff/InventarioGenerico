@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -28,6 +29,18 @@
         function LoadInventory() {
             // Esta función ahora es manejada por menu.js
         }
+        function handleFile(file) {
+                    if (file && file.type.startsWith("image/")) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewContainer.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image">`;
+                            previewContainer.querySelector("img").style.display = "block";
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        alert("Please upload a valid image file.");
+                    }
+                }
     </script>
     <body>
         <nav class="navbar">
@@ -44,355 +57,532 @@
                         <input id="search-input" type="text" class="ButtonGeneric" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
                     </div>
                     <div class="tab-buttons" style="margin:0;border:none;flex: shrink 1;">
-                        <button class="tab-btn active" data-tab="inventario">Inventario</button>
+                        <button class="tab-btn active" id="inventario" data-tab="inventario">Inventario</button>
                         <button class="tab-btn" data-tab="historial">Historial de Cambios</button>
-                        <button class="tab-btn" data-tab="AgregarInsumo">Agregar Insumo</button>
+                        <button class="tab-btn" id="AgregarInsumo" data-tab="AgregarInsumo">Agregar Insumo</button>
                     </div>
                 </div>
                 <div id="inventory-grid" class="inventory-grid2 active"></div>
                 <div id="historial" class="history-list"> </div>
         </div>
 
-        <script>
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
+    </body>
+    <script>
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
 
-            const overlay = document.createElement('div');
-            overlay.className = 'popup';
-            overlay.id = 'popup';
-            overlay.innerHTML = `
-                <button type="button" class="popup-close" id="popup-close">×</button>
-                <div class="popup-content">
-                    <div class="popup-content-title"> Agregar nuevo elemento:</div>
-                    <form id="form-add" class="inventory-form">
-                        <div class="form-group">
-                            <label>Insumo:</label>
-                            <input type="text" id="insumo" class="ButtonGeneric" placeholder="Ej: Resma A4" required>
-                        </div>
+    const OverlayCreateElementHtml = `
+        <button type="button" class="popup-close">×</button>
+        <div class="popup-content">
+            <div class="popup-content-title"> Agregar nuevo elemento:</div>
 
-                        <div>
-                            <label>Subir imagen (opcional):</label> <br>
-                            <label for="ped-imagen" class="ButtonFiles2" id="DropArea" style="width: 32px; height: 32px;" title="Subir imagen">
-                                <img src="../media/clip.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="32px">
-                            </label>
-                            <div id="previewContainer"></div>
-                            <input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="HandleFile(this.files[0])">
-                        </div>
-                        <div class="form-group">
-                            <label>Categoría:</label>
-                            <input type="text" id="categoria" class="ButtonGeneric" placeholder="Ej: Librería" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Unidades:</label>
-                            <input type="number" id="unidades" class="ButtonGeneric" placeholder="0" min="0" max="9999" required>
-                        </div>
-
-                        <button type="submit" class="ButtonSubmit">Guardar en Inventario</button>
-                    </form>
+            <form id="form-add" class="inventory-form">
+                <div class="form-group">
+                    <label>Insumo:</label>
+                    <input type="text" id="insumo" class="ButtonGeneric" placeholder="Ej: Resma A4" required>
                 </div>
-            `;
-            document.body.appendChild(overlay);
 
-            document.getElementById('popup-close').addEventListener('click', () => {
-                overlay.style.display = "none"; 
-            });
+                <div>
+                    <label>Subir imagen (opcional):</label> <br>
 
-            document.addEventListener("DOMContentLoaded", function () {
-                const dropArea = document.getElementById("DropArea");
-                const fileInput = document.getElementById("ped-imagen");
-                const previewContainer = document.getElementById("previewContainer");
+                    <label for="ped-imagen" class="ButtonFiles2" id="DropArea" style="width: 32px; height: 32px;" title="Subir imagen">
+                        <img src="../media/clip.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="32px">
+                    </label>
 
-                // Handle drag and drop
-                dropArea.addEventListener("dragover", (e) => {
-                    e.preventDefault();
-                    dropArea.classList.add("highlight");
-                });
+                    <div id="previewContainer"></div>
 
-                dropArea.addEventListener("dragleave", () => {
-                    dropArea.classList.remove("highlight");
-                });
+                    <input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0])">
+                </div>
 
-                dropArea.addEventListener("drop", (e) => {
-                    e.preventDefault();
-                    dropArea.classList.remove("highlight");
-                    const file = e.dataTransfer.files[0];
-                    handleFile(file);
-                });
+                <div class="form-group">
+                    <label>Categoría:</label>
+                    <input type="text" id="categoria" class="ButtonGeneric" placeholder="Ej: Librería" required>
+                </div>
 
-                // Handle browse button click
-                fileInput.addEventListener("change", (e) => {
-                    console.log("tocaron asi pos nomas");
-                    const file = e.target.files[0];
-                    handleFile(file);
-                });
+                <div class="form-group">
+                    <label>Unidades:</label>
+                    <input type="number" id="unidades" class="ButtonGeneric" placeholder="0" min="0" max="9999" required>
+                </div>
 
-                function handleFile(file) {
-                    if (file && file.type.startsWith("image/")) {
-                        const reader = new FileReader();
-                        reader.onload = function (e) {
-                            previewContainer.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image">`;
-                            previewContainer.querySelector("img").style.display = "block";
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        alert("Please upload a valid image file.");
-                    }
-                }
-            });
+                <button type="submit" class="ButtonSubmit">Guardar en Inventario</button>
+            </form>
+        </div>
+    `;
 
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    
-                    btn.classList.add('active');
-                    const element = document.getElementById(btn.dataset.tab);
-                    if (element) element.classList.add('active');
-                    
-                    if (btn.dataset.tab === 'inventario') renderInventory("GenericLoad");
-                    if (btn.dataset.tab === 'historial') loadHistorialInventario();
-                    if (btn.dataset.tab === "AgregarInsumo") AddNewItem();
-                });
-            });
+    let currentWindow ="";
 
-            async function ResetSelected(selected) {
-                const lists = [document.getElementById('historial'), document.getElementById('inventory-grid')];
-                for (let i = 0; i < lists.length; i++ ) {
-                    /* console.log("Comparing now:");
-                    console.log(lists[i].className);
-                    console.log(selected.className); */
-                    if (lists[i].className === selected.className){
-                        lists[i].classList.add("active");
-                    } else{ 
-                        lists[i].classList.remove("active");
-                    }
-                    lists[i].innerHTML = "";
-                }
+    const overlay = document.createElement('div');
+    overlay.className = 'popup';
+    overlay.id = 'popup';
+    overlay.innerHTML = OverlayCreateElementHtml;
+    document.body.appendChild(overlay);
+
+    const overlay2 = document.createElement("div"); 
+    overlay2.className = "popup";
+    overlay2.id = "popup2"; 
+
+    overlay2.innerHTML = `
+        <button type="button" class="popup-close">×</button>
+
+        <div class="popup-content2">
+            <h2>Inserte el numero a modificar</h2>
+            <input type="number" class="ButtonGeneric edit-unidades" value="0" placeholder="Unidades" max="9999"> <br>
+             <br> <br>
+            <button class="btn-save">Guardar</button> <br>
+            <button class="btn-cancel">Cancelar</button>
+        </div>
+    `;
+
+    document.body.appendChild(overlay2);
+
+    document.addEventListener('click', function(event) {
+
+        if (event.target && event.target.matches('.popup-close')) {
+            overlay.style.display = "none"; 
+            overlay2.style.display = "none";
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const dropArea = document.getElementById("DropArea");
+        const fileInput = document.getElementById("ped-imagen");
+        const previewContainer = document.getElementById("previewContainer");
+
+        dropArea.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropArea.classList.add("highlight");
+        });
+
+        dropArea.addEventListener("dragleave", () => {
+            dropArea.classList.remove("highlight");
+        });
+
+        dropArea.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropArea.classList.remove("highlight");
+
+            const file = e.dataTransfer.files[0];
+            handleFile(file);
+        });
+
+        fileInput.addEventListener("change", (e) => {
+
+            const file = e.target.files[0];
+            handleFile(file);
+        });
+
+        function handleFile(file) {
+
+            if (file && file.type.startsWith("image/")) {
+
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+
+                    previewContainer.innerHTML = `
+                        <img src="${e.target.result}" alt="Uploaded Image">
+                    `;
+
+                    previewContainer.querySelector("img").style.display = "block";
+                };
+
+                reader.readAsDataURL(file);
+
+            } else {
+                alert("Please upload a valid image file.");
+            }
+        }
+    });
+
+    tabBtns.forEach(btn => {
+
+        btn.addEventListener('click', () => {
+
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            btn.classList.add('active');
+
+            const element = document.getElementById(btn.dataset.tab);
+
+            if (element) element.classList.add('active');
+
+            if (btn.dataset.tab === 'inventario')
+                renderInventory("GenericLoad");
+
+            if (btn.dataset.tab === 'historial')
+                loadHistorialInventario();
+
+            if (btn.dataset.tab === "AgregarInsumo")
+                AddNewItem();
+        });
+    });
+
+    async function ResetSelected(selected) {
+
+        const lists = [
+            document.getElementById('historial'),
+            document.getElementById('inventory-grid')
+        ];
+
+        for (let i = 0; i < lists.length; i++ ) {
+
+            if (lists[i].className === selected.className){
+                lists[i].classList.add("active");
+            } else { 
+                lists[i].classList.remove("active");
             }
 
-            async function renderInventory(insumos) {
-                const list = document.getElementById('historial');
-                const inventoryGrid = document.getElementById('inventory-grid');
-                
-                ResetSelected(inventoryGrid);
+            lists[i].innerHTML = "";
+        }
+    }
 
-                try {
-                    if (insumos === "GenericLoad") {
-                        const response = await fetch('/api/insumo');
-                        insumos = await response.json();
-                    }
+    async function renderInventory(insumos) {
 
-                    if (!Array.isArray(insumos) || insumos.length === 0) {
-                        inventoryGrid.innerHTML = '<p>No hay insumos cargados todavía.</p>';
-                        return;
-                    }
-                    console.log(insumos)
-                    insumos.forEach(item => {
-                        const itemCard = document.createElement('div');
-                        itemCard.className = 'inventory-item';
-                        itemCard.dataset.id = item._id;
-                        itemCard.innerHTML = `
-                            ${item.imagen ? `<img src="${item.imagen}" alt="foto" class="inventory-image">` : ''}
-                            <h3 class="itemname">${item.insumo}</h3>
-                            <p>Stock: ${item.unidades}</p>
-                            <small>Categoría: <br> ${item.categoria}</small> <br>
-                            <button class="btn-increase"><img src="media/add_white.svg" alt="Agregar"></button>
-                            <button class="btn-decrease"><img src="media/remove_white.svg" alt="Restar"> </button>
-                            <button class="btn-delete"><img src="media/trash-white.svg" alt="Eliminar"></button>
-                        `;
+        const list = document.getElementById('historial');
+        const inventoryGrid = document.getElementById('inventory-grid');
 
-                        const addButton = itemCard.querySelector('.btn-increase');
-                        addButton.addEventListener('click', () => {
-                            enterEditMode(itemCard, item, "Agregar");
-                        });
-                        const decreaseButton = itemCard.querySelector('.btn-decrease');
-                        decreaseButton.addEventListener('click', () => {
-                            enterEditMode(itemCard, item, "Quitar");
-                        });
-                        const deleteButton = itemCard.querySelector('.btn-delete');
-                        deleteButton.addEventListener('click', async () => {
-                        const confirmed = confirm(`¿Eliminar el insumo "${item.insumo}"?`);
-                        if (!confirmed) return;
+        ResetSelected(inventoryGrid);
 
-                        try {
-                                const deleteResponse = await fetch('/api/borrarinsumo', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({ id: item._id })
-                                });
+        try {
 
-                                const deleteResult = await deleteResponse.json();
-                                if (deleteResponse.ok && deleteResult.success) {
-                                    await renderInventory("GenericLoad");
-                                } else {
-                                    alert('No se pudo eliminar el insumo.');
-                                }
-                            } catch (error) {
-                                console.error('Error al borrar:', error);
-                                alert('Ocurrió un error al intentar eliminar el insumo.');
-                            }
-                        });
+            if (insumos === "GenericLoad") {
 
-                        inventoryGrid.appendChild(itemCard);
-                    });
-                } catch (error) {
-                    console.error('Error al cargar los datos:', error);
-                    inventoryGrid.innerHTML = '<p>Error al conectar con el servidor.</p>';
-                }
+                const response = await fetch('/api/insumo');
+                insumos = await response.json();
             }
 
-            async function loadHistorialInventario() {
-                const list = document.getElementById('historial');
-                const inventoryGrid = document.getElementById('inventory-grid');
+            if (!Array.isArray(insumos) || insumos.length === 0) {
 
-                ResetSelected(list);
-                try {
-                    const response = await fetch('/api/historial-inventario');
-                    const historial = await response.json();
-                    /* console.log(historial) */
-                    let TablaOrdenada = OrdenarTabla(historial);
-                    if (!Array.isArray(historial) || historial.length === 0) {
-                        list.innerHTML = '<p>No hay registros de cambios.</p>';
-                        return;
-                    }
-
-                    let html = '<table class="history-table" style="width:100%; border: 2px solid #444; border-collapse: collapse; border-spacing: 0 20px;"><thead><tr><th>Insumo</th><th>Categoría</th><th>Unidades</th><th>Tipo</th><th>Fecha</th></tr></thead><tbody>';
-
-                    TablaOrdenada.forEach(item => {
-                        html += `<tr style="border: 1px solid #444; padding: 20px;">
-                            <td class="inventory-registry">${item.insumo}</td>
-                            <td class="inventory-registry">${item.categoria}</td>
-                            <td class="inventory-registry">${item.unidades}</td>
-                            <td class="inventory-registry">${item.accion}</td>
-                            <td class="inventory-registry">${new Date(item.fecha).toLocaleDateString()}</td>
-                        </tr>`;
-                    });
-                    html += '</tbody></table>';
-                    list.innerHTML = html;
-                } catch (error) {
-                    console.error('Error al cargar historial:', error);
-                    list.innerHTML = '<p>Error al conectar.</p>';
-                }
+                inventoryGrid.innerHTML = '<p>No hay insumos cargados todavía.</p>';
+                return;
             }
 
-            async function AddNewItem(misc) {
-                console.log("it is time");
-                overlay.style.display = "flex"; 
-            }
+            insumos.forEach(item => {
 
-            function enterEditMode(card, item, mode) {
-                card.innerHTML = `
-                    <input type="number" class="ButtonGeneric edit-unidades" value="${0}" placeholder="Unidades"> <br>
-                    <button class="btn-save">Guardar</button> <br>
-                    <button class="btn-cancel">Cancelar</button>
+                const itemCard = document.createElement('div');
+
+                itemCard.className = 'inventory-item';
+                itemCard.dataset.id = item._id;
+
+                itemCard.innerHTML = `
+                    ${item.imagen ? `<img src="${item.imagen}" alt="foto" class="inventory-image">` : ''}
+
+                    <h3 class="itemname">${item.insumo}</h3>
+
+                    <p>Stock: ${item.unidades}</p>
+
+                    <small>
+                        Categoría: <br> ${item.categoria}
+                    </small> <br>
+
+                    <button class="btn-increase">
+                        <img src="media/add_white.svg" alt="Agregar">
+                    </button>
+
+                    <button class="btn-decrease">
+                        <img src="media/remove_white.svg" alt="Restar">
+                    </button>
+
+                    <button class="btn-delete">
+                        <img src="media/trash-white.svg" alt="Eliminar">
+                    </button>
                 `;
-                const saveButton = card.querySelector('.btn-save');
-                const cancelButton = card.querySelector('.btn-cancel');
 
-                saveButton.addEventListener('click', async () => {
-                    let unidades = parseInt(card.querySelector('.edit-unidades').value);
-                    const insumo = item.insumo 
-                    const categoria = item.categoria
-                    let UnidadFinal = null;
-                    let action = "";
+                const addButton = itemCard.querySelector('.btn-increase');
 
-                    if (isNaN(unidades)) {
-                        alert('Por favor, complete todos los campos correctamente.');
-                        return;
-                    }
+                addButton.addEventListener('click', () => {
+                    enterEditMode(itemCard, item, "Agregar");
+                });
 
-                    if (mode==="Quitar") {
-                        UnidadFinal = item.unidades - unidades;
-                        action = 1
-                    }
-                    else {
-                        UnidadFinal = item.unidades + unidades;
-                        action = 2
-                    }
+                const decreaseButton = itemCard.querySelector('.btn-decrease');
+
+                decreaseButton.addEventListener('click', () => {
+                    enterEditMode(itemCard, item, "Quitar");
+                });
+
+                const deleteButton = itemCard.querySelector('.btn-delete');
+
+                deleteButton.addEventListener('click', async () => {
+
+                    const confirmed = confirm(`¿Eliminar el insumo "${item.insumo}"?`);
+
+                    if (!confirmed) return;
 
                     try {
-                        const response = await fetch('/api/modificarinsumo', {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: item._id, categoria, insumo, UnidadFinal, action})
+
+                        const deleteResponse = await fetch('/api/borrarinsumo', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ id: item._id })
                         });
 
-                        const result = await response.json();
-                        if (response.ok && result.success) {
+                        const deleteResult = await deleteResponse.json();
+
+                        if (deleteResponse.ok && deleteResult.success) {
+
                             await renderInventory("GenericLoad");
+
                         } else {
-                            alert('No se pudo modificar el insumo.');
+
+                            alert('No se pudo eliminar el insumo.');
                         }
+
                     } catch (error) {
-                        console.error('Error al modificar:', error);
-                        alert('Ocurrió un error al intentar modificar el insumo.');
+
+                        console.error('Error al borrar:', error);
+                        alert('Ocurrió un error al intentar eliminar el insumo.');
                     }
                 });
 
-                cancelButton.addEventListener('click', () => {
-                    renderInventory("GenericLoad");
+                inventoryGrid.appendChild(itemCard);
+            });
+
+        } catch (error) {
+
+            console.error('Error al cargar los datos:', error);
+            inventoryGrid.innerHTML = '<p>Error al conectar con el servidor.</p>';
+        }
+    }
+
+    async function loadHistorialInventario() {
+
+        const list = document.getElementById('historial');
+        const inventoryGrid = document.getElementById('inventory-grid');
+
+        ResetSelected(list);
+
+        try {
+
+            const response = await fetch('/api/historial-inventario');
+            const historial = await response.json();
+
+            let TablaOrdenada = OrdenarTabla(historial);
+
+            if (!Array.isArray(historial) || historial.length === 0) {
+
+                list.innerHTML = '<p>No hay registros de cambios.</p>';
+                return;
+            }
+
+            let html = `
+                <table class="history-table" style="width:100%; border: 2px solid #444; border-collapse: collapse; border-spacing: 0 20px;">
+                    <thead>
+                        <tr>
+                            <th>Insumo</th>
+                            <th>Categoría</th>
+                            <th>Unidades</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            TablaOrdenada.forEach(item => {
+
+                html += `
+                    <tr style="border: 1px solid #444; padding: 20px;">
+                        <td class="inventory-registry">${item.insumo}</td>
+                        <td class="inventory-registry">${item.categoria}</td>
+                        <td class="inventory-registry">${item.unidades}</td>
+                        <td class="inventory-registry">${item.accion}</td>
+                        <td class="inventory-registry">${new Date(item.fecha).toLocaleDateString()}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+
+            list.innerHTML = html;
+
+        } catch (error) {
+
+            console.error('Error al cargar historial:', error);
+            list.innerHTML = '<p>Error al conectar.</p>';
+        }
+    }
+
+    async function AddNewItem() {
+        overlay.style.display = "flex";
+    }
+
+    function enterEditMode(card, item, mode) {
+
+        overlay2.style.display = "flex";
+
+        const saveButton = overlay2.querySelector('.btn-save');
+        const cancelButton = overlay2.querySelector('.btn-cancel');
+
+        saveButton.onclick = async () => {
+
+            let unidades = parseInt(
+                overlay2.querySelector('.edit-unidades').value
+            );
+
+            const insumo = item.insumo;
+            const categoria = item.categoria;
+
+            let UnidadFinal = null;
+            let action = "";
+
+            if (isNaN(unidades)) {
+
+                alert('Por favor, complete todos los campos correctamente.');
+                return;
+            }
+
+            if (mode==="Quitar") {
+
+                UnidadFinal = item.unidades - unidades;
+                action = 1;
+
+            } else {
+
+                UnidadFinal = item.unidades + unidades;
+                action = 2;
+            }
+
+            try {
+
+                const response = await fetch('/api/modificarinsumo', {
+
+                    method: 'PUT',
+
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify({
+                        id: item._id,
+                        categoria,
+                        insumo,
+                        UnidadFinal,
+                        action
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+
+                    await renderInventory("GenericLoad");
+
+                } else {
+
+                    alert('No se pudo modificar el insumo.');
+                }
+
+            } catch (error) {
+
+                console.error('Error al modificar:', error);
+                alert('Ocurrió un error al intentar modificar el insumo.');
+            }
+
+            overlay2.style.display = "none";
+        };
+
+        cancelButton.onclick = () => {
+
+            overlay2.style.display = "none";
+            renderInventory("GenericLoad");
+        };
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderInventory("GenericLoad");
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+
+        try {
+
+            const response = await fetch('/api/insumo'); 
+            allInsumos = await response.json();
+
+            const searchInput = document.getElementById('search-input');
+
+            if (searchInput) {
+
+                searchInput.addEventListener('input', () => {
+
+                    const filter = searchInput.value.trim().toLowerCase();
+
+                    const filtered = allInsumos.filter(item =>
+                        (item.insumo || item.objeto_specifico || '')
+                        .toLowerCase()
+                        .includes(filter)
+                    );
+
+                    renderInventory(filtered);
                 });
             }
 
-            document.addEventListener('DOMContentLoaded', () => {
-                renderInventory("GenericLoad");
-            }); 
-            document.addEventListener('DOMContentLoaded', async () => {
-                try {
-                    const response = await fetch('/api/insumo'); 
-                    allInsumos = await response.json();
+            renderInventory(allInsumos);
 
-                    const searchInput = document.getElementById('search-input');
-                    if (searchInput) {
-                        searchInput.addEventListener('input', () => {
-                            const filter = searchInput.value.trim().toLowerCase();
-                            const filtered = allInsumos.filter(item => (item.insumo || item.objeto_specifico || '').toLowerCase().includes(filter));
-                            renderInventory(filtered);
-                        });
-                    }
+        } catch (error) {
 
-                    renderInventory(allInsumos);
-                } catch (error) {
-                    console.error("Error al cargar los datos:", error);
-                    document.getElementById('inventory-grid').innerHTML = "<p>Error al conectar con el servidor.</p>";
-                }
-            });  
+            console.error("Error al cargar los datos:", error);
 
-            document.getElementById('form-add').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const nuevoInsumo = new FormData()
+            document.getElementById('inventory-grid').innerHTML =
+                "<p>Error al conectar con el servidor.</p>";
+        }
+    });
 
-                nuevoInsumo.append('categoria', document.getElementById('categoria').value);
-                nuevoInsumo.append('insumo', document.getElementById('insumo').value);
-                nuevoInsumo.append('unidades', parseInt(document.getElementById('unidades').value));
-                const imagenFile = document.getElementById('ped-imagen').files[0];
-                if (imagenFile) {
-                    nuevoInsumo.append('imagen', imagenFile);
-                }
+    document.getElementById('form-add').addEventListener('submit', async (e) => {
 
-                try {
-                    const response = await fetch('/insumo', {
-                        method: 'POST',
-                        body: nuevoInsumo
-                    });
+        e.preventDefault();
 
-                    const resData = await response.json();
+        const nuevoInsumo = new FormData();
 
-                    if (resData.success) {
-                        alert("¡Insumo guardado correctamente!");
-                        document.getElementById('form-add').reset();
-                    } else {
-                        alert("Error: " + resData.message);
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert("Error al conectar con el servidor");
-                }
+        nuevoInsumo.append(
+            'categoria',
+            document.getElementById('categoria').value
+        );
+
+        nuevoInsumo.append(
+            'insumo',
+            document.getElementById('insumo').value
+        );
+
+        nuevoInsumo.append(
+            'unidades',
+            parseInt(document.getElementById('unidades').value)
+        );
+
+        const imagenFile = document.getElementById('ped-imagen').files[0];
+
+        if (imagenFile) {
+            nuevoInsumo.append('imagen', imagenFile);
+        }
+
+        try {
+
+            const response = await fetch('/insumo', {
+                method: 'POST',
+                body: nuevoInsumo
             });
-        </script>
-        
-    </body>
+
+            const resData = await response.json();
+
+            if (resData.success) {
+
+                alert("¡Insumo guardado correctamente!");
+                document.getElementById('form-add').reset();
+
+            } else {
+
+                alert("Error: " + resData.message);
+            }
+
+        } catch (err) {
+
+            console.error(err);
+            alert("Error al conectar con el servidor");
+        }
+    });
+</script>
 </html>
