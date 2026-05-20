@@ -47,11 +47,10 @@
             <a href="main_menu.html" class="nav-logo"><img src="media/COM_Logo.png" alt="COM2"></a>
             <a href="main_menu.html" class="nav-currently-selected">Inventario</a>
             <a href="pages/registro.html">Registro</a>
-            <a href="pages/add.html">Agregar</a>
         </nav>
         <div class="container container-main"> 
                 <div class="container-navbar">
-                    <span style="font-size:20px;font-weight:600;">Inventario</span>
+                    <span style="font-size:32px;font-weight:600;">Inventario</span>
                     <div> 
                         <p style="margin:0 auto;text-align:center;flex:1;min-width:0; margin-bottom:10px">Seleccione el insumo que desea modificar:</p>
                         <input id="search-input" type="text" class="ButtonGeneric" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
@@ -383,7 +382,6 @@
             `;
 
             TablaOrdenada.forEach(item => {
-
                 html += `
                     <tr style="border: 1px solid #444; padding: 20px;">
                         <td class="inventory-registry">${item.insumo}</td>
@@ -572,6 +570,7 @@
 
                 alert("¡Insumo guardado correctamente!");
                 document.getElementById('form-add').reset();
+                location.reload();
 
             } else {
 
