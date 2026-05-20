@@ -58,8 +58,8 @@
             }
 
             .image-overlay-content img:hover{
-                transform: scale(1.05);
-                transition: transform 0.7s ease;
+                transform: scale(1.15);
+                transition: transform 0.5s ease;
             }
 
             .image-overlay-close {
@@ -93,12 +93,32 @@
         <title>Registro</title>
     </head>
 
+    <script>
+        function handleFile(file, container) {
+            let SelectedContainer = {
+            1: previewContainer,
+            2: previewContainer2
+            }[container];
+            console.log(container);
+            console.log(SelectedContainer.classList);
+                    if (file && file.type.startsWith("image/")) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            SelectedContainer.innerHTML = `<h1>Vista previa de imagen subida:</h1> <img src="${e.target.result}" alt="Uploaded Image">`;
+                            SelectedContainer.querySelector("img").style.display = "block";
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        alert("Please upload a valid image file.");
+                    }
+                }
+    </script>
+
     <body>
         <nav class="navbar">
             <a href="../main_menu.html" class="nav-logo"><img src="../media/COM_Logo.png" alt="COM2"></a>
             <a href="../main_menu.html">Inventario</a>
             <a href="registro.html" class="nav-currently-selected">Registro</a>
-            <a href="add.html">Agregar</a>
         </nav>
         <div class="container container-main">
             <div style="display: flex;align-items:center; justify-content:space-between;gap: 15px;margin-bottom:15px;width:100%; margin-top: -80px; margin-bottom: 100px;"> 
@@ -118,9 +138,12 @@
                     <input type="text" id="ped-insumo" maxlength="40" class="ButtonGeneric" placeholder="Insumo" required style="flex: 1; min-width: 150px;">
                     <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
                     <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
-                    <label for="ped-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*">
+                    <label for="ped-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUploadOrdered" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 1)">
                     <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button>
+                    
                 </form>
+                <div id="imgholder" class="imgholder"> </div>
+                
                 <div id="pedidos-grid" class="inventory-grid"></div>
             </div>
 
@@ -130,9 +153,11 @@
                     <input type="text" id="pres-insumo" class="ButtonGeneric" placeholder="Insumo" title="Indique el nombre del insumo" required style="flex: 1; min-width: 150px;">
                     <input type="number" id="pres-cantidad" class="ButtonGeneric" placeholder="Cantidad" title="Indique la cantidad en números" required style="flex: 1; min-width: 100px;">
                     <input type="text" id="pres-area" class="ButtonGeneric" placeholder="Área" title="Seleccione el area a la que se le fué prestado el insumo" required style="flex: 1; min-width: 150px;">
-                    <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="auto"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*">
+                    <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUploadLent" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 2)">
                     <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px;">Registrar</button>    
                 </form>
+                <div id="imgholder2" class="imgholder"> </div>
+
                 <div id="prestados-grid" class="inventory-grid"></div>
             </div>
 
@@ -145,6 +170,8 @@
         <script>
             const tabBtns = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
+            const previewContainer = document.getElementById("imgholder");
+            const previewContainer2 = document.getElementById("imgholder2");
 
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -179,7 +206,7 @@
                     const result = await response.json();
                     if (result.success) {
                         document.getElementById('form-pedido').reset();
-                        loadPedidos();
+                        location.reload();
                     } else {
                         alert('Error al registrar.');
                     }
@@ -208,7 +235,7 @@
                     const result = await response.json();
                     if (result.success) {
                         document.getElementById('form-prestado').reset();
-                        loadPrestados();
+                        location.reload();
                     } else {
                         alert('Error al registrar.');
                     }
@@ -227,6 +254,8 @@
             async function loadPedidos() {
                 const grid = document.getElementById('pedidos-grid');
                 grid.innerHTML = '';
+                previewContainer.innerHTML = "";
+                previewContainer2.innerHTML = "";
                 try {
                     const response = await fetch('/api/pedidos');
                     const pedidos = await response.json();
@@ -260,6 +289,8 @@
             async function loadPrestados() {
                 const grid = document.getElementById('prestados-grid');
                 grid.innerHTML = '';
+                previewContainer.innerHTML = "";
+                previewContainer2.innerHTML = "";
                 try {
                     const response = await fetch('/api/prestados');
                     const prestados = await response.json();
@@ -306,11 +337,11 @@
 
                     Ordenada.forEach(item => {
                         html += `<tr style="border-bottom: 1px solid #292229;">
-                            <td>${item.insumo}</td>
-                            <td>${item.cantidad}</td>
-                            <td>${item.area}</td>
-                            <td>${item.tipo}</td>
-                            <td>${new Date(item.fecha).toLocaleDateString()}</td>
+                            <td class="inventory-registry">${item.insumo}</td>
+                            <td class="inventory-registry">${item.cantidad}</td>
+                            <td class="inventory-registry">${item.area}</td>
+                            <td class="inventory-registry">${item.tipo}</td>
+                            <td class="inventory-registry">${new Date(item.fecha).toLocaleDateString()}</td>
                         </tr>`;
                     });
                     html += '</tbody></table>';
