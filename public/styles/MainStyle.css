@@ -1,8 +1,11 @@
 /* utils */
 
 @font-face {
-  font-family: fuente1; 
-  src: url(../pages/Lato-Bold.ttf);
+    font-family: fuente1;
+    src: url('lato-bold-webfont.woff2') format('woff2'),
+         url('lato-bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 ::-webkit-scrollbar {
@@ -93,6 +96,7 @@
         text-align: right !important;
         border-bottom: 1px solid #3d3d3d;
         padding: 12px;
+        border: none;
     }
 
     /* Insertamos los nombres de las columnas usando :before */
@@ -105,6 +109,7 @@
         text-align: left;
         font-weight: bold;
         color: #85abb1;
+        border: none;
         content: attr(data-label); /* IMPORTANTE: Requiere cambio en JS */
     }
     
@@ -189,7 +194,7 @@ body{
     margin-right: 5px;
     color: #ffffff;
     text-decoration: none;
-    font-size: calc(0.25rem + 0.9vw);
+    font-size: 20px;
     font-weight: bold;
     transition: color 0.3s ease;
 }
@@ -197,7 +202,7 @@ body{
 .navbar a.nav-currently-selected {
     color: #85abb1 !important;
     font-weight: bold;
-    font-size: calc(0.25rem + 1.15vw);
+    font-size: 25px;
 }
 
 .navbar a:hover {
@@ -289,6 +294,40 @@ body{
 
 .inventory-item .itemname {
     white-space: normal;
+}
+
+
+.history-table td {         
+    max-width: 150px;
+    border-bottom: 1px solid #3d3d3d;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    border: 1px solid #000000;
+    text-align: center;
+}
+
+#imgholder img {
+    border-radius: 5px;
+    display: none;
+    margin-top: 2rem;
+    width: auto;
+    max-width: 500px;
+    max-height: 400px;
+    margin-bottom: 20px;
+    border: 2px solid rgb(61, 46, 56); 
+    box-shadow: #272127 5px  5px 12px;
+}
+
+#imgholder2 img {
+    border-radius: 5px;
+    display: none;
+    margin-top: 2rem;
+    width: auto;
+    max-width: 500px;
+    max-height: 400px;
+    margin-bottom: 20px;
+    border: 2px solid rgb(61, 46, 56); 
+    box-shadow: #272127 5px  5px 12px;
 }
 
 /* botones de elementos creados dinamicamente ok??? */
@@ -479,6 +518,19 @@ body{
     font-size: larger;
 }
 
+#error-container {
+    position: relative;
+}
+
+#error-message {
+    color: #f57373; 
+    word-wrap: break-word;   
+    white-space: normal;       
+    max-width: 100%;           
+    text-align: center;        
+    margin-top: 10px;
+}
+
 /* botones */
 
 .ButtonGeneric{
@@ -505,6 +557,32 @@ input[type="file"] {
     display: none;
 }
 
+.tab-btn {
+    padding: 12px 20px;
+    background-color: #2e2e2e;
+    color: #a5a5a5;
+    border: none;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    border-bottom: 3px solid #131321;
+    margin-right: 20px;
+}
+
+.tab-btn.active {
+    background-color: 	#4a3261;
+    color: #ffffff;
+    border-bottom: 1px solid #131321;
+}
+
+.tab-btn:hover {
+    color: #ffffff;
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
 .ButtonFiles{
     width: 100%;
     padding: 10px;
@@ -515,6 +593,7 @@ input[type="file"] {
     background-color: #2e2e2e;
     color: rgb(255, 255, 255);
     font-size: 16px;
+    cursor: pointer;
 }
 
 .ButtonFiles:hover{
@@ -554,26 +633,35 @@ input[type="file"] {
     display: none;
     margin-top: 2rem;
     width: 100%;
+    max-height: 750px;
 }
 
 .ButtonSubmit{
-    background-color: rgb(57, 0, 131);
-    color: rgb(255, 255, 255);
+    background-color: hsl(248, 53%, 58%);
+    color: #ffffff;
     width: 100%;
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
+    border-top: none;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(145, 53, 140) 2.8%, rgb(87, 42, 66) 90.2% );
+    border-left: none;
+    border-right: none;
+    border-bottom: 3px solid hsl(273, 86%, 14%);
     width: 110%;
     font-size: 20px;
+    cursor: pointer;
 }
 
 .ButtonSubmit:hover{
-    background-color: rgb(35, 0, 82);
+    background-color: hsl(248, 39%, 35%);
     color: rgb(255, 255, 255);
     width: 100%;
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(117, 43, 114) 7.8%, rgb(61, 30, 47) 92.2% );
+
     width: 110%;
     font-size: 22px;
     transform: scale(1.05);
@@ -583,8 +671,12 @@ input[type="file"] {
 .ButtonSubmit:active
 {
     color: #ffffff;
-    background-color: rgb(143, 57, 255);
+    background-color:  hsl(248, 77%, 71%);
     font-weight: 550;
+    border: none;
+    transform: translateY(1px);
+    transition: transform 65ms ease;
+    background: radial-gradient( circle farthest-corner at 10% 20%,  rgb(153, 90, 150) 17.8%, rgb(90, 46, 78) 90.2% );
 }
 
 .ButtonSubmitImage:active{
@@ -633,19 +725,6 @@ input[type="file"] {
     margin-bottom: 15px;
 }
 
-#error-container {
-    position: relative;
-}
-
-#error-message {
-    color: #f57373; 
-    word-wrap: break-word;   
-    white-space: normal;       
-    max-width: 100%;           
-    text-align: center;        
-    margin-top: 10px;
-}
-
 .tab-buttons {
     display: flex;
     align-items:center;
@@ -653,32 +732,6 @@ input[type="file"] {
     gap: -15px;
     margin-bottom: 20px;
     border-bottom: 2px solid #444;
-}
-
-.tab-btn {
-    padding: 12px 20px;
-    background-color: #2e2e2e;
-    color: #a5a5a5;
-    border: none;
-    border-radius: 5px 5px 0 0;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: color 0.3s ease;
-    border-bottom: 3px solid #131321;
-    margin-right: 20px;
-}
-
-.tab-btn.active {
-    background-color: 	#4a3261;
-    color: #ffffff;
-    border-bottom: 1px solid #131321;
-}
-
-.tab-btn:hover {
-    color: #ffffff;
-    transform: scale(1.05);
-    transition: transform 0.3s ease;
 }
 
 .tab-content {
