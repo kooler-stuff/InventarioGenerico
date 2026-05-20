@@ -9,6 +9,7 @@ const Pedido = require('./models/pedido');
 const Prestado = require('./models/prestado');
 const Historial = require('./models/historial');
 const HistorialInventario = require('./models/historialInventario');
+const Usuarios = require("./models/users.js");
 
 const express = require('express');
 const multer = require("multer");
@@ -130,7 +131,7 @@ app.post('/insumo', uploadItems.single('imagen'), async (req, res) => {
       insumo,
       categoria,
       unidades,
-      accion: 'Insumo agregado al inventario.',
+      accion: 'Insumo agregado al inventario',
     });
     await registroHistorial.save();
     
@@ -223,13 +224,38 @@ app.get('/api/historial-inventario', async (req, res) => {
   }
 });
 
-app.post('/auth', (req, res) => {
-  const { Usuario, Contraseña } = req.body;
-  if (Usuario === process.env.DB_USER && Contraseña === process.env.DB_PASSWORD) {
-    req.session.authenticated = true;
-    res.json({ success: true, redirect: '/main_menu.html' });
-  } else {
-    res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
+app.post("/addUser", async (req, res)=> {
+  try {
+    const {usuario, contraseña} = req.body;
+    const nuevoUser = new Usuarios({usuario, contraseña});
+    await nuevoUser.save();
+    res.json({ success: true, data: nuevoUser });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+}); 
+
+app.post('/auth', async (req, res) => {
+  const {usuario, contraseña } = req.body;
+  try{
+      const user = await Usuarios.findOne({
+        usuario: usuario
+      });
+      console.log(req.body);
+      if (!user){
+        console.log("no usuario existe");
+        res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
+        return;
+      } 
+      if (user.contraseña !== contraseña) {
+        console.log("Usuario existe, contra invalida.");
+        res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
+        return;
+      }
+      req.session.authenticated = true;
+      res.json({ success: true, redirect: '/main_menu.html' });
+  } catch(error){
+    console.log(error);
   }
 });
 

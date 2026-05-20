@@ -55,4 +55,13 @@ eso de imagenes arreglado ok
 
 parece estar funcional pero no me confiaria, hubo mucho problema y renegar con tonterias hoy
 
+20/05: 
+
+Solucionado textos haciendo sobreflujo o como se diga si eran demasiado largos en los historiales, y agregada vista previa de imagen a la seccion de prestados y pedidos. 
+Pagina de agregar ha sido eliminada, la funcionalidad esta completa en el menu principal
+y parece que el trillonesimo arreglo a que la fuente no cargue finalmente funco???
+
+hay q mover las credenciales a base de datos pa k no esten en el env pos nomas we
+
+
 -- lista ultima vez actualizada 19/05
