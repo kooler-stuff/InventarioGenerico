@@ -4,7 +4,6 @@ Cuenta con un registro de todos los cambios (entradas y salidas) en la cantidad 
 
 Desarrollo empezado 04/05/26
 
-
 para nota personal, este proyecto esta usando:
 -html (04/05)
 -css (04/05)
@@ -19,6 +18,8 @@ para nota personal, este proyecto esta usando:
 falta preparar:
 
 - MongoDB (implementado 08/05)
+
+changelog:
 
 11/05: 
 
