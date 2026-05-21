@@ -54,7 +54,6 @@
 /* elementos q se controlen con media para lo responsive y asi */
 
 @media screen and (max-width: 900px) { /* IsraelGPT salvame */ 
-    /* Ajustamos el contenedor principal que tenías fijo al 80% */
     .container-main {
         width: 95% !important;
         padding: 10px;
@@ -64,7 +63,6 @@
         padding-left: 0px;
     }
 
-    /* Forzamos a la tabla a no comportarse como tabla */
     .history-table, 
     .history-table thead, 
     .history-table tbody, 
@@ -74,7 +72,6 @@
         display: block; 
     }
 
-    /* Escondemos los encabezados originales (th) */
     .history-table thead tr { 
         position: absolute;
         top: -9999px;
@@ -89,7 +86,6 @@
     }
 
     .history-table td { 
-        /* Hacemos que cada celda actúe como una fila con título */
         border: none;
         position: relative;
         padding-left: 50% !important; 
@@ -98,8 +94,6 @@
         padding: 12px;
         border: none;
     }
-
-    /* Insertamos los nombres de las columnas usando :before */
     .history-table td:before { 
         position: absolute;
         left: 10px;
@@ -253,9 +247,6 @@ body{
     text-align: left;
     border-left: 5px solid #6929a5;
     transition: transform 0.2s;
-    overflow: hidden;
-    overflow-wrap: break-word;
-    white-space: nowrap;
 }
 
 .inventory-item .inventory-image {
@@ -279,17 +270,20 @@ body{
 .inventory-item h3 {
     margin: 0 0 10px 0;
     font-size: 18px;
+    max-width: 160px;
     color: #ffffff;
+    word-break: break-all;
+    text-overflow: ellipsis;
 }
 
 .inventory-item p {
     margin: 5px 0;
     font-weight: bold;
-    color: #a5a5a5;
+    color: #c5c5c5;
 }
 
 .inventory-item small {
-    color: #797979;
+    color: #a3a3a3;;
 }
 
 .inventory-item .itemname {
@@ -334,7 +328,7 @@ body{
 
 .inventory-item .btn-delete {
     margin-top: 12px;
-    padding: 10px 14px;
+    padding: 8px 12px;
     background-color: #c23b3b;
     color: #ffffff;
     border: none;
@@ -350,7 +344,7 @@ body{
 
 .inventory-item .btn-increase {
     margin-top: 12px;
-    padding: 10px 14px;
+    padding: 8px 12px;
     background-color: #66dd7a;
     color: #ffffff;
     border: none;
@@ -366,7 +360,7 @@ body{
 
 .inventory-item .btn-decrease {
     margin-top: 12px;
-    padding: 10px 14px;
+    padding: 8px 12px;
     background-color: #7a7979;
     color: #ffffff;
     border: none;
@@ -380,26 +374,11 @@ body{
     transform: translateY(-1px);
 }
 
-
-.popup-content2 {
-    position: relative;
-    font-size: medium;
-    width: 410px;
-    height: 260px;
-    max-width: 90%;
-    padding: 50px;
-    padding-left: 15px;
-    margin:20px;
-    display: flex;
-    flex-direction: column;
-    border-radius: 15px;
-    background-color: #3a274c;
-}
-
 .popup .btn-save {
     margin-top: 8px;
     padding: 8px 12px;
     background-color: #6e5e7e;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(145, 53, 140) 2.8%, rgb(87, 42, 66) 90.2% );
     color: #ffffff;
     border: none;
     border-radius: 6px;
@@ -415,12 +394,16 @@ body{
 
 .popup .btn-save:hover {
     background-color: #b090d1;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(202, 68, 196) 2.8%, rgb(94, 49, 73) 90.2% );
+
 }
 
 .popup .btn-save:active {
     background-color: #ebddeb;
     color: black;
     border-bottom: 2px solid black;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(172, 112, 170) 7.8%, rgb(116, 103, 110) 92.2% );
+
 }
 
 .popup .btn-cancel {
@@ -428,6 +411,7 @@ body{
     margin-left: 8px;
     padding: 8px 12px;
     background-color: #910d0d;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%, rgb(146, 0, 0) 2.8%, rgb(48, 15, 15) 90.2%);
     color: #ffffff;
     border: none;
     border-radius: 6px;
@@ -442,10 +426,14 @@ body{
 
 .popup .btn-cancel:hover {
     background-color: #dd4848;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(206, 51, 51) 2.8%, rgb(66, 18, 18) 90.2% );
+
 }
 
 .popup .btn-cancel:active {
     background-color: #ffcaca;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(255, 141, 141) 2.8%, rgb(179, 128, 128) 90.2% );
+
     color: rgb(0, 0, 0);
     border-bottom: 2px solid black;
 }
@@ -483,9 +471,23 @@ body{
     flex-direction: column;
     border-radius: 15px;
     background-color: #3a274c;
-
     align-items: stretch;
     justify-content: flex-start;
+}
+
+.popup-content2 {
+    position: relative;
+    font-size: medium;
+    width: 400px;
+    height: 300px;
+    max-width: 90%;
+    padding: 50px;
+    padding-left: 15px;
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    background-color: #3a274c;
 }
 
 .popup-content-title {
@@ -531,17 +533,15 @@ body{
     margin-top: 10px;
 }
 
-/* botones */
-
 .ButtonGeneric{
     width: 100%;
     padding: 10px;
     margin: 10px 0;
     border: none;
     border-radius: 5px;
-    background-color: #2e2e2e;
+    background-color: #3d3d3d;
     color: rgb(255, 255, 255);
-    border: 2px solid rgb(95, 95, 95);
+    border: 2px solid rgb(145, 145, 145);
     font-size: 16px;
 }
 .ButtonGeneric::placeholder {
@@ -555,6 +555,29 @@ body{
 
 input[type="file"] {
     display: none;
+}
+
+.SearchBar {
+    width: 100%;
+    padding: 12px 20px 12px 14px;
+    margin: 15px 0;
+    font-size: 16px;
+    color: #ffffff;
+    background-color: #2d3035; 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    border-radius: 25px;
+    transition: all 0.3s ease; 
+}
+
+.SearchBar:focus {
+    outline: none;
+    background-color: rgba(76, 50, 95, 0.7);
+    border-color: #a855f7;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+}
+
+.SearchBar::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .tab-btn {
