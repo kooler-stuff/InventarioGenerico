@@ -63,5 +63,13 @@ y parece que el trillonesimo arreglo a que la fuente no cargue finalmente funco?
 
 hay q mover las credenciales a base de datos pa k no esten en el env pos nomas we
 
+no dije nada, ya esta hecho, a dormir!!!
 
--- lista ultima vez actualizada 19/05
+21/05: 
+
+Agregada funcion para que imagen se borre automaticamente si se borra su insumo, pos nomas!
+cambios menores al diseño 
+arreglado formulario no reiniciandose de quitar/agregar stock en menu principal
+yo juro que si esta lista ahorita
+
+-- lista ultima vez actualizada 21/05

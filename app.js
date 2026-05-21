@@ -13,7 +13,11 @@ const Usuarios = require("./models/users.js");
 
 const express = require('express');
 const multer = require("multer");
-const str = require("string_decoder")
+const str = require("string_decoder");
+const fs = require("fs");
+const {promisify} = require("util");
+
+const UnlinkAsync = promisify(fs.unlink)
 
 const storagePrestados = multer.diskStorage({
   destination: (req, file, cb) => cb(null, path.join(__dirname, 'media_images', 'prestados')),
@@ -117,7 +121,9 @@ app.post('/insumo', uploadItems.single('imagen'), async (req, res) => {
   try {
     const { categoria, insumo, unidades } = req.body;
     const imagen = req.file ? `/media_images/inventario/${req.file.filename}` : undefined;
+    /*
     console.log(req.body)
+    */ 
     const nuevoInsumo = new Insumo({
       categoria,
       insumo,
@@ -154,6 +160,10 @@ app .post('/api/borrarinsumo', async (req, res) => {
         accion: `Insumo eliminado del inventario`, 
       });
       await registroHistorial.save();
+      let ImageFile = insumoABorrar.imagen;  
+      if (ImageFile){
+        await UnlinkAsync("./" + ImageFile); 
+      }
     }
     await Insumo.findByIdAndDelete(id);
     res.json({ success: true });
@@ -166,14 +176,16 @@ app .post('/api/borrarinsumo', async (req, res) => {
 app.put('/api/modificarinsumo', async (req, res) => {
   try {
     const { id, categoria, insumo, UnidadFinal, accion} = req.body;
-    console.log(req.body)
+    /* console.log(req.body) */
 
     let action = "";
     let unidades = UnidadFinal;
     let ac = req.body.action;
     let act = JSON.stringify(ac); 
+    /*
     console.log(accion);
-    console.log(act);
+    console.log(act);¨
+    */
     if (act === "1"){
       action = "Insumos removidos.";
     } else if (act === "2"){
@@ -181,11 +193,11 @@ app.put('/api/modificarinsumo', async (req, res) => {
     } else {
       action = "Acción no especificada.";
     }
-
+    /* 
     console.log(unidades);
     console.log("accion:");
     console.log(action);
-
+    */ 
     const updated = await Insumo.findByIdAndUpdate(id, { categoria, insumo, unidades }, { new: true });
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Insumo no encontrado' });
@@ -241,14 +253,16 @@ app.post('/auth', async (req, res) => {
       const user = await Usuarios.findOne({
         usuario: usuario
       });
+      /* 
       console.log(req.body);
+      */ 
       if (!user){
-        console.log("no usuario existe");
+        /* console.log("no usuario existe"); */
         res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
         return;
       } 
       if (user.contraseña !== contraseña) {
-        console.log("Usuario existe, contra invalida.");
+        /* console.log("Usuario existe, contra invalida."); */
         res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
         return;
       }
