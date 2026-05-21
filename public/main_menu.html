@@ -53,7 +53,7 @@
                     <span style="font-size:32px;font-weight:600;">Inventario</span>
                     <div> 
                         <p style="margin:0 auto;text-align:center;flex:1;min-width:0; margin-bottom:10px">Seleccione el insumo que desea modificar:</p>
-                        <input id="search-input" type="text" class="ButtonGeneric" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
+                        <input id="search-input"  type="text" class="SearchBar" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
                     </div>
                     <div class="tab-buttons" style="margin:0;border:none;flex: shrink 1;">
                         <button class="tab-btn active" id="inventario" data-tab="inventario">Inventario</button>
@@ -125,7 +125,7 @@
 
         <div class="popup-content2">
             <h2>Inserte el numero a modificar</h2>
-            <input type="number" class="ButtonGeneric edit-unidades" value="0" placeholder="Unidades" max="9999"> <br>
+            <input type="number" id="edit-unidades" class="ButtonGeneric edit-unidades" value="0" placeholder="Unidades" max="9999"> <br>
              <br> <br>
             <button class="btn-save">Guardar</button> <br>
             <button class="btn-cancel">Cancelar</button>
@@ -466,6 +466,7 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
+                    document.getElementById('edit-unidades').value = "0";
 
                     await renderInventory("GenericLoad");
 
@@ -582,6 +583,7 @@
             console.error(err);
             alert("Error al conectar con el servidor");
         }
+        
     });
 </script>
 </html>
