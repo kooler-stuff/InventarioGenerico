@@ -29,6 +29,9 @@
         function LoadInventory() {
             // Esta función ahora es manejada por menu.js
         }
+        function toggleDropdown() {
+            document.getElementById("dropdown-content").classList.toggle("dropdown-show");
+        }
         function handleFile(file) {
                     if (file && file.type.startsWith("image/")) {
                         const reader = new FileReader();
@@ -53,8 +56,20 @@
                     <span style="font-size:32px;font-weight:600;">Inventario</span>
                     <div> 
                         <p style="margin:0 auto;text-align:center;flex:1;min-width:0; margin-bottom:10px">Seleccione el insumo que desea modificar:</p>
-                        <input id="search-input"  type="text" class="SearchBar" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
+                        <div style="display: flex; flex-direction: row; "> 
+                            <input id="search-input"  type="text" class="SearchBar" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
+                            <div class="dropdown"> 
+                                <label for="filter" class="ButtonFilter" style="display: inline-block; align-items: center; max-width: 30px; max-height: 30px;" title="Subir imagen">
+                                    <img id="FileUploadOrdered" class="ButtonFilterImage" width="24px" height="24px">
+                                </label> 
+                                <input type="button" onclick="toggleDropdown()"  id="filter" name="filter" style="display: none;">
+                                <div id="dropdown-content" class="dropdown-content"> <h1>filtrar:</h1> </div>
+                            </div>
+                            
+                        </div>
+                        
                     </div>
+                     
                     <div class="tab-buttons" style="margin:0;border:none;flex: shrink 1;">
                         <button class="tab-btn active" id="inventario" data-tab="inventario">Inventario</button>
                         <button class="tab-btn" data-tab="historial">Historial de Cambios</button>
@@ -95,7 +110,11 @@
 
                 <div class="form-group">
                     <label>Categoría:</label>
-                    <input type="text" id="categoria" class="ButtonGeneric" placeholder="Ej: Librería" required>
+                    <select id="categoria" class="ButtonGeneric" placeholder="Ej: Librería" required>
+                    <option value="almacen"> Almacén </option>
+                    <option value="libreria"> Librería </option>
+                    <option value="limpieza"> Limpieza </option>
+                    <option value="miscelaneo"> Misceláneo </option>
                 </div>
 
                 <div class="form-group">
@@ -266,11 +285,10 @@
                 itemCard.dataset.id = item._id;
 
                 itemCard.innerHTML = `
+                    <p>Stock: ${item.unidades}</p>
                     ${item.imagen ? `<img src="${item.imagen}" alt="foto" class="inventory-image">` : ''}
 
                     <h3 class="itemname">${item.insumo}</h3>
-
-                    <p>Stock: ${item.unidades}</p>
 
                     <small>
                         Categoría: <br> ${item.categoria}
