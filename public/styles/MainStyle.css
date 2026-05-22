@@ -277,16 +277,20 @@ body{
 }
 
 .inventory-item p {
+    justify-self:center;
     margin: 5px 0;
     font-weight: bold;
-    color: #c5c5c5;
+    font-size: medium;
+    color: #fcfcfc;
 }
 
 .inventory-item small {
-    color: #a3a3a3;;
+    color: #cfcfcf;
+    font-size: small;
 }
 
 .inventory-item .itemname {
+    font-size:large;
     white-space: normal;
 }
 
@@ -604,6 +608,47 @@ input[type="file"] {
     color: #ffffff;
     transform: scale(1.05);
     transition: transform 0.3s ease;
+}
+
+.ButtonFilter{
+    cursor: pointer;
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    padding: 8px;
+    border: none;
+}
+
+.ButtonFilterImage{
+    content: url(../media/filter_off_white.svg);
+}
+
+.ButtonFilterImage:active{
+    content: url(../media/filter_on_white.svg);
+}
+
+.dropdown{
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  left: 0px;
+  background-color: #3a274c;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-show{
+    display: block;
+}
+
+/* Show the menu on hover */
+.ButtonFilter:hover .dropdown-content {
+  display: block;
 }
 
 .ButtonFiles{
