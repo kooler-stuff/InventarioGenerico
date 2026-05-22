@@ -65,6 +65,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'c0ngr3s0',
   resave: false,
   saveUninitialized: false,
+  permissionLevel: undefined,
   cookie: {
     maxAge: 60 * 60 * 1000,
     sameSite: 'lax'
@@ -78,6 +79,7 @@ function isAuthenticated(req) {
 app.use((req, res, next) => {
   const publicPaths = ['/', '/auth', '/check', '/index.html'];
   const allowedPrefixes = ['/styles/', '/media/'];
+  const allowedGenericUserPaths = ["/menu_basic"];
 
   if (publicPaths.includes(req.path) || allowedPrefixes.some(prefix => req.path.startsWith(prefix))) {
     return next();
@@ -85,6 +87,10 @@ app.use((req, res, next) => {
 
   if (isAuthenticated(req)) {
     return next();
+  }
+
+  if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
+    return res.status(401).json({ success: false, message: "No autorizado"});
   }
 
   if (req.path.startsWith('/api') || req.method !== 'GET') {
@@ -266,7 +272,11 @@ app.post('/auth', async (req, res) => {
         res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
         return;
       }
+      console.log(user["acceso"]);
+      let permslevel = user["acceso"]; 
+      console.log(permslevel);
       req.session.authenticated = true;
+      req.session.permissionLevel = permslevel;
       res.json({ success: true, redirect: '/main_menu.html' });
   } catch(error){
     console.log(error);

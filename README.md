@@ -73,4 +73,13 @@ cambios menores al diseño
 arreglado formulario no reiniciandose de quitar/agregar stock en menu principal
 yo juro que si esta lista ahorita
 
--- lista ultima vez actualizada 21/05
+22/05: 
+
+toca subir el nivel, a implementar diferentes roles de usuarios (admin con todo lo actual y user generico que solo tenga acceso a una pantalla donde puedan hacer pedidos)
+tambien añadir filtrado por categoria al buscador de menu principal 
+
+-- lista ultima vez actualizada 22/05
+
+  if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
+    return res.status(401).json({ success: false, message: "No autorizado"});
+  }
