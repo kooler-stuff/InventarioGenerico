@@ -120,13 +120,14 @@
             <a href="../main_menu.html">Inventario</a>
             <a href="registro.html" class="nav-currently-selected">Registro</a>
         </nav>
-        <div class="container container-main">
+        <div class="container container-main" id="MainContainer">
             <div style="display: flex;align-items:center; justify-content:space-between;gap: 15px;margin-bottom:15px;width:100%; margin-top: -80px; margin-bottom: 100px;"> 
                 <h1 class="titler1" style="margin:0;flex-shrink:0;">Registro</h1>
                 
                 <div class="tab-buttons" style="margin:0;border:none;flex-shrink:0;">
                     <button class="tab-btn active" data-tab="pedidos">Insumos Pedidos</button>
                     <button class="tab-btn" data-tab="prestados">Insumos Prestados</button>
+                    <button class="tab-btn" data-tab="especiales">Pedidos Especiales</button>
                     <button class="tab-btn" data-tab="historial">Historial</button>
                 </div>
             </div>
@@ -135,7 +136,7 @@
             <div id="pedidos" class="tab-content active">
                 <h2>Insumos Pedidos</h2>
                 <form id="form-pedido" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
-                    <input type="text" id="ped-insumo" maxlength="40" class="ButtonGeneric" placeholder="Insumo" required style="flex: 1; min-width: 150px;">
+                    <input type="text" id="ped-insumo" maxlength="300" class="ButtonGeneric" placeholder="Insumo" required style="flex: 1; min-width: 150px;">
                     <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
                     <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
                     <label for="ped-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUploadOrdered" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 1)">
@@ -150,7 +151,7 @@
             <div id="prestados" class="tab-content">
                 <h2>Insumos Prestados</h2>
                 <form id="form-prestado" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
-                    <input type="text" id="pres-insumo" class="ButtonGeneric" placeholder="Insumo" title="Indique el nombre del insumo" required style="flex: 1; min-width: 150px;">
+                    <input type="text" id="pres-insumo" maxlength="300" class="ButtonGeneric" placeholder="Insumo" title="Indique el nombre del insumo" required style="flex: 1; min-width: 150px;">
                     <input type="number" id="pres-cantidad" class="ButtonGeneric" placeholder="Cantidad" title="Indique la cantidad en números" required style="flex: 1; min-width: 100px;">
                     <input type="text" id="pres-area" class="ButtonGeneric" placeholder="Área" title="Seleccione el area a la que se le fué prestado el insumo" required style="flex: 1; min-width: 150px;">
                     <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUploadLent" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 2)">
@@ -186,6 +187,25 @@
                     if (btn.dataset.tab === 'historial') loadHistorial();
                 });
             });
+
+            document.addEventListener("DOMContentLoaded", async (event) => {
+                document.getElementById("MainContainer").style.display = "none";
+                try { 
+                    const response = await fetch('/verify');
+                    const permLvl = await response.json();
+                    console.log(response);
+                    console.log(permLvl);
+                    if (permLvl.success && permLvl.permsLevel === "user"){
+                        console.log("bot")
+                        window.location.href = "../menu_basic.html";
+                    } else {
+                        document.getElementById("MainContainer").style.display = "block";
+                        console.log("ok");
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+            })
 
             document.getElementById('form-pedido').addEventListener('submit', async (e) => {
                 e.preventDefault();
