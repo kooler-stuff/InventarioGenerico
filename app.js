@@ -88,10 +88,11 @@ app.use((req, res, next) => {
   if (isAuthenticated(req)) {
     return next();
   }
+  console.log("accion autenticada");
 
   if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
     return res.status(401).json({ success: false, message: "No autorizado"});
-  }
+  } 
 
   if (req.path.startsWith('/api') || req.method !== 'GET') {
     return res.status(401).json({ success: false, message: 'No autorizado' });
@@ -112,6 +113,10 @@ app.get('/api/insumo', async (req, res) => {
     } catch (error) {
         res.status(500).json({ mensaje: "Error al obtener datos" });
     }
+});
+
+app.get('main_menu.html', (req, res) => {
+  console.log("Entranding");
 });
 
 app.get('/', (req, res) => {
@@ -277,11 +282,24 @@ app.post('/auth', async (req, res) => {
       console.log(permslevel);
       req.session.authenticated = true;
       req.session.permissionLevel = permslevel;
-      res.json({ success: true, redirect: '/main_menu.html' });
+      if (permslevel != "admin"){ 
+        res.json({ success: true, redirect: '/menu_basic.html' });
+      } else {
+        res.json({ success: true, redirect: '/main_menu.html' });
+      }
   } catch(error){
     console.log(error);
   }
 });
+
+app.get("/verify", async(req,res) =>{ 
+  const PermLevel = req.session.permissionLevel
+  try{ 
+    res.json({success: true, permsLevel: PermLevel});
+  } catch(err){
+    console.log(err);
+  }
+})
 
 app.post('/logout', (req, res) => {
   req.session.destroy(err => {
