@@ -9,9 +9,21 @@
         <link rel="icon" href="/media/icon.ico">
         <title>Realizar un pedido...</title>
     </head>
-
     <body>
-
+        <div class="container container-main">
+            <div style="display: flex;align-items:center; justify-content:space-between;gap: 15px;margin-bottom:15px;width:100%; margin-top: -80px; margin-bottom: 100px;"> 
+                <h1 class="titler1" style="margin:0;flex-shrink:0;">Realiza un pedido:</h1>
+            </div>
+            <h2></h2>
+            <form id="form-pedido" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data"> 
+            <input type="text" id="ped-insumo" maxlength="300" class="ButtonGeneric" placeholder="Nombre del insumo" required style="flex: 1; min-width: 150px;">
+            <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
+            <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
+            <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br>
+            <div id="pedido-info" class="inventory-grid"></div>
+            <textarea name="description" class="ButtonGeneric2" id="ped-insumo" placeholder="Descripción del pedido" maxlength="500"></textarea>
+            </div>
+        </form>
     </body>
     <script>  
     </script>

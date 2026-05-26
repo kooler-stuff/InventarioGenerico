@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -30,6 +29,7 @@
             // Esta función ahora es manejada por menu.js
         }
         function toggleDropdown() {
+            document.getElementById("ButtonFilterIMG").classList.toggle("ButtonFilterImageActive")
             document.getElementById("dropdown-content").classList.toggle("dropdown-show");
         }
         function handleFile(file) {
@@ -51,7 +51,7 @@
             <a href="main_menu.html" class="nav-currently-selected">Inventario</a>
             <a href="pages/registro.html">Registro</a>
         </nav>
-        <div class="container container-main"> 
+        <div id="MainContainer" class="container container-main"> 
                 <div class="container-navbar">
                     <span style="font-size:32px;font-weight:600;">Inventario</span>
                     <div> 
@@ -60,10 +60,17 @@
                             <input id="search-input"  type="text" class="SearchBar" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
                             <div class="dropdown"> 
                                 <label for="filter" class="ButtonFilter" style="display: inline-block; align-items: center; max-width: 30px; max-height: 30px;" title="Subir imagen">
-                                    <img id="FileUploadOrdered" class="ButtonFilterImage" width="24px" height="24px">
+                                    <img id="ButtonFilterIMG" class="ButtonFilterImage" width="24px" height="24px">
                                 </label> 
                                 <input type="button" onclick="toggleDropdown()"  id="filter" name="filter" style="display: none;">
-                                <div id="dropdown-content" class="dropdown-content"> <h1>filtrar:</h1> </div>
+                                <div id="dropdown-content" class="dropdown-content">
+                                    <h3 style="margin: 10px 15px; color: #85abb1; font-size: 16px;">Categorías:</h3>
+                                    <a href="#" onclick="filterByCategory('todas')">Todas</a>
+                                    <a href="#" onclick="filterByCategory('almacen')">Almacén</a>
+                                    <a href="#" onclick="filterByCategory('libreria')">Librería</a>
+                                    <a href="#" onclick="filterByCategory('limpieza')">Limpieza</a>
+                                    <a href="#" onclick="filterByCategory('miscelaneo')">Misceláneo</a>
+</div>
                             </div>
                             
                         </div>
@@ -126,7 +133,6 @@
             </form>
         </div>
     `;
-
     let currentWindow ="";
 
     const overlay = document.createElement('div');
@@ -151,6 +157,22 @@
         </div>
     `;
 
+let allInsumos = [];
+
+function filterByCategory(categoria) {
+    if (categoria === 'todas') {
+        renderInventory(allInsumos);
+    } else {
+        const filtrados = allInsumos.filter(item => 
+            item.categoria && item.categoria.toLowerCase() === categoria.toLowerCase()
+        );
+        renderInventory(filtrados);
+    }
+    document.getElementById("dropdown-content").classList.remove("dropdown-show");
+}
+    
+document.getElementById("dropdown-content").classList.remove("dropdown-show");
+
     document.body.appendChild(overlay2);
 
     document.addEventListener('click', function(event) {
@@ -160,6 +182,26 @@
             overlay2.style.display = "none";
         }
     });
+
+    document.addEventListener("DOMContentLoaded", async (event) => {
+        document.getElementById("MainContainer").style.display = "none";
+        try { 
+            const response = await fetch('/verify');
+            const permLvl = await response.json();
+            console.log(response);
+            console.log(permLvl);
+            if (permLvl.success && permLvl.permsLevel === "user"){
+                console.log("bot");
+                window.location.href = "menu_basic.html";
+            } else {
+                document.getElementById("MainContainer").style.display = "block";
+                console.log("ok");
+            }
+        } catch (err) {
+            console.log(err);
+        }
+       
+    })
 
     document.addEventListener("DOMContentLoaded", function () {
 
