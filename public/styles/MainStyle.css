@@ -538,7 +538,7 @@ body{
 }
 
 .ButtonGeneric{
-    width: 100%;
+  width: 100%;
     padding: 10px;
     margin: 10px 0;
     border: none;
@@ -546,7 +546,7 @@ body{
     background-color: #3d3d3d;
     color: rgb(255, 255, 255);
     border: 2px solid rgb(145, 145, 145);
-    font-size: 16px;
+    font-size: 16px;  
 }
 .ButtonGeneric::placeholder {
     color: rgb(173, 173, 173);
@@ -623,7 +623,7 @@ input[type="file"] {
     content: url(../media/filter_off_white.svg);
 }
 
-.ButtonFilterImage:active{
+.ButtonFilterImageActive{
     content: url(../media/filter_on_white.svg);
 }
 
@@ -758,7 +758,25 @@ input[type="file"] {
     gap: 0px;
     margin-top: 10px;
 }
-
+.ButtonGeneric2
+{
+    font-family: fuente1;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #3d3d3d;
+    color: rgb(255, 255, 255);
+    border: 2px solid rgb(145, 145, 145);
+    font-size: 16px;
+    resize: vertical;
+    flex: 1; 
+    min-width: 150px;
+    max-width: 70%; 
+    max-height: 100px;
+    height: 100px;
+}
 /* mmm */
 
 .container-small {
@@ -808,6 +826,19 @@ input[type="file"] {
 
 .tab-content.active {
     display: block;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.dropdown-content a:hover {
+    background-color: #4a3261;
 }
 
 .history-table {
