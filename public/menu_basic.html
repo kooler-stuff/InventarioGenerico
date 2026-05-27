@@ -16,15 +16,56 @@
             </div>
             <h2></h2>
             <form id="form-pedido" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data"> 
-            <input type="text" id="ped-insumo" maxlength="300" class="ButtonGeneric" placeholder="Nombre del insumo" required style="flex: 1; min-width: 150px;">
-            <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
-            <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
-            <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br>
-            <div id="pedido-info" class="inventory-grid"></div>
-            <textarea name="description" class="ButtonGeneric2" id="ped-insumo" placeholder="Descripción del pedido" maxlength="500"></textarea>
+                <input type="text" id="ped-insumo" maxlength="60" class="ButtonGeneric" placeholder="Nombre del insumo" required style="flex: 1; min-width: 150px;">
+                <input type="number" id="ped-cantidad" min="0" max="10000" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
+                <input type="text" list="areas" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;" />
+                    <datalist id="areas">
+                        <option>Sala</option>
+                        <option>Investigacion y desarrollo</option>
+                        <option>Equipo técnico</option>
+                    </datalist>
+                <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br>
+                <div id="pedido-info" class="inventory-grid"></div>
+                <textarea name="description" class="ButtonGeneric2" id="ped-descripcion" placeholder="Descripción del pedido" maxlength="500" required></textarea>
             </div>
         </form>
     </body>
     <script>  
+        document.getElementById('form-pedido').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const pedido = new FormData();
+                    pedido.append('insumo', document.getElementById('ped-insumo').value);
+                    pedido.append('cantidad', parseInt(document.getElementById('ped-cantidad').value));
+                    pedido.append('area', document.getElementById('ped-area').value);
+                    pedido.append('descripcion', document.getElementById("ped-descripcion").value);
+                    console.log(pedido);
+                    console.log(document.getElementById('ped-insumo').value);
+                    const response = await fetch('/api/pedidosmisc', {
+                        method: 'POST',
+
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+
+                            body: JSON.stringify({
+                                insumo: document.getElementById('ped-insumo').value,
+                                cantidad: parseInt(document.getElementById('ped-cantidad').value),
+                                area: document.getElementById('ped-area').value,
+                                descripcion: document.getElementById("ped-descripcion").value
+                            })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        document.getElementById('form-pedido').reset();
+                        location.reload();  
+                    } else {
+                        alert('Error al registrar.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error al conectar.');
+                }
+            });
     </script>
 </html>

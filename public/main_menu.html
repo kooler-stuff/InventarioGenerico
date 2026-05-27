@@ -29,7 +29,6 @@
             // Esta función ahora es manejada por menu.js
         }
         function toggleDropdown() {
-            document.getElementById("ButtonFilterIMG").classList.toggle("ButtonFilterImageActive")
             document.getElementById("dropdown-content").classList.toggle("dropdown-show");
         }
         function handleFile(file) {
@@ -70,14 +69,14 @@
                                     <a href="#" onclick="filterByCategory('libreria')">Librería</a>
                                     <a href="#" onclick="filterByCategory('limpieza')">Limpieza</a>
                                     <a href="#" onclick="filterByCategory('miscelaneo')">Misceláneo</a>
-</div>
+                            </div>
                             </div>
                             
                         </div>
                         
                     </div>
                      
-                    <div class="tab-buttons" style="margin:0;border:none;flex: shrink 1;">
+                    <div class="tab-buttons" style="margin:0;border:none;flex: shrink 1; margin-right: 15px;">
                         <button class="tab-btn active" id="inventario" data-tab="inventario">Inventario</button>
                         <button class="tab-btn" data-tab="historial">Historial de Cambios</button>
                         <button class="tab-btn" id="AgregarInsumo" data-tab="AgregarInsumo">Agregar Insumo</button>
@@ -162,10 +161,12 @@ let allInsumos = [];
 function filterByCategory(categoria) {
     if (categoria === 'todas') {
         renderInventory(allInsumos);
+        document.getElementById("ButtonFilterIMG").classList.remove("ButtonFilterImageActive")
     } else {
         const filtrados = allInsumos.filter(item => 
             item.categoria && item.categoria.toLowerCase() === categoria.toLowerCase()
         );
+        document.getElementById("ButtonFilterIMG").classList.add("ButtonFilterImageActive")
         renderInventory(filtrados);
     }
     document.getElementById("dropdown-content").classList.remove("dropdown-show");
