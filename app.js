@@ -10,6 +10,7 @@ const Prestado = require('./models/prestado');
 const Historial = require('./models/historial');
 const HistorialInventario = require('./models/historialInventario');
 const Usuarios = require("./models/users.js");
+const PedidosMisc = require("./models/pedidosmisc.js");
 
 const express = require('express');
 const multer = require("multer");
@@ -330,6 +331,47 @@ app.post('/api/pedidos', uploadOrders.single('imagen'), async (req, res) => {
     res.json({ success: true, data: nuevoPedido });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+app.get('/api/pedidosmisc', async (req, res) => {
+  try {
+    const pedidos = await PedidosMisc.find();
+    res.json(pedidos);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener pedidos' });
+  }
+});
+
+app.post('/api/pedidosmisc', async (req, res) => {
+  try {
+    console.log(req.body);
+    const { insumo, cantidad, area, descripcion } = req.body;
+    let estado = "Pendiente";
+    const nuevoPedido = new PedidosMisc({ insumo, cantidad, area, descripcion, estado});
+    await nuevoPedido.save();
+    res.json({ success: true, data: nuevoPedido });
+  } catch (error) {
+    console.log(error)
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+app.put('/api/completarpedido', async (req, res) => {
+  try {
+    const { id, insumo, cantidad, area, descripcion } = req.body;
+    console.log(req.body);
+    const InsumoACompletar = await PedidosMisc.findById(id);
+    console.log(InsumoACompletar);
+    console.log("smth");
+    let Estado = "Entregado";
+    const updated = await PedidosMisc.findByIdAndUpdate(id, { insumo: insumo, cantidad: cantidad, area: area, descripcion: descripcion, estado: Estado }, { new: true });
+    if (updated) {
+      return res.json({success: true});
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'No encontrado.' });
   }
 });
 
