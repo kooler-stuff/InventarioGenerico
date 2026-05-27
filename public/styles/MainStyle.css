@@ -243,6 +243,7 @@ body{
 .inventory-item {
     background-color: #2e2e2e; 
     padding: 20px;
+    
     border-radius: 10px;
     text-align: left;
     border-left: 5px solid #6929a5;
@@ -269,11 +270,26 @@ body{
 
 .inventory-item h3 {
     margin: 0 0 10px 0;
-    font-size: 18px;
+    font-size: 17px;
     max-width: 160px;
     color: #ffffff;
     word-break: break-all;
     text-overflow: ellipsis;
+}
+
+.inventory-item h4 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    max-width: 160px;
+    color: #ffffff;
+    word-break: break-all;
+    text-overflow: ellipsis;
+}
+
+.inventory-item h5 {
+    margin: 0 0 3px 0;
+    color: #cfcfcf;
+    font-size: small;
 }
 
 .inventory-item p {
@@ -294,6 +310,39 @@ body{
     white-space: normal;
 }
 
+.inventory-item .buttondesc {
+    height: 40px;
+    width: 150px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: #6e5e7e;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(145, 53, 140) 2.8%, rgb(87, 42, 66) 90.2% );
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    border-bottom: 3px solid #131321;
+    margin-right: 10px;
+    margin-left: 0px;
+    box-shadow: 12px rgba(0,0,0,0.2);
+}
+
+.inventory-item .buttondesc:hover {
+    background-color: #b090d1;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(202, 68, 196) 2.8%, rgb(94, 49, 73) 90.2% );
+
+}
+
+.inventory-item .buttondesc:active {
+    background-color: #ebddeb;
+    color: black;
+    border-bottom: 2px solid black;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(172, 112, 170) 7.8%, rgb(116, 103, 110) 92.2% );
+
+}
 
 .history-table td {         
     max-width: 150px;
@@ -327,6 +376,113 @@ body{
     border: 2px solid rgb(61, 46, 56); 
     box-shadow: #272127 5px  5px 12px;
 }
+
+.sidebar {
+        position: fixed;
+        top: 0;
+        right: -450px; 
+        width: 400px;
+        max-width: 100%;
+        height: 100%;
+        background-color: #191419;
+        box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+        z-index: 9995;
+        transition: right 0.75s ease-out;
+        box-sizing: border-box;
+    }
+
+    .sidebar.active {
+        right: 0; /* Desplaza el panel hacia adentro */
+    }
+
+    .sidebar-content {
+        position: relative;
+        height: 100%;
+        padding: 30px 25px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+
+    .sidebar-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 35px;
+        height: 35px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .sidebar-close:hover {
+        background: rgb(255, 44, 44);
+        color: white;
+    }
+
+    .sidebar-body {
+        margin-top: 30px;
+        color: #e0e0e0;
+        font-family: 'fuente1', sans-serif;
+    }
+
+    .sidebar-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #fff;
+        margin-bottom: 20px;
+        word-break: break-word;
+        line-height: 1.2;
+    }
+
+    .sidebar-meta {
+        background: rgba(255, 6, 234, 0.03);
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        margin-bottom: 25px;
+    }
+
+    .sidebar-meta p {
+        margin: 8px 0;
+        font-size: 1rem;
+    }
+
+    .sidebar-meta strong {
+        color: #85abb1;
+    }
+
+    .sidebar-divider {
+        border: 0;
+        height: 1px;
+        background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0));
+        margin-bottom: 25px;
+    }
+
+    .sidebar-description-container h3 {
+        color: #85abb1;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+
+    .sidebar-description-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #c5c5c5;
+        white-space: pre-wrap;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 3px solid #b090d1;
+    }
 
 /* botones de elementos creados dinamicamente ok??? */
 
@@ -376,6 +532,51 @@ body{
 .inventory-item .btn-decrease:hover {
     background-color: rgb(114, 56, 56);
     transform: translateY(-1px);
+}
+
+.estado-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.estado-pendiente {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffe082;
+    border: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+.estado-completado {
+    background-color: rgba(40, 167, 69, 0.2);
+    color: #a3e635;
+    border: 1px solid rgba(40, 167, 69, 0.4);
+}
+
+.estado-defecto {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+}
+
+.btn-completar {
+    background: transparent;
+    border: 1px solid #29ac30;
+    color: #29ac30;
+    padding: 5px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.3s;
+    margin-top: 10px;
+    display: block;
+    width: 100%;
+}
+
+.btn-completar:hover {
+    background: #29ac30;
+    color: #fff;
 }
 
 .popup .btn-save {
