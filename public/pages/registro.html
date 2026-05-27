@@ -127,7 +127,7 @@
                 <div class="tab-buttons" style="margin:0;border:none;flex-shrink:0;">
                     <button class="tab-btn active" data-tab="pedidos">Insumos Pedidos</button>
                     <button class="tab-btn" data-tab="prestados">Insumos Prestados</button>
-                    <button class="tab-btn" data-tab="especiales">Pedidos Especiales</button>
+                    <button class="tab-btn" data-tab="pedidos-misc">Pedidos Especiales</button>
                     <button class="tab-btn" data-tab="historial">Historial</button>
                 </div>
             </div>
@@ -162,13 +162,42 @@
                 <div id="prestados-grid" class="inventory-grid"></div>
             </div>
 
+            <div id="pedidos-misc" class="tab-content">
+                <h2> Pedidos especiales </h2>
+                <div id="especiales-grid" class="inventory-grid"></div>
+            </div>
+
             <div id="historial" class="tab-content">
                 <h2>Historial de Préstamos</h2>
                 <div id="historial-list" class="inventory-list"></div>
             </div>
         </div>
+            <div id="description-sidebar" class="sidebar">
+            <div class="sidebar-content">
+                <button type="button" class="sidebar-close" id="sidebar-close">×</button>
+                
+                <div class="sidebar-body">
+                    <h1 id="sidebar-titulo" class="sidebar-title">Nombre del Producto</h1>
+                    
+                    <div class="sidebar-meta">
+                        <p><strong>Cantidad:</strong> <span id="sidebar-cantidad">0</span></p>
+                        <p><strong>Área destino:</strong> <span id="sidebar-area">Área</span></p>
+                        <p><strong>Fecha del pedido:</strong> <span id="sidebar-fecha">--/--/----</span></p>
+                        <p><strong>Estado del pedido:</strong> <span id="sidebar-estado">Área</span></p>
+                    </div>
+                    
+                    <hr class="sidebar-divider">
+                    
+                    <div class="sidebar-description-container">
+                        <h3>Descripción del pedido:</h3>
+                        <p id="sidebar-descripcion" class="sidebar-description-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <script>
+    </body>
+    <script>
             const tabBtns = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
             const previewContainer = document.getElementById("imgholder");
@@ -181,10 +210,20 @@
                     
                     btn.classList.add('active');
                     document.getElementById(btn.dataset.tab).classList.add('active');
-                    
-                    if (btn.dataset.tab === 'pedidos') loadPedidos();
-                    if (btn.dataset.tab === 'prestados') loadPrestados();
-                    if (btn.dataset.tab === 'historial') loadHistorial();
+                    switch(btn.dataset.tab){
+                        case "pedidos":
+                            loadPedidos();
+                            break; 
+                        case "prestados":
+                            loadPrestados();
+                            break; 
+                        case "historial": 
+                            loadHistorial();
+                            break;
+                        case "pedidos-misc": 
+                            loadPedidosMisc(); 
+                            break; 
+                    }
                 });
             });
 
@@ -218,6 +257,7 @@
                     if (imagenFile) {
                         formData.append('imagen', imagenFile);
                     }
+                    console.log(formData);
 
                     const response = await fetch('/api/pedidos', {
                         method: 'POST',
@@ -226,7 +266,6 @@
                     const result = await response.json();
                     if (result.success) {
                         document.getElementById('form-pedido').reset();
-                        location.reload();
                     } else {
                         alert('Error al registrar.');
                     }
@@ -306,6 +345,63 @@
                 }
             }
 
+            async function loadPedidosMisc() {
+                const grid = document.getElementById('especiales-grid');
+                grid.innerHTML = '';
+                previewContainer.innerHTML = "";
+                previewContainer2.innerHTML = "";
+                try {
+                    const response = await fetch('/api/pedidosmisc');
+                    const pedidos = await response.json();
+        
+                    if (!Array.isArray(pedidos) || pedidos.length === 0) {
+                        grid.innerHTML = '<p>No hay insumos pedidos.</p>';
+                        return;
+                    }
+
+                    const Ordenada = OrdenarTabla(pedidos);
+                    Ordenada.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'inventory-item';
+                        
+                        let estadoClass = 'estado-defecto';
+                        let botonCompletar = "";
+                        const estadoNormalizado = (item.estado || '').toLowerCase().trim();
+                        if (estadoNormalizado === 'pendiente') {
+                            estadoClass = 'estado-pendiente';
+                            botonCompletar = `<button class="btn-completar" onclick="marcarCompletado('${item._id}')">✔ Marcar como Completado</button>`;
+                        } else if (estadoNormalizado === 'completado') {
+                            estadoClass = 'estado-completado';
+                        }
+
+                        card.innerHTML = `
+                            <h3>${item.insumo}</h3>
+                            <h4>Cantidad: ${item.cantidad}</h4>
+                            <small>Área: ${item.area}</small>
+                            <h5 style="color: #a5a5a5; font-size: 12px; margin-bottom: 8px;">
+                                Fecha: ${new Date(item.fecha).toLocaleDateString()}
+                            </h5>
+                            <div style="margin-bottom: 12px;">
+                                <span class="estado-badge ${estadoClass}">${item.estado || 'Pendiente'}</span>
+                            </div>
+                            ${botonCompletar}
+                            <button class="buttondesc view-sidebar-btn" 
+                                    data-insumo="${item.insumo}" 
+                                    data-cantidad="${item.cantidad}" 
+                                    data-area="${item.area}" 
+                                    data-fecha="${new Date(item.fecha).toLocaleDateString()}" 
+                                    data-estado="${item.estado}"
+                                    data-descripcion="${item.descripcion || 'Sin descripción disponible.'}"> 
+                                Ver descripción 
+                            </button>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } catch (error) {
+                    console.error('Error al cargar pedidos:', error);
+                    grid.innerHTML = '<p>Error al conectar.</p>';
+                }
+            }
             async function loadPrestados() {
                 const grid = document.getElementById('prestados-grid');
                 grid.innerHTML = '';
@@ -395,6 +491,65 @@
             document.getElementById('prestados-grid').addEventListener('click', handleImageClick);
             document.getElementById('pedidos-grid').addEventListener('click', handleImageClick);
 
+            async function marcarCompletado(id, insumo, cantidad, area, descripcion) {
+                if (!confirm('¿Deseas marcar este pedido como completado?')) return;
+
+                try {
+                    const response = await fetch(`/api/completarpedido/`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id: id, 
+                            insumo: insumo, 
+                            cantidad: cantidad, 
+                            area: area, 
+                            descripcion: descripcion
+                        })
+                    });
+
+                    if (response.ok) {
+                        // Recargamos la lista para actualizar los badges y ocultar el botón
+                        loadPedidosMisc(); 
+                    } else {
+                        alert('Error al actualizar el estado.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            const sidebar = document.getElementById('description-sidebar');
+            document.getElementById('especiales-grid').addEventListener('click', (event) => {
+                const button = event.target.closest('.view-sidebar-btn');
+                if (!button) return;
+
+                const insumo = button.dataset.insumo;
+                const cantidad = button.dataset.cantidad;
+                const area = button.dataset.area;
+                const fecha = button.dataset.fecha;
+                const estado = button.dataset.estado;
+                const descripcion = button.dataset.descripcion;
+
+                document.getElementById('sidebar-titulo').textContent = insumo;
+                document.getElementById('sidebar-cantidad').textContent = cantidad;
+                document.getElementById('sidebar-area').textContent = area;
+                document.getElementById('sidebar-fecha').textContent = fecha;
+                document.getElementById("sidebar-estado").textContent = estado;
+                document.getElementById('sidebar-descripcion').textContent = descripcion;
+
+                sidebar.classList.add('active');
+            });
+            document.getElementById('sidebar-close').addEventListener('click', () => {
+                sidebar.classList.remove('active');
+            });
+            document.addEventListener('click', (event) => {
+                if (sidebar.classList.contains('active') && 
+                    !sidebar.contains(event.target) && 
+                    !event.target.closest('.view-sidebar-btn')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
             document.getElementById('overlay-close').addEventListener('click', () => {
                 overlay.classList.remove('active');
             });
@@ -407,6 +562,4 @@
 
             document.addEventListener('DOMContentLoaded', loadPedidos);
         </script>
-
-    </body>
 </html>
