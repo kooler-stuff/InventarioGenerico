@@ -350,6 +350,7 @@ app.post('/api/pedidosmisc', async (req, res) => {
     let estado = "Pendiente";
     const nuevoPedido = new PedidosMisc({ insumo, cantidad, area, descripcion, estado});
     await nuevoPedido.save();
+    await Historial.create({ insumo, cantidad, area, tipo: 'Pedido especial' });
     res.json({ success: true, data: nuevoPedido });
   } catch (error) {
     console.log(error)
@@ -359,14 +360,15 @@ app.post('/api/pedidosmisc', async (req, res) => {
 
 app.put('/api/completarpedido', async (req, res) => {
   try {
-    const { id, insumo, cantidad, area, descripcion } = req.body;
+    const { id, insumo, Cantidad, Area, Descripcion } = req.body;
     console.log(req.body);
     const InsumoACompletar = await PedidosMisc.findById(id);
     console.log(InsumoACompletar);
     console.log("smth");
     let Estado = "Entregado";
-    const updated = await PedidosMisc.findByIdAndUpdate(id, { insumo: insumo, cantidad: cantidad, area: area, descripcion: descripcion, estado: Estado }, { new: true });
+    const updated = await PedidosMisc.findByIdAndUpdate(id, { insumo: insumo, cantidad: Cantidad, area: Area, descripcion: Descripcion, estado: Estado }, { new: true });
     if (updated) {
+      await Historial.create({ insumo: InsumoACompletar["insumo"], cantidad: InsumoACompletar["cantidad"] , area: InsumoACompletar["area"] , tipo: 'Pedido especial entregado' });
       return res.json({success: true});
     }
   } catch (error) {
