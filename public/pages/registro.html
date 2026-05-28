@@ -369,7 +369,7 @@
                         const estadoNormalizado = (item.estado || '').toLowerCase().trim();
                         if (estadoNormalizado === 'pendiente') {
                             estadoClass = 'estado-pendiente';
-                            botonCompletar = `<button class="btn-completar" onclick="marcarCompletado('${item._id}')">✔ Marcar como Completado</button>`;
+                            botonCompletar = `<button class="btn-completar" onclick="marcarCompletado('${item._id}')"> ✔ Marcar como Completado</button>`;
                         } else if (estadoNormalizado === 'completado') {
                             estadoClass = 'estado-completado';
                         }
