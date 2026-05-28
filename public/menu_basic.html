@@ -10,29 +10,114 @@
         <title>Realizar un pedido...</title>
     </head>
     <body>
-        <div class="container container-main">
+        <div class="container container-main" id="main-container">
             <div style="display: flex;align-items:center; justify-content:space-between;gap: 15px;margin-bottom:15px;width:100%; margin-top: -80px; margin-bottom: 100px;"> 
                 <h1 class="titler1" style="margin:0;flex-shrink:0;">Realiza un pedido:</h1>
             </div>
             <h2></h2>
-            <form id="form-pedido" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data"> 
-                <input type="text" id="ped-insumo" maxlength="60" class="ButtonGeneric" placeholder="Nombre del insumo" required style="flex: 1; min-width: 150px;">
-                <input type="number" id="ped-cantidad" min="0" max="10000" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
-                <input type="text" list="areas" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;" />
+            <form id="form-pedido" class="formGeneric" enctype="multipart/form-data"> 
+                <input type="text" id="ped-insumo" maxlength="60" class="ButtonGeneric" placeholder="Nombre del insumo" name="insumo" required style="flex: 1; min-width: 150px;">
+                <input type="number" id="ped-cantidad" min="0" max="10000" class="ButtonGeneric" placeholder="Cantidad" name="cantidad" required style="flex: 1; min-width: 100px;">
+                <input type="text" list="areas" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" name="area" required style="flex: 1; min-width: 150px;" />
                     <datalist id="areas">
                         <option>Sala</option>
                         <option>Investigacion y desarrollo</option>
                         <option>Equipo técnico</option>
                     </datalist>
-                <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br>
+                <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br> 
+                <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img src="./media/add_white.svg" alt=""> </button>
                 <div id="pedido-info" class="inventory-grid"></div>
-                <textarea name="description" class="ButtonGeneric2" id="ped-descripcion" placeholder="Descripción del pedido" maxlength="500" required></textarea>
+                <textarea name="descripcion" class="ButtonGeneric2" id="ped-descripcion" placeholder="Descripción del pedido" maxlength="500" required></textarea>
             </div>
         </form>
     </body>
     <script>  
+        let ExtraUploadsCreated = 0; 
+        const MainContainer = document.getElementById("main-container");
+        function OrdenarTabla(tabla) {
+            const TablaOrdenada = tabla.slice().sort((a, b) => b.dataset.id - a.dataset.id);
+            return TablaOrdenada 
+        }
+
+        function RemoveBulkUploadInstance(btn){
+            const parent = btn.parentNode; 
+            const root = parent.parentNode;
+            console.log(parent);
+            console.log(parent.getAttribute("id"));
+            root.remove();
+        }
+
+        function AddBulkUploadInstance(){
+            const BasicForm = document.createElement('div');
+                BasicForm.innerHTML = `
+                <form id="form-pedido" class="formGeneric" enctype="multipart/form-data"> 
+                    <input type="text" id="ped-insumo" maxlength="60" class="ButtonGeneric" placeholder="Nombre del insumo" name="insumo" required style="flex: 1; min-width: 150px;">
+                    <input type="number" id="ped-cantidad" min="0" max="10000" class="ButtonGeneric" placeholder="Cantidad" name="cantidad" required style="flex: 1; min-width: 100px;">
+                    <input type="text" list="areas" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" name="area" required style="flex: 1; min-width: 150px;" />
+                        <datalist id="areas">
+                            <option>Sala</option>
+                            <option>Investigacion y desarrollo</option>
+                            <option>Equipo técnico</option>
+                        </datalist>
+                    <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br> 
+                    <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img src="./media/add_white.svg" alt=""> </button>
+                    <button type="button" onclick="RemoveBulkUploadInstance(this)" title="Eliminar Pedido" id="removeInstanceBtn" class="formAddBtn"> <img src="./media/remove_white.svg" alt=""> </button>
+                    <div id="pedido-info" class="inventory-grid"></div>
+                    <textarea name="descripcion" class="ButtonGeneric2" id="ped-descripcion" placeholder="Descripción del pedido" maxlength="500" required></textarea>
+                </form>
+                `;
+            MainContainer.appendChild(BasicForm);
+            console.log("extraForm"+ExtraUploadsCreated);
+            BasicForm.dataset.id = "extraForm"+ExtraUploadsCreated;
+            ExtraUploadsCreated += 1; 
+        }
+        async function UploadInBulk() {
+        // Seleccionamos todos los formularios creados en el contenedor
+        const formularios = MainContainer.querySelectorAll('.formGeneric');
+        
+        if(formularios.length === 0) {
+            alert("No hay pedidos para enviar.");
+            return;
+        }
+        // Recorremos cada formulario y hacemos la petición individual
+        for (const form of formularios) {
+            const formData = new FormData(form);
+            
+            const dataToSend = {
+                insumo: formData.get('insumo'),
+                cantidad: parseInt(formData.get('cantidad')),
+                area: formData.get('area'),
+                descripcion: formData.get('descripcion')
+            };
+
+            try {
+                const response = await fetch('/api/pedidosmisc', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSend)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    form.parentNode.remove();
+                }
+            } catch (error) {
+                console.error("Error enviando un pedido individual:", error);
+            }
+    }
+    
+    alert("Proceso de envío masivo finalizado.");
+    location.reload();
+}
         document.getElementById('form-pedido').addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const formularios = MainContainer.querySelectorAll('.formGeneric');
+                alert("xd");
+                if(formularios.length > 1) {
+                    console.log("xd2");
+                    UploadInBulk();
+                    return;
+                }
                 try {
                     const pedido = new FormData();
                     pedido.append('insumo', document.getElementById('ped-insumo').value);
@@ -57,8 +142,9 @@
                     });
                     const result = await response.json();
                     if (result.success) {
+                        alert("Pedido enviado!");
                         document.getElementById('form-pedido').reset();
-                        location.reload();  
+                        //location.reload();  
                     } else {
                         alert('Error al registrar.');
                     }
