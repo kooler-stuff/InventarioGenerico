@@ -78,7 +78,29 @@ yo juro que si esta lista ahorita
 toca subir el nivel, a implementar diferentes roles de usuarios (admin con todo lo actual y user generico que solo tenga acceso a una pantalla donde puedan hacer pedidos)
 tambien añadir filtrado por categoria al buscador de menu principal 
 
--- lista ultima vez actualizada 22/05
+26/05:
+
+FIltrado por categoría de objeto ahora funcional, y ahora ya no se puede acceder a páginas de solo admin si accedes como usuario genérico. 
+A aplicar backend de la pagina para usuario basico y por extensión la seccion para ver los pedidos especiales (los cuales solo seran hechos por el usuario basico) desde el lado de admin.
+
+27/05:
+
+Errores visuales menores en filtrado de categoría solucionado. 
+Backend de pag de usuario basico funcional y asi mismo con el lado para admin. 
+Cosas que recibimos para hacer:
+- Permitir subida de multiples pedidos a la vez (bulk) para usuario básico.
+- Permitir que todos los cambios a los pedidos especiales sean registrados en el historial. 
+
+28/05: 
+
+Agregado subida de pedidos en masa y ese tal registro de pedidos especiales en historial. 
+Mas cambios menores de diseño.
+
+A HACER: 
+Extender pantalla de Registro - Insumos pedidos, agregar una seccion de pedido realizado/pendiente, similar a la seccion igualmente llamada en pedidos especiales, 
+también para conveniencia agregar también un filtro para poder buscar entre pedidos realizados o pendientes.
+
+-- lista ultima vez actualizada 28/05
 
   if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
     return res.status(401).json({ success: false, message: "No autorizado"});
