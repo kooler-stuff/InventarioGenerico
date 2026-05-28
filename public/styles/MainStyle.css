@@ -243,7 +243,6 @@ body{
 .inventory-item {
     background-color: #2e2e2e; 
     padding: 20px;
-    
     border-radius: 10px;
     text-align: left;
     border-left: 5px solid #6929a5;
@@ -561,22 +560,37 @@ body{
 }
 
 .btn-completar {
-    background: transparent;
-    border: 1px solid #29ac30;
-    color: #29ac30;
-    padding: 5px 12px;
-    border-radius: 5px;
+    height: 40px;
+    width: 150px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: #20a741;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(62, 177, 90) 2.8%, rgb(37, 83, 35) 90.2% );
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.8rem;
-    transition: all 0.3s;
-    margin-top: 10px;
-    display: block;
-    width: 100%;
+    font-size: 13px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    border-bottom: 3px solid #131321;
+    margin-right: 10px;
+    margin-left: 0px;
+    box-shadow: 12px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-completar:hover {
-    background: #29ac30;
-    color: #fff;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(91, 204, 119) 2.8%, rgb(66, 121, 65) 90.2% );
+}
+
+.btn-completar:active {
+    background-color: #67cc80;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(109, 216, 135) 2.8%, rgb(90, 131, 89) 60.2% );
+    color: black;
+    border-bottom: solid black 2px;
 }
 
 .popup .btn-save {
@@ -739,7 +753,7 @@ body{
 }
 
 .ButtonGeneric{
-  width: 100%;
+    width: 100%;
     padding: 10px;
     margin: 10px 0;
     border: none;
@@ -917,7 +931,7 @@ input[type="file"] {
     border-left: none;
     border-right: none;
     border-bottom: 3px solid hsl(273, 86%, 14%);
-    width: 110%;
+    width: 105%;
     font-size: 20px;
     cursor: pointer;
 }
@@ -925,12 +939,10 @@ input[type="file"] {
 .ButtonSubmit:hover{
     background-color: hsl(248, 39%, 35%);
     color: rgb(255, 255, 255);
-    width: 100%;
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
     background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(117, 43, 114) 7.8%, rgb(61, 30, 47) 92.2% );
-
     width: 110%;
     font-size: 22px;
     transform: scale(1.05);
@@ -978,7 +990,43 @@ input[type="file"] {
     max-height: 100px;
     height: 100px;
 }
+
+.ButtonGenericCat {
+    width: 105%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #3d3d3d;
+    color: rgb(255, 255, 255);
+    border: 2px solid rgb(145, 145, 145);
+    font-size: 16px;  
+}
 /* mmm */
+
+.formGeneric{
+    margin-bottom: 20px;
+    display: flex; 
+    gap: 10px; 
+    flex-wrap: wrap;
+}
+
+.formAddBtn{
+    background-color: #b900e78c;
+    border: none;
+    border-radius: 50px;
+    margin-top: 10px;
+    margin-left: -10px;
+    height: 40px;
+    width: 40px;
+}
+
+.formAddBtn img{
+    height: 100%;
+    width: 100%;
+    display: block;
+    margin: auto;
+}
 
 .container-small {
     width: 20%;
