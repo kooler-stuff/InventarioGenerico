@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../Styles/MainStyle.css">
+        <link rel="icon" href="../Media/icon.ico">
+        <style>
+            @font-face {
+                font-family: fuente1; 
+                src: url(../pages/Lato-Bold.ttf);
+            }
+        </style>
+        <title>Agregar Insumo</title>
+    </head>
+
+    <body>
+        <nav class="navbar">
+            <a href="../main_menu.html" class="nav-logo"><img src="../media/COM_Logo.png" alt="COM2"></a>
+            <a href="../main_menu.html">Inventario</a>
+            <a href="../pages/registro.html">Registro</a>
+            <a href="../pages/add.html" class="nav-currently-selected">Agregar</a>
+        </nav>
+
+        <div class="container container-small">
+            <h1 class="titler1">Agregar Nuevo Insumo</h1>
+            
+            <form id="form-add" class="inventory-form">
+                <div class="form-group">
+                    <label>Insumo:</label>
+                    <input type="text" id="insumo" class="ButtonGeneric" placeholder="Ej: Resma A4" required>
+                </div>
+
+                <div>
+                    <label>Subir imagen (opcional):</label> <br>
+                    <label for="ped-imagen" class="ButtonFiles" style="align-items: center; width: 32px; height: 32px;" title="Subir imagen">
+                        <img src="../media/clip.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="32px">
+                    </label>
+                    <input type="file" id="ped-imagen" name="imagen" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label>Categoría:</label>
+                    <input type="text" id="categoria" class="ButtonGeneric" placeholder="Ej: Librería" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Unidades:</label>
+                    <input type="number" id="unidades" class="ButtonGeneric" placeholder="0" min="0" max="9999" required>
+                </div>
+
+                <button type="submit" class="ButtonSubmit">Guardar en Inventario</button>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById('form-add').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const nuevoInsumo = new FormData()
+
+                nuevoInsumo.append('categoria', document.getElementById('categoria').value);
+                nuevoInsumo.append('insumo', document.getElementById('insumo').value);
+                nuevoInsumo.append('unidades', parseInt(document.getElementById('unidades').value));
+                const imagenFile = document.getElementById('ped-imagen').files[0];
+                if (imagenFile) {
+                    nuevoInsumo.append('imagen', imagenFile);
+                }
+
+                try {
+                    const response = await fetch('/insumo', {
+                        method: 'POST',
+                        body: nuevoInsumo
+                    });
+
+                    const resData = await response.json();
+
+                    if (resData.success) {
+                        alert("¡Insumo guardado correctamente!");
+                        document.getElementById('form-add').reset();
+                    } else {
+                        alert("Error: " + resData.message);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Error al conectar con el servidor");
+                }
+            });
+        </script>
+    </body>
+</html>
