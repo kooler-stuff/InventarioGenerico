@@ -100,7 +100,13 @@ A HACER:
 Extender pantalla de Registro - Insumos pedidos, agregar una seccion de pedido realizado/pendiente, similar a la seccion igualmente llamada en pedidos especiales, 
 también para conveniencia agregar también un filtro para poder buscar entre pedidos realizados o pendientes.
 
--- lista ultima vez actualizada 28/05
+29/05: 
+
+Agregado seccion de realizado/en proceso/pendiente para pedidos. 
+Cambios de diseño a unos cuantos botones y asi. 
+Filtro aun no agregado a sección de pedidos.
+
+-- lista ultima vez actualizada 29/05
 
   if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
     return res.status(401).json({ success: false, message: "No autorizado"});

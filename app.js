@@ -265,16 +265,16 @@ app.post('/auth', async (req, res) => {
       const user = await Usuarios.findOne({
         usuario: usuario
       });
-      /* 
+      const usss = await Usuarios.find();
+      console.log(usss);
       console.log(req.body);
-      */ 
       if (!user){
-        /* console.log("no usuario existe"); */
+        console.log("no usuario existe");
         res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
         return;
       } 
       if (user.contraseña !== contraseña) {
-        /* console.log("Usuario existe, contra invalida."); */
+        console.log("Usuario existe, contra invalida.");
         res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
         return;
       }
@@ -322,15 +322,31 @@ app.get('/api/pedidos', async (req, res) => {
 
 app.post('/api/pedidos', uploadOrders.single('imagen'), async (req, res) => {
   try {
-    const { insumo, cantidad, area } = req.body;
+    const { insumo, cantidad, area, estado } = req.body;
     const imagen = req.file ? `/media_images/pedidos/${req.file.filename}` : undefined;
 
-    const nuevoPedido = new Pedido({ insumo, cantidad, area, imagen });
+    const nuevoPedido = new Pedido({ insumo, cantidad, area, estado, imagen });
     await nuevoPedido.save();
     await Historial.create({ insumo, cantidad, area, tipo: 'Pedido' });
     res.json({ success: true, data: nuevoPedido });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+app.put('/api/pedidos', async (req, res) => {
+  try {
+    // console.log("cambio de estado pedido");
+    // console.log(req.body);
+    const { id, estado } = req.body;
+    const updated = await Pedido.findByIdAndUpdate(id, { estado }, { new: true });
+    if (updated) {
+      res.json({ success: true, data: updated });
+    } else {
+      res.status(404).json({ success: false, message: 'Pedido no encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
