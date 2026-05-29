@@ -4,6 +4,7 @@ const PedidoSchema = new mongoose.Schema({
     insumo: { type: String, required: true },
     cantidad: { type: Number, required: true },
     area: { type: String, required: true },
+    estado: { type: String, enum: ['Pendiente', 'En proceso', 'Completado'], default: 'Pendiente' },
     fecha: { type: Date, default: Date.now },
     imagen: { type: String, required: false }
 });
