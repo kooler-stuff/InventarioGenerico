@@ -218,6 +218,13 @@ body{
         padding-left: 37px;
     }
 
+.form-spacer{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    margin-bottom: -20px;
+}
 .inventory-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -310,8 +317,6 @@ body{
 }
 
 .inventory-item .buttondesc {
-    height: 40px;
-    width: 150px;
     margin-top: 8px;
     padding: 8px 12px;
     background-color: #6e5e7e;
@@ -548,6 +553,12 @@ body{
     border: 1px solid rgba(255, 193, 7, 0.4);
 }
 
+.estado-en-proceso {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffe082;
+    border: 1px solid rgba(255, 193, 7, 0.4);
+}
+
 .estado-completado {
     background-color: rgba(40, 167, 69, 0.2);
     color: #a3e635;
@@ -559,9 +570,71 @@ body{
     color: #e0e0e0;
 }
 
+.btn-mark-entregado {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: #20a741;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(62, 177, 90) 2.8%, rgb(37, 83, 35) 90.2% );
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    border-bottom: 3px solid #131321;
+    margin-right: 10px;
+    margin-left: 0px;
+    box-shadow: 12px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-mark-entregado:hover {
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(91, 204, 119) 2.8%, rgb(66, 121, 65) 90.2% );
+}
+
+.btn-mark-entregado:active {
+    background-color: #67cc80;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(152, 240, 174) 2.8%, rgb(113, 153, 112) 60.2% );
+    color: black;
+    border-bottom: solid black 2px;
+}
+
+.btn-mark-proceso {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: #816a04;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(231, 198, 6) 2.8%, rgb(110, 90, 1) 90.2% );
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    border-bottom: 3px solid #131321;
+    margin-right: 10px;
+    margin-left: 0px;
+    box-shadow: 12px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-mark-proceso:hover {
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(255, 217, 103) 2.8%, rgb(128, 107, 17) 90.2% );
+}
+
+.btn-mark-proceso:active {
+    background-color: #bfa23c;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(255, 227, 141) 2.8%, rgb(149, 122, 34) 90.2% );
+    color: black;
+    border-bottom: solid black 2px;
+}
+
 .btn-completar {
-    height: 40px;
-    width: 150px;
     margin-top: 8px;
     padding: 8px 12px;
     background-color: #20a741;
@@ -1002,6 +1075,18 @@ input[type="file"] {
     border: 2px solid rgb(145, 145, 145);
     font-size: 16px;  
 }
+.ButtonGenericStatus {
+    width: 15%;
+    min-width: 150px;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #3d3d3d;
+    color: rgb(255, 255, 255);
+    border: 2px solid rgb(145, 145, 145);
+    font-size: 16px; 
+}
 /* mmm */
 
 .formGeneric{
@@ -1109,16 +1194,35 @@ input[type="file"] {
 }
 
 .view-image-btn {
-    display: inline-block;
-    margin-top: 10px;
+    margin-top: 8px;
     padding: 8px 12px;
-    border: 1px solid #d1d1d1;
-    border-radius: 8px;
-    background: #29ac30;
-    color: #111;
+    background-color: #cb68d4;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(179, 132, 172) 2.8%, rgb(71, 31, 71) 90.2% );
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.2s ease;
-    font-size: 0.95rem;
+    font-size: 13px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    border-bottom: 3px solid #131321;
+    margin-right: 10px;
+    margin-left: 0px;
+    box-shadow: 12px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.view-image-btn:hover {
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(199, 155, 192) 2.8%, rgb(94, 47, 94) 90.2% );
+}
+
+.view-image-btn:active {
+    background-color: #d9a3e0;
+    background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(219, 173, 207) 2.8%, rgb(120, 63, 120) 90.2% );
+    color: black;
+    border-bottom: solid black 2px;
 }
 
 .inventory-list .historial .historial-item{
