@@ -39,6 +39,25 @@
             return TablaOrdenada 
         }
 
+        function CheckAllComplete(table){
+            let Valid = true;
+            for (let i of table) {
+                const dat = new FormData(i);
+                
+                let dataCheck = {
+                    insumo: dat.get('insumo'),
+                    cantidad: parseInt(dat.get('cantidad')),
+                    area: dat.get('area'),
+                    descripcion: dat.get('descripcion')
+                };
+
+                if (dataCheck.insumo === "" || isNaN(dataCheck.cantidad) || dataCheck.area === "" || dataCheck.descripcion === "") {
+                    Valid = false;
+                }
+            }
+            return Valid;
+        }
+
         function RemoveBulkUploadInstance(btn){
             const parent = btn.parentNode; 
             const root = parent.parentNode;
@@ -59,8 +78,8 @@
                             <option>Investigacion y desarrollo</option>
                             <option>Equipo técnico</option>
                         </datalist>
-                    <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br> 
-                    <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img src="./media/add_white.svg" alt=""> </button>
+                    <button type="button" onclick="UploadInBulk()" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br> 
+                    <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img src="./media/add_white.svg" alt=""> </button> <br> 
                     <button type="button" onclick="RemoveBulkUploadInstance(this)" title="Eliminar Pedido" id="removeInstanceBtn" class="formAddBtn"> <img src="./media/remove_white.svg" alt=""> </button>
                     <div id="pedido-info" class="inventory-grid"></div>
                     <textarea name="descripcion" class="ButtonGeneric2" id="ped-descripcion" placeholder="Descripción del pedido" maxlength="500" required></textarea>
@@ -72,53 +91,49 @@
             ExtraUploadsCreated += 1; 
         }
         async function UploadInBulk() {
-        // Seleccionamos todos los formularios creados en el contenedor
-        const formularios = MainContainer.querySelectorAll('.formGeneric');
-        
-        if(formularios.length === 0) {
-            alert("No hay pedidos para enviar.");
-            return;
-        }
-        // Recorremos cada formulario y hacemos la petición individual
-        for (const form of formularios) {
-            const formData = new FormData(form);
+            const formularios = MainContainer.querySelectorAll('.formGeneric');
             
-            const dataToSend = {
-                insumo: formData.get('insumo'),
-                cantidad: parseInt(formData.get('cantidad')),
-                area: formData.get('area'),
-                descripcion: formData.get('descripcion')
-            };
-
-            try {
-                const response = await fetch('/api/pedidosmisc', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSend)
-                });
-                
-                const result = await response.json();
-                if (result.success) {
-                    form.parentNode.remove();
-                }
-            } catch (error) {
-                console.error("Error enviando un pedido individual:", error);
+            if(formularios.length === 0) {
+                alert("No hay pedidos para enviar.");
+                return;
             }
-    }
-    
-    alert("Proceso de envío masivo finalizado.");
-    location.reload();
-}
-        document.getElementById('form-pedido').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formularios = MainContainer.querySelectorAll('.formGeneric');
-                alert("xd");
-                if(formularios.length > 1) {
-                    console.log("xd2");
-                    UploadInBulk();
-                    return;
-                }
+            let allComplete = CheckAllComplete(formularios);
+            if(!allComplete) {
+                alert("Por favor, complete todos los campos de todos los pedidos antes de enviarlos.");
+                return;
+            }
+
+            for (const form of formularios) {
+                const formData = new FormData(form);
+                
+                const dataToSend = {
+                    insumo: formData.get('insumo'),
+                    cantidad: parseInt(formData.get('cantidad')),
+                    area: formData.get('area'),
+                    descripcion: formData.get('descripcion')
+                };
+
                 try {
+                    const response = await fetch('/api/pedidosmisc', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dataToSend)
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        form.parentNode.remove();
+                    }
+                } catch (error) {
+                    console.error("Error enviando un pedido individual:", error);
+                }
+            }
+            
+            alert("Todos los pedidos han sido enviados.");
+            location.reload();
+        }
+        async function UploadSingle(){
+            try {
                     const pedido = new FormData();
                     pedido.append('insumo', document.getElementById('ped-insumo').value);
                     pedido.append('cantidad', parseInt(document.getElementById('ped-cantidad').value));
@@ -152,6 +167,16 @@
                     console.error('Error:', error);
                     alert('Error al conectar.');
                 }
+        }
+        document.getElementById('form-pedido').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formularios = MainContainer.querySelectorAll('.formGeneric');
+                if(formularios.length > 1) {
+                    // console.log("xd2");
+                    UploadInBulk();
+                    return;
+                }
+                UploadSingle();
             });
     </script>
 </html>

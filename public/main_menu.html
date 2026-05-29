@@ -58,7 +58,7 @@
                         <div style="display: flex; flex-direction: row; "> 
                             <input id="search-input"  type="text" class="SearchBar" placeholder="Buscar por nombre..." style="max-width:320px;margin:0;">
                             <div class="dropdown"> 
-                                <label for="filter" class="ButtonFilter" style="display: inline-block; align-items: center; max-width: 30px; max-height: 30px;" title="Subir imagen">
+                                <label for="filter" class="ButtonFilter" style="display: inline-block; align-items: center; max-width: 30px; max-height: 30px;" title="Filtrar por categoría">
                                     <img id="ButtonFilterIMG" class="ButtonFilterImage" width="24px" height="24px">
                                 </label> 
                                 <input type="button" onclick="toggleDropdown()"  id="filter" name="filter" style="display: none;">
@@ -95,10 +95,11 @@
         <button type="button" class="popup-close">×</button>
         <div class="popup-content">
             <div class="popup-content-title"> Agregar nuevo elemento:</div>
-
+            <br>
             <form id="form-add" class="inventory-form">
                 <div class="form-group">
-                    <label>Insumo:</label>
+                    <label>Insumo:</label> <br>
+                    
                     <input type="text" id="insumo" class="ButtonGeneric" placeholder="Ej: Resma A4" required>
                 </div>
 
@@ -121,8 +122,8 @@
                     <option value="libreria"> Librería </option>
                     <option value="limpieza"> Limpieza </option>
                     <option value="miscelaneo"> Misceláneo </option>
+                    </select>
                 </div>
-
                 <div class="form-group">
                     <label>Unidades:</label>
                     <input type="number" id="unidades" class="ButtonGeneric" placeholder="0" min="0" max="9999" required>
