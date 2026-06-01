@@ -44,7 +44,7 @@
                     }
                 }
     </script>
-    <body>
+    <body data-theme="light">
         <nav class="navbar">
             <a href="main_menu.html" class="nav-logo"><img src="media/COM_Logo.png" alt="COM2"></a>
             <a href="main_menu.html" class="nav-currently-selected">Inventario</a>
@@ -52,7 +52,7 @@
         </nav>
         <div id="MainContainer" class="container container-main"> 
                 <div class="container-navbar">
-                    <span style="font-size:32px;font-weight:600;">Inventario</span>
+                    <h1 class="titler1" style="margin:0;flex-shrink:0;">Inventario</h1>
                     <div> 
                         <p style="margin:0 auto;text-align:center;flex:1;min-width:0; margin-bottom:10px">Seleccione el insumo que desea modificar:</p>
                         <div style="display: flex; flex-direction: row; "> 
@@ -337,18 +337,19 @@ document.getElementById("dropdown-content").classList.remove("dropdown-show");
                     <small>
                         Categoría: <br> ${item.categoria}
                     </small> <br>
+                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-left: 10px;">
+                        <button class="btn-increase">
+                            <img src="media/add_white.svg" alt="Agregar">
+                        </button>
 
-                    <button class="btn-increase">
-                        <img src="media/add_white.svg" alt="Agregar">
-                    </button>
+                        <button class="btn-decrease">
+                            <img src="media/remove_white.svg" alt="Restar">
+                        </button>
 
-                    <button class="btn-decrease">
-                        <img src="media/remove_white.svg" alt="Restar">
-                    </button>
-
-                    <button class="btn-delete">
-                        <img src="media/trash-white.svg" alt="Eliminar">
-                    </button>
+                        <button class="btn-delete">
+                            <img src="media/trash-white.svg" alt="Eliminar">
+                        </button>
+                    </div>
                 `;
 
                 const addButton = itemCard.querySelector('.btn-increase');
@@ -646,6 +647,19 @@ document.getElementById("dropdown-content").classList.remove("dropdown-show");
             alert("Error al conectar con el servidor");
         }
         
+    });
+
+    const themeBtn = document.createElement('button');
+    themeBtn.innerHTML = '🌓';
+    themeBtn.className = 'theme-toggle-widget';
+    document.body.appendChild(themeBtn);
+
+    themeBtn.addEventListener('click', () => {
+        if (document.body.getAttribute('data-theme') === 'light') {
+            document.body.setAttribute('data-theme', 'dark');
+        } else {
+            document.body.setAttribute('data-theme', 'light');
+        }
     });
 </script>
 </html>
