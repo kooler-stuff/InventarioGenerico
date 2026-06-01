@@ -99,17 +99,17 @@
                 }
     </script>
 
-    <body>
+    <body data-theme="light">
         <nav class="navbar">
             <a href="../main_menu.html" class="nav-logo"><img src="../media/COM_Logo.png" alt="COM2"></a>
             <a href="../main_menu.html">Inventario</a>
             <a href="registro.html" class="nav-currently-selected">Registro</a>
         </nav>
         <div class="container container-main" id="MainContainer">
-            <div style="display: flex;align-items:center; justify-content:space-between;gap: 15px;margin-bottom:15px;width:100%; margin-top: -80px; margin-bottom: 100px;"> 
-                <h1 class="titler1" style="margin:0;flex-shrink:0;">Registro</h1>
+            <div class="container-navbar"> 
+                <h1 class="titler1" style="margin-top:0px; margin-bottom:0px; flex-shrink:0;">Registro</h1>
                 
-                <div class="tab-buttons" style="margin:0;border:none;flex-shrink:0;">
+                <div class="tab-buttons" style="border:none;flex: shrink 1; margin-right: 15px; margin-top:15px; margin-bottom: 10px; display: flex; gap: 8px; flex-direction: row;">
                     <button class="tab-btn active" data-tab="pedidos">Insumos Pedidos</button>
                     <button class="tab-btn" data-tab="prestados">Insumos Prestados</button>
                     <button class="tab-btn" data-tab="pedidos-misc">Pedidos Especiales</button>
@@ -601,7 +601,18 @@
                     overlay.classList.remove('active');
                 }
             });
+            const themeBtn = document.createElement('button');
+            themeBtn.innerHTML = '🌓';
+            themeBtn.className = 'theme-toggle-widget';
+            document.body.appendChild(themeBtn);
 
+            themeBtn.addEventListener('click', () => {
+                if (document.body.getAttribute('data-theme') === 'light') {
+                    document.body.setAttribute('data-theme', 'dark');
+                } else {
+                    document.body.setAttribute('data-theme', 'light');
+                }
+            });
             document.addEventListener('DOMContentLoaded', loadPedidos);
         </script>
 </html>
