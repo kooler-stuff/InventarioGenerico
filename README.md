@@ -106,7 +106,13 @@ Agregado seccion de realizado/en proceso/pendiente para pedidos.
 Cambios de diseño a unos cuantos botones y asi. 
 Filtro aun no agregado a sección de pedidos.
 
--- lista ultima vez actualizada 29/05
+01/06: 
+
+Comenzando overhaul completo del diseño de la página porque el otro estaba feo y así, habrá mucho por hacer.... 
+Aun se debe migrar a React, y agregar opcion para multiples subidas que tiene pedidos especiales a pedidos normales, y agregar opciones predeterminadas de insumos para evitar duplicados un poco. Y unas cuantas cosas mas, como uhhh agregar opcion para cerrar sesion
+hashear usuario y contraseña x tokens
+
+-- lista ultima vez actualizada 01/06
 
   if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
     return res.status(401).json({ success: false, message: "No autorizado"});
