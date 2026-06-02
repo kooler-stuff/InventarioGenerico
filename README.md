@@ -111,8 +111,18 @@ Filtro aun no agregado a sección de pedidos.
 Comenzando overhaul completo del diseño de la página porque el otro estaba feo y así, habrá mucho por hacer.... 
 Aun se debe migrar a React, y agregar opcion para multiples subidas que tiene pedidos especiales a pedidos normales, y agregar opciones predeterminadas de insumos para evitar duplicados un poco. Y unas cuantas cosas mas, como uhhh agregar opcion para cerrar sesion
 hashear usuario y contraseña x tokens
+normalizar nombres de variables y en la base de datos tmb sacar ese spanglish que puse ups
 
--- lista ultima vez actualizada 01/06
+02/06:
+
+https://codebeyondlimits.com/articles/pagination-in-mongodb-the-https://codebeyondlimits.com/articles/pagination-in-mongodb-the-only-right-way-to-implement-it-and-avoid-common-mistakesonly-right-way-to-implement-it-and-avoid-common-mistakes
+
+Errores en etiquetas por el revamp de diseño ya completamente arregladas? 
+Agregada base para subida en masa a registro. 
+Agregado buscador SELECT para solo poder realizar pedidos de objetos existentes en el inventario con buscador funcional, pero los botones y asi aun no funcionales. 
+pasando a colores blanco/violeta y negro/naranja? es la que va?
+
+-- lista ultima vez actualizada 02/06
 
   if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
     return res.status(401).json({ success: false, message: "No autorizado"});
