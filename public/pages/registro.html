@@ -7,11 +7,6 @@
         
         <link rel="icon" href="../media/icon.ico">
         <style>
-            @font-face {
-                font-family: fuente1; 
-                src: url(../pages/Lato-Bold.ttf);
-            }
-
             .image-overlay {
                 position: fixed;
                 inset: 0;
@@ -97,6 +92,9 @@
                         alert("Please upload a valid image file.");
                     }
                 }
+        function toggleDropdown() {
+            document.getElementById("dropdown-content").classList.toggle("dropdown-show");
+        }
     </script>
 
     <body data-theme="light">
@@ -120,33 +118,45 @@
 
             <div id="pedidos" class="tab-content active">
                 <h2>Insumos Pedidos</h2>
-                <form id="form-pedido" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
-                    <input type="text" id="ped-insumo" maxlength="300" class="ButtonGeneric" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
-                    <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
-                    <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
-                    <label for="ped-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUploadOrdered" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 1)">
-                    <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button>
-                    <div id="spacier" class="form-spacer"></div>
-                    <select name="estado" id="ped-estado" class="ButtonGenericStatus" title="Seleccione el estado del pedido">
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="En proceso">En proceso</option>
-                        <option value="Completado">Completado</option>
-                    </select>
-                    
-                </form>
-                <div id="imgholder" class="imgholder"> </div>
+                <div id="pedidos-holder"> 
+                    <form id="form-pedido" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
+                    <div class="dropdown">
+                        <label for="ped-insumo" class="ButtonGeneric" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
+                            <span id="insumo-elegido">Insumo</span>
+                        </label> 
+                        <input type="button" onclick="toggleDropdown()"  id="ped-insumo" name="insumo" style="display: none;">
+                            <div id="dropdown-content" class="dropdown-content2">
+                                <input type="text" id="search-input" class="ButtonGeneric" placeholder="Buscar insumo...">
+                                <div id="dropdown-options"> </div>
+                            </div>
+                        </div>
+                        
+                        <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
+                        <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
+                        <label for="ped-imagen" class="ButtonFiles" style="max-width: 32px;" title="Subir imagen"><img id="FileUploadOrdered" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 1)">
+                        <button type="submit" class="ButtonSubmit" style="flex: 1; margin-top: 0px; min-width: 120px; border-radius: 10px; max-height: 50px;">Registrar</button>
+                        <div id="spacier" class="form-spacer"></div>
+                        <select name="estado" id="ped-estado" class="ButtonGenericStatus" title="Seleccione el estado del pedido">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En proceso">En proceso</option>
+                            <option value="Completado">Completado</option>
+                        </select>
+                        <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img class="AddOrderImage"> </button>   
+                    </form>
+                    <div id="imgholder" class="imgholder"> </div>
+                </div>  
                 
                 <div id="pedidos-grid" class="inventory-grid"></div>
             </div>
 
             <div id="prestados" class="tab-content">
                 <h2>Insumos Prestados</h2>
-                <form id="form-prestado" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
+                <form id="form-prestado" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
                     <input type="text" id="pres-insumo" maxlength="300" class="ButtonGeneric" placeholder="Insumo" title="Indique el nombre del insumo" required style="flex: 1; min-width: 150px;">
                     <input type="number" id="pres-cantidad" class="ButtonGeneric" placeholder="Cantidad" title="Indique la cantidad en números" required style="flex: 1; min-width: 100px;">
                     <input type="text" id="pres-area" class="ButtonGeneric" placeholder="Área" title="Seleccione el area a la que se le fué prestado el insumo" required style="flex: 1; min-width: 150px;">
                     <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUploadLent" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 2)">
-                    <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px;">Registrar</button>    
+                    <button type="submit" class="ButtonSubmit" style="flex: 1; margin-top: 0px; min-width: 120px; border-radius: 10px; max-height: 50px;">Registrar</button>    
                 </form>
                 <div id="imgholder2" class="imgholder"> </div>
 
@@ -193,6 +203,8 @@
             const tabContents = document.querySelectorAll('.tab-content');
             const previewContainer = document.getElementById("imgholder");
             const previewContainer2 = document.getElementById("imgholder2");
+            const PedidosHolder = document.getElementById("pedidos-holder");
+            let ExtraUploadsCreated = 0; 
 
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -203,7 +215,7 @@
                     document.getElementById(btn.dataset.tab).classList.add('active');
                     switch(btn.dataset.tab){
                         case "pedidos":
-                            loadPedidos();
+                            loadPedidos("GenericLoad");
                             break; 
                         case "prestados":
                             loadPrestados();
@@ -230,6 +242,7 @@
                         window.location.href = "../menu_basic.html";
                     } else {
                         document.getElementById("MainContainer").style.display = "block";
+                        loadPedidos("GenericLoad");
                         console.log("ok");
                     }
                 } catch (err) {
@@ -258,7 +271,7 @@
                     const result = await response.json();
                     if (result.success) {
                         document.getElementById('form-pedido').reset();
-                        loadPedidos();                
+                        loadPedidos("GenericLoad");                
                     } else {
                         alert('Error al registrar.');
                     }
@@ -310,7 +323,7 @@
                     const result = await response.json();
                     if (result.success) {
                         alert(`Pedido marcado como "${status}"!`);
-                        loadPedidos();
+                        loadPedidos("GenericLoad");
                     } else {
                         alert('Error al actualizar el estado.');
                     }
@@ -325,11 +338,109 @@
                 return TablaOrdenada 
             }
 
-            async function loadPedidos() {
+            function RemoveBulkUploadInstance(btn){
+            const parent = btn.parentNode; 
+            const root = parent.parentNode;
+            root.remove();
+        }
+
+            function AddBulkUploadInstance(){
+                const BasicForm = document.createElement('div');
+                    BasicForm.innerHTML = `
+                    <form id="form-pedido" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
+                        <div class="dropdown">
+                            <label for="ped-insumo" class="ButtonGeneric" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
+                            <span id="insumo-elegido">Insumo</span>
+                        </label> 
+                        <input type="button" onclick="toggleDropdown()"  id="ped-insumo" name="insumo" style="display: none;">
+                            <div id="dropdown-content" class="dropdown-content2">
+                                <input type="text" id="search-bar" class="ButtonGeneric" placeholder="Buscar insumo..." onkeyup="filterOptions()">
+                                <div id="dropdown-options"> </div>
+                            </div>
+                        </div>
+                        
+                        <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
+                        <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
+                        <label for="ped-imagen" class="ButtonFiles" style="max-width: 32px;" title="Subir imagen"><img id="FileUploadOrdered" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 1)">
+                        <button type="submit" class="ButtonSubmit" style="flex: 1; margin-top: 0px; min-width: 120px; border-radius: 10px; max-height: 50px;">Registrar</button>
+                        <div id="spacier" class="form-spacer"></div>
+                        <select name="estado" id="ped-estado" class="ButtonGenericStatus" title="Seleccione el estado del pedido">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En proceso">En proceso</option>
+                            <option value="Completado">Completado</option>
+                        </select>
+                        <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img class="AddOrderImage"> </button>   
+                        <button type="button" onclick="RemoveBulkUploadInstance(this)" title="Eliminar Pedido" id="removeInstanceBtn" class="formAddBtn"> <img class="RemoveOrderImage"> </button> 
+                    </form>
+                    `;
+                PedidosHolder.appendChild(BasicForm);
+                console.log("extraForm"+ExtraUploadsCreated);
+                BasicForm.dataset.id = "extraForm"+ExtraUploadsCreated;
+                ExtraUploadsCreated += 1; 
+            }
+
+            async function FiltrarInsumos(){
+                const grid = document.getElementById('dropdown-options');
+                grid.innerHTML = "";
+                try {
+                    const response = await fetch('/api/insumo');
+                    const insumos = await response.json();
+                    const searchInput = document.getElementById('search-input');
+                    
+                    if (!Array.isArray(insumos) || insumos.length === 0) {
+                        grid.innerHTML = '<p>Estas buscando un insumo que no existe, primero crea uno.</p>';
+                        return;
+                    }
+                    if (searchInput) {
+
+                        searchInput.addEventListener('input', () => {
+                            let filter = "";
+                            if (searchInput.value && searchInput.value.trim() !== "") {
+                                filter = searchInput.value.trim().toLowerCase();
+                            } else {
+                                filter = "";
+                            }
+
+                            const filtered = insumos.filter(item =>
+                                (item.insumo || item.objeto_specifico || '')
+                                .toLowerCase()
+                                .includes(filter)
+                            );
+                    });
+
+                    const Ordenada = OrdenarTabla(insumos)
+
+                    Ordenada.forEach(item => {
+                        const card = document.createElement('div');
+                        let itemId = item._id;
+                        //  card.className = 'inventory-item';
+                        // <h3>${item._id}</h3> asi le sacas la id 
+                        card.innerHTML = `
+                        <button class="item-desplegable" type = "button" onclick="selectOption('${item.insumo || item.objeto_specifico}', '${item._id}')">${item.insumo || item.objeto_specifico} </button>
+                        `;
+                        grid.appendChild(card);
+                    });
+                    } 
+                } catch (error) {
+                        console.error('Error al cargar insumos:', error);
+                        grid.innerHTML = '<p>Error al conectar.</p>';
+                }
+            }
+                
+                
+            async function loadPedidos(insumos) {
                 const grid = document.getElementById('pedidos-grid');
                 grid.innerHTML = '';
                 previewContainer.innerHTML = "";
                 previewContainer2.innerHTML = "";
+                if (insumos === "GenericLoad") {
+                    const response = await fetch('/api/pedidos');
+                    insumos = await response.json();
+                }   
+                if (!Array.isArray(insumos) || insumos.length === 0) {
+                    grid.innerHTML = '<p>No hay pedidos cargados todavía.</p>';
+                    return;
+                }
                 try {
                     const response = await fetch('/api/pedidos');
                     const pedidos = await response.json();
@@ -462,12 +573,12 @@
 
                     Ordenada.forEach(item => {
                         const card = document.createElement('div');
-                        card.className = 'inventory-item';
+                        card.className = 'inventory-item-og';
                         card.innerHTML = `
-                            <h3>${item.insumo}</h3>
+                            <h3>${item.insumo}</h3> <br>
                             <p>Cantidad: ${item.cantidad}</p>
                             <small>Área: ${item.area}</small>
-                            <p style="color: #a5a5a5; font-size: 12px;">Desde: ${new Date(item.fecha).toLocaleDateString()}</p>
+                            <p style="color: #a5a5a5; font-size: 12px;">Prestado: ${new Date(item.fecha).toLocaleDateString()}</p>
                             ${item.imagen ? `<button class="view-image-btn" data-image="${item.imagen}"> <img src="../media/pic.svg" alt="foto"></button>` : ''}
                         `;
                         grid.appendChild(card);
@@ -599,6 +710,58 @@
             overlay.addEventListener('click', (event) => {
                 if (event.target === overlay) {
                     overlay.classList.remove('active');
+                }
+            });
+            function renderOptions(lista, grid) {
+                grid.innerHTML = "";
+                if (lista.length === 0) {
+                    grid.innerHTML = '<p>Insumo no encontrado, crea uno nuevo.</p>';
+                    return;
+                }
+                lista.forEach(item => {
+                    const card = document.createElement('div');
+
+                    card.innerHTML = `
+                        <button class="item-desplegable" type = "button"
+                            onclick="selectOption('${item.insumo || item.objeto_specifico}', '${item._id}')">
+                            ${item.insumo || item.objeto_specifico}
+                        </button>
+                    `;
+
+                    grid.appendChild(card);
+                });
+            }
+            document.addEventListener('DOMContentLoaded', async () => {
+                const grid = document.getElementById('dropdown-options');
+                try {
+                    const response = await fetch('/api/insumo');
+                    const insumos = await response.json();
+                    const searchInput = document.getElementById('search-input');
+                    
+                    if (!Array.isArray(insumos) || insumos.length === 0) {
+                        grid.innerHTML = '<p>Estas buscando un insumo que no existe, primero crea uno.</p>';
+                        return;
+                    }
+                    renderOptions(insumos, grid);
+                    searchInput.addEventListener('input', () => {
+                            let filter = "";
+                            if (searchInput.value && searchInput.value.trim() !== "") {
+                                filter = searchInput.value.trim().toLowerCase();
+                            } else {
+                                filter = "";
+                            }
+
+                            const filtered = insumos.filter(item =>
+                                (item.insumo || item.objeto_specifico || '')
+                                .toLowerCase()
+                                .includes(filter)
+                            );
+                            renderOptions(filtered, grid);
+                    });
+
+                } catch (error) {
+                        console.error('Error al cargar insumos:', error);
+                        grid.innerHTML = '<p>Error al conectar.</p>';
                 }
             });
             const themeBtn = document.createElement('button');
