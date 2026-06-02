@@ -25,7 +25,7 @@
                         <option>Equipo técnico</option>
                     </datalist>
                 <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br> 
-                <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img src="./media/add_white.svg" alt=""> </button>
+                <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img class="AddOrderImage"> </button>
                 <div id="pedido-info" class="inventory-grid"></div>
                 <textarea name="descripcion" class="ButtonGeneric2" id="ped-descripcion" placeholder="Descripción del pedido" maxlength="500" required></textarea>
             </div>
@@ -79,8 +79,8 @@
                             <option>Equipo técnico</option>
                         </datalist>
                     <button type="button" onclick="UploadInBulk()" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br> 
-                    <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img src="./media/add_white.svg" alt=""> </button> <br> 
-                    <button type="button" onclick="RemoveBulkUploadInstance(this)" title="Eliminar Pedido" id="removeInstanceBtn" class="formAddBtn"> <img src="./media/remove_white.svg" alt=""> </button>
+                    <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img class="AddOrderImage"> </button> <br> 
+                    <button type="button" onclick="RemoveBulkUploadInstance(this)" title="Eliminar Pedido" id="removeInstanceBtn" class="formAddBtn"> <img class="RemoveOrderImage"> </button>
                     <div id="pedido-info" class="inventory-grid"></div>
                     <textarea name="descripcion" class="ButtonGeneric2" id="ped-descripcion" placeholder="Descripción del pedido" maxlength="500" required></textarea>
                 </form>

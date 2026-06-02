@@ -34,9 +34,11 @@
         function handleFile(file) {
                     if (file && file.type.startsWith("image/")) {
                         const reader = new FileReader();
+                        const DefaultImage = document.getElementById("FileUpload");
                         reader.onload = function (e) {
                             previewContainer.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image">`;
                             previewContainer.querySelector("img").style.display = "block";
+                            DefaultImage.style.display = "none";
                         };
                         reader.readAsDataURL(file);
                     } else {
@@ -69,7 +71,7 @@
                                     <a href="#" onclick="filterByCategory('libreria')">Librería</a>
                                     <a href="#" onclick="filterByCategory('limpieza')">Limpieza</a>
                                     <a href="#" onclick="filterByCategory('miscelaneo')">Misceláneo</a>
-                            </div>
+                                </div>
                             </div>
                             
                         </div>
@@ -107,10 +109,11 @@
                     <label>Subir imagen (opcional):</label> <br>
 
                     <label for="ped-imagen" class="ButtonFiles2" id="DropArea" style="width: 32px; height: 32px;" title="Subir imagen">
-                        <img src="../media/clip.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="32px">
+                        <div id="previewContainer"></div>
+                        <img src="../media/images-black.svg" id="FileUpload" class="ButtonSubmitImage" width="32px" height="32px">
                     </label>
 
-                    <div id="previewContainer"></div>
+                    
 
                     <input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0])">
                 </div>
@@ -432,8 +435,8 @@ document.getElementById("dropdown-content").classList.remove("dropdown-show");
 
             let html = `
                 <table class="history-table" style="width:100%; border: 2px solid #444; border-collapse: collapse; border-spacing: 0 20px;">
-                    <thead>
-                        <tr>
+                    <thead style="border: 1px solid #444;">
+                        <tr >
                             <th>Insumo</th>
                             <th>Categoría</th>
                             <th>Unidades</th>
