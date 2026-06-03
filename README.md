@@ -122,7 +122,16 @@ Agregada base para subida en masa a registro.
 Agregado buscador SELECT para solo poder realizar pedidos de objetos existentes en el inventario con buscador funcional, pero los botones y asi aun no funcionales. 
 pasando a colores blanco/violeta y negro/naranja? es la que va?
 
--- lista ultima vez actualizada 02/06
+03/06: 
+
+buscador select para pedido singular funcional 
+arreglado todo frontend de buscador select para pedidos en masa
+obviamente 3 mil cambios mas de diseño y asi etc etc etc 
+cambiados logos para adaptarse a modo oscuro/claro
+hay que agregar un boton de cerrar sesion en algun punto de la vida ok??????
+y quizas ver en que rol estas logeado pq asi es la q va o algo supongoooo asi piden
+
+-- lista ultima vez actualizada 03/06
 
   if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
     return res.status(401).json({ success: false, message: "No autorizado"});
