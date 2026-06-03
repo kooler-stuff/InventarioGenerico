@@ -9,7 +9,7 @@
         <link rel="icon" href="/media/icon.ico">
         <title>Realizar un pedido...</title>
     </head>
-    <body>
+    <body data-theme="dark">
         <div class="container container-main" id="main-container">
             <div style="display: flex;align-items:center; justify-content:space-between;gap: 15px;margin-bottom:15px;width:100%; margin-top: -80px; margin-bottom: 100px;"> 
                 <h1 class="titler1" style="margin:0;flex-shrink:0;">Realiza un pedido:</h1>
@@ -24,8 +24,8 @@
                         <option>Investigacion y desarrollo</option>
                         <option>Equipo técnico</option>
                     </datalist>
-                <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px;">Registrar</button> <br> 
-                <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img class="AddOrderImage"> </button>
+                <button type="submit" class="ButtonSubmit" style="flex: 1; min-width: 120px; border-radius: 10px; margin-top: 0px; max-height: 50px;">Registrar</button> <br> 
+                <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." style="margin-left: -10px; margin-right: 20px;" id="addInstanceBtn" class="formAddBtn"> <img class="AddOrderImage"> </button>
                 <div id="pedido-info" class="inventory-grid"></div>
                 <textarea name="descripcion" class="ButtonGeneric2" id="ped-descripcion" placeholder="Descripción del pedido" maxlength="500" required></textarea>
             </div>
