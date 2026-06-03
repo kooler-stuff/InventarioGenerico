@@ -5,22 +5,24 @@
     --bg-card: #1c1924;
     --image-submit-img: url(../media/clip.svg);
     --image-addorder-img: url(../media/add_white.svg);
+    --image-logo: url(../media/COM_Logo.png);
     --image-removeorder-img: url(../media/remove_white.svg);
     --text-primary: #ffffff;
     --text-secondary: #948fa3;
     --accent-color: #ffbb00;
-    --accent-hover: #a78bfa;
-    --accent-gradient: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
+    --accent-hover: #ff9100;
+    --scroll-bar: #d37f00;
+    --accent-gradient: linear-gradient(135deg, #d37f00 0%, #d47d11 100%);
     --border-color: rgb(224, 224, 224);
-    --navbar-color: #1c1924;
+    --navbar-color: #241f19;
     --navbar-border: rgba(255, 136, 0, 0.363);
     --container-color: rgba(77, 77, 77, 0.363); 
     --container-border: rgba(39, 39, 39, 0.363);
-    --input-bg: #221f2d;
+    --input-bg: #2d251f;
     --input-border: rgba(255, 255, 255, 0.12);
-    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 4px 12px rgba(163, 102, 62, 0.04);
+    --shadow-md: 0 12px 32px rgba(163, 99, 62, 0.08);
+    --shadow-lg: 0 24px 50px rgba(163, 102, 62, 0.12);
     
     /* Semantic Status Colors */
     --success-color: #10b981;
@@ -30,7 +32,7 @@
     --danger-color: #ef4444;
     --danger-bg: rgba(239, 68, 68, 0.6);
     --warning-color: #f59e0b;
-    --warning-bg: rgba(245, 158, 11, 0.6);
+    --warning-bg: rgba(255, 0, 0, 0.6);
     
     /* Border Radii */
     --radius-sm: 8px;
@@ -50,12 +52,14 @@ body[data-theme="light"] {
     --bg-secondary: #ffffff;
     --navbar-img-link: url("../media/COM_Logo.png");
     --image-submit-img: url(../media/clip-black.svg);
+    --image-logo: url(../media/3F_COM_ALTERNATIVO.png);
     --image-addorder-img: url(../media/add_white.svg);  
     --bg-card: #ffffff;
     --text-primary: #110f16;
     --text-secondary: #686278;
     --accent-color: #582056;
-    --accent-hover: #ff8800;
+    --accent-hover: #b109a8;
+    --scroll-bar: #582056;
     --accent-gradient: linear-gradient(135deg, #472f82 0%, #5c3ea3 100%);
     --border-color: rgba(58, 58, 58, 0.199);
     --border-strong-color: rgba(43, 43, 43, 0.5);
@@ -108,9 +112,10 @@ body {
 }
 ::-webkit-scrollbar-track {
     background: var(--bg-primary);
+
 }
 ::-webkit-scrollbar-thumb {
-    background: var(--border-color);
+    background: var(--scroll-bar);
     border-radius: var(--radius-pill);
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -194,7 +199,7 @@ body {
     padding: 20px;
     padding-top: 100px;
     padding-bottom: 100px;
-    margin-top: 12.5%;
+    margin-top: 5.5%;
     border-radius: 15px;
     display: flex;
     flex-direction: column;
@@ -288,6 +293,7 @@ body {
     border-radius: 50%;
     cursor: pointer;
     transition: all var(--transition-fast);
+    margin-top: 20px;
 }
 
 .ButtonFilter:hover {
@@ -751,6 +757,14 @@ body.light-theme .inventory-item > p {
     margin-left: 10px;
     height: 40px;
     width: 40px;
+    transition: var(--transition-normal);
+    cursor: pointer;
+}
+
+.formAddBtn:hover{
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    transform: translateY(-2px);
+    background: var(--accent-hover);
 }
 
 .formAddBtn img{
@@ -795,6 +809,12 @@ body.light-theme .inventory-item > p {
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
 }
 
+.nav-logo-image {
+    content: var(--image-logo);
+    width: 32px;
+    height: 32px;
+}
+
 .ButtonGenericStatus {
     width: 15%;
     min-width: 150px;
@@ -811,11 +831,11 @@ body.light-theme .inventory-item > p {
 .ButtonGeneric2
 {
     width: 100%;
-    padding: 10px;
-    margin: 10px 0;
+    padding: 15px;
+    margin: 5px 0;
     border: none;
-    border-radius: 5px;
-    background-color: #3d3d3d;
+    background-color: var(--input-bg);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     color: rgb(255, 255, 255);
     border: 2px solid rgb(145, 145, 145);
     font-size: 16px;
@@ -1245,6 +1265,7 @@ body.light-theme .inventory-item > p {
 .titler1 {
     margin-top: -50px;
     margin-bottom: 15px;
+    margin-left: 20px;
 }
 
 /* Configuracion y utilidades */
