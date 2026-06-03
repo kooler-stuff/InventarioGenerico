@@ -92,14 +92,16 @@
                         alert("Please upload a valid image file.");
                     }
                 }
-        function toggleDropdown() {
-            document.getElementById("dropdown-content").classList.toggle("dropdown-show");
+        function toggleDropdown(element) {
+            console.log(element);
+            console.log(element.parentNode);
+            element.parentNode.querySelector(".dropdown-content2").classList.toggle("dropdown-show");
         }
     </script>
 
     <body data-theme="light">
         <nav class="navbar">
-            <a href="../main_menu.html" class="nav-logo"><img src="../media/COM_Logo.png" alt="COM2"></a>
+            <a href="main_menu.html" class="nav-logo"><img class="nav-logo-image" style="max-width: 64px; max-height: 64px;" alt="COM2"></a>
             <a href="../main_menu.html">Inventario</a>
             <a href="registro.html" class="nav-currently-selected">Registro</a>
         </nav>
@@ -121,10 +123,10 @@
                 <div id="pedidos-holder"> 
                     <form id="form-pedido" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
                     <div class="dropdown">
-                        <label for="ped-insumo" class="ButtonGeneric" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
-                            <span id="insumo-elegido">Insumo</span>
+                        <label for="ped-insumo" class="ButtonGenericStatus" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
+                            <span class="insumo-elegido">Insumo</span>
                         </label> 
-                        <input type="button" onclick="toggleDropdown()"  id="ped-insumo" name="insumo" style="display: none;">
+                        <input type="button" onclick="toggleDropdown(this)" class="valor-insumo" id="ped-insumo" name="insumo" style="display: none;">
                             <div id="dropdown-content" class="dropdown-content2">
                                 <input type="text" id="search-input" class="ButtonGeneric" placeholder="Buscar insumo...">
                                 <div id="dropdown-options"> </div>
@@ -250,8 +252,13 @@
                 }
             })
 
-            document.getElementById('form-pedido').addEventListener('submit', async (e) => {
-                e.preventDefault();
+            async function UploadInBulk() {
+                const SeccionPedidos = document.getElementById("pedidos"); 
+                const formularios = SeccionPedidos.querySelectorAll('.formGeneric');
+                
+            }
+
+            async function UploadSingle() {
                 try {
                     const formData = new FormData();
                     formData.append('insumo', document.getElementById('ped-insumo').value);
@@ -279,6 +286,15 @@
                     console.error('Error:', error);
                     alert('Error al conectar.');
                 }
+            }
+
+            document.getElementById('form-pedido').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (ExtraUploadsCreated === 0) {
+                    UploadSingle();
+                    return;
+                } 
+                UploadInBulk();               
             });
 
             document.getElementById('form-prestado').addEventListener('submit', async (e) => {
@@ -333,6 +349,22 @@
                 }
             }
 
+                        async function fetchInsumos(grid) {
+                try {
+                    const response = await fetch('/api/insumo');
+                    const insumos = await response.json();
+                    
+                    if (!Array.isArray(insumos) || insumos.length === 0) {
+                        grid.innerHTML = '<p>Estas buscando un insumo que no existe, primero crea uno.</p>';
+                        return;
+                    }
+                    initializeDropdown(grid, insumos);
+                } catch (error) {
+                        console.error('Error al cargar insumos:', error);
+                        grid.innerHTML = '<p>Error al conectar.</p>';
+                }
+            }
+
             function OrdenarTabla(tabla) {
                 const TablaOrdenada = tabla.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
                 return TablaOrdenada 
@@ -347,15 +379,15 @@
             function AddBulkUploadInstance(){
                 const BasicForm = document.createElement('div');
                     BasicForm.innerHTML = `
-                    <form id="form-pedido" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
-                        <div class="dropdown">
-                            <label for="ped-insumo" class="ButtonGeneric" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
-                            <span id="insumo-elegido">Insumo</span>
+                    <form id="form-pedido${ExtraUploadsCreated}" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
+                         <div class="dropdown">
+                        <label for="ped-insumo${ExtraUploadsCreated}" class="ButtonGeneric" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
+                            <span class="insumo-elegido">Insumo</span>
                         </label> 
-                        <input type="button" onclick="toggleDropdown()"  id="ped-insumo" name="insumo" style="display: none;">
+                        <input type="button" onclick="toggleDropdown(this)" class="valor-insumo" id="ped-insumo${ExtraUploadsCreated}" name="insumo" style="display: none;">
                             <div id="dropdown-content" class="dropdown-content2">
-                                <input type="text" id="search-bar" class="ButtonGeneric" placeholder="Buscar insumo..." onkeyup="filterOptions()">
-                                <div id="dropdown-options"> </div>
+                                <input type="text" id="search-input" class="ButtonGeneric" placeholder="Buscar insumo...">
+                                <div class="dropdown-options"> </div>
                             </div>
                         </div>
                         
@@ -373,61 +405,17 @@
                         <button type="button" onclick="RemoveBulkUploadInstance(this)" title="Eliminar Pedido" id="removeInstanceBtn" class="formAddBtn"> <img class="RemoveOrderImage"> </button> 
                     </form>
                     `;
+                const button = BasicForm.querySelector(".valor-insumo");
+                const dropdown = BasicForm.querySelector(".dropdown-options");
+                button.addEventListener("click", async() => {
+                    await fetchInsumos(dropdown);
+                });
                 PedidosHolder.appendChild(BasicForm);
                 console.log("extraForm"+ExtraUploadsCreated);
                 BasicForm.dataset.id = "extraForm"+ExtraUploadsCreated;
                 ExtraUploadsCreated += 1; 
             }
 
-            async function FiltrarInsumos(){
-                const grid = document.getElementById('dropdown-options');
-                grid.innerHTML = "";
-                try {
-                    const response = await fetch('/api/insumo');
-                    const insumos = await response.json();
-                    const searchInput = document.getElementById('search-input');
-                    
-                    if (!Array.isArray(insumos) || insumos.length === 0) {
-                        grid.innerHTML = '<p>Estas buscando un insumo que no existe, primero crea uno.</p>';
-                        return;
-                    }
-                    if (searchInput) {
-
-                        searchInput.addEventListener('input', () => {
-                            let filter = "";
-                            if (searchInput.value && searchInput.value.trim() !== "") {
-                                filter = searchInput.value.trim().toLowerCase();
-                            } else {
-                                filter = "";
-                            }
-
-                            const filtered = insumos.filter(item =>
-                                (item.insumo || item.objeto_specifico || '')
-                                .toLowerCase()
-                                .includes(filter)
-                            );
-                    });
-
-                    const Ordenada = OrdenarTabla(insumos)
-
-                    Ordenada.forEach(item => {
-                        const card = document.createElement('div');
-                        let itemId = item._id;
-                        //  card.className = 'inventory-item';
-                        // <h3>${item._id}</h3> asi le sacas la id 
-                        card.innerHTML = `
-                        <button class="item-desplegable" type = "button" onclick="selectOption('${item.insumo || item.objeto_specifico}', '${item._id}')">${item.insumo || item.objeto_specifico} </button>
-                        `;
-                        grid.appendChild(card);
-                    });
-                    } 
-                } catch (error) {
-                        console.error('Error al cargar insumos:', error);
-                        grid.innerHTML = '<p>Error al conectar.</p>';
-                }
-            }
-                
-                
             async function loadPedidos(insumos) {
                 const grid = document.getElementById('pedidos-grid');
                 grid.innerHTML = '';
@@ -723,46 +711,57 @@
 
                     card.innerHTML = `
                         <button class="item-desplegable" type = "button"
-                            onclick="selectOption('${item.insumo || item.objeto_specifico}', '${item._id}')">
+                            >
                             ${item.insumo || item.objeto_specifico}
                         </button>
                     `;
+                    const btn = card.querySelector('button');
+                        btn.addEventListener('click', () => {
+                            const mainGrid = grid.parentNode.parentNode;
+                            var GridLabel = mainGrid.querySelector('label[for="ped-insumo"]');
+                            if (!GridLabel){
+                                GridLabel = mainGrid.querySelector('.valor-insumo');
+                            };
+                            var elegido = GridLabel.querySelector('.insumo-elegido');
+                            if (!elegido){
+                                var btnGeneric = mainGrid.querySelector(".ButtonGeneric");
+                                console.log(btnGeneric);
+                                elegido = btnGeneric.querySelector('.insumo-elegido');
+                            }
 
+                            console.log(mainGrid);
+                            elegido.innerText = item.insumo || item.objeto_specifico;
+                            mainGrid.querySelector('.valor-insumo').value = item.insumo || item.objeto_specifico;
+                            toggleDropdown(mainGrid);
+                        });
                     grid.appendChild(card);
                 });
             }
+            function initializeDropdown(dropdown, insumos) {
+                const mainGrid = dropdown.parentNode;
+                // console.log(mainGrid);
+                // console.log(dropdown);
+                const searchInput = mainGrid.querySelector('.ButtonGeneric');
+                const optionsGrid = dropdown;
+
+                renderOptions(insumos, optionsGrid);
+
+                searchInput.addEventListener('input', () => {
+                    const filter = searchInput.value.toLowerCase();
+
+                    const filtered = insumos.filter(item =>
+                        (item.insumo || item.objeto_specifico || '')
+                            .toLowerCase()
+                            .includes(filter)
+                    );
+
+                    renderOptions(filtered, optionsGrid);
+                });
+            }
+
             document.addEventListener('DOMContentLoaded', async () => {
                 const grid = document.getElementById('dropdown-options');
-                try {
-                    const response = await fetch('/api/insumo');
-                    const insumos = await response.json();
-                    const searchInput = document.getElementById('search-input');
-                    
-                    if (!Array.isArray(insumos) || insumos.length === 0) {
-                        grid.innerHTML = '<p>Estas buscando un insumo que no existe, primero crea uno.</p>';
-                        return;
-                    }
-                    renderOptions(insumos, grid);
-                    searchInput.addEventListener('input', () => {
-                            let filter = "";
-                            if (searchInput.value && searchInput.value.trim() !== "") {
-                                filter = searchInput.value.trim().toLowerCase();
-                            } else {
-                                filter = "";
-                            }
-
-                            const filtered = insumos.filter(item =>
-                                (item.insumo || item.objeto_specifico || '')
-                                .toLowerCase()
-                                .includes(filter)
-                            );
-                            renderOptions(filtered, grid);
-                    });
-
-                } catch (error) {
-                        console.error('Error al cargar insumos:', error);
-                        grid.innerHTML = '<p>Error al conectar.</p>';
-                }
+                await fetchInsumos(grid);
             });
             const themeBtn = document.createElement('button');
             themeBtn.innerHTML = '🌓';
