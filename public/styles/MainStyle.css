@@ -20,9 +20,13 @@
     --container-border: rgba(39, 39, 39, 0.363);
     --input-bg: #2d251f;
     --input-border: rgba(255, 255, 255, 0.12);
+    --search-input-bg: #5c5c5c;
+    --search-input-border: #ff9100;
+    --search-text-color: #ffffff;
     --shadow-sm: 0 4px 12px rgba(163, 102, 62, 0.04);
     --shadow-md: 0 12px 32px rgba(163, 99, 62, 0.08);
     --shadow-lg: 0 24px 50px rgba(163, 102, 62, 0.12);
+    --user-role-border: rgba(255, 255, 255, 0.096);
     
     /* Semantic Status Colors */
     --success-color: #10b981;
@@ -64,12 +68,16 @@ body[data-theme="light"] {
     --border-color: rgba(58, 58, 58, 0.199);
     --border-strong-color: rgba(43, 43, 43, 0.5);
     --input-bg: #f1eff5;
+    --search-input-bg: #ffffff;
+    --search-input-border: #999999;
+    --search-text-color: #000000;
     --input-border: rgba(92, 62, 163, 0.15);
     --shadow-sm: 0 4px 12px rgba(92, 62, 163, 0.04);
     --shadow-md: 0 12px 32px rgba(92, 62, 163, 0.08);
     --shadow-lg: 0 24px 50px rgba(92, 62, 163, 0.12);
     --navbar-color: rgba(134, 134, 134, 0.123);
     --navbar-border: rgba(43, 43, 43, 0.363);
+    --user-role-border: rgba(0, 0, 0, 0.04);
 }
 
 /* System-level auto preference fallback if no explicit theme class is added */
@@ -169,6 +177,39 @@ body {
     font-weight: 700;
 }
 
+.navbar .nav-user-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.navbar .nav-user-controls #user-role {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--user-role-border);
+}
+
+.navbar .nav-user-controls .nav-logout {
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 14px;
+    padding: 6px 10px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.navbar .nav-user-controls .nav-logout:hover {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
 .navbar a.nav-currently-selected::after {
     content: '';
     position: absolute;
@@ -259,8 +300,8 @@ body {
     padding: 12px 18px;
     font-size: 14px;
     color: var(--text-primary);
-    background-color: var(--input-bg);
-    border: 1px solid var(--input-border);
+    background-color: var(--search-input-bg);
+    border: 1px solid var(--search-input-border);
     border-radius: var(--radius-pill);
     transition: all var(--transition-fast);
 }
@@ -273,7 +314,7 @@ body {
 }
 
 .SearchBar::placeholder {
-    color: var(--text-secondary);
+    color: var(--search-text-color);
     opacity: 0.7;
 }
 
@@ -427,6 +468,35 @@ body.light-theme .ButtonFilterImage {
     margin-bottom: 40px;
 }
 
+.pagination-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.pagination-btn {
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.pagination-btn:hover {
+    background: var(--accent-color);
+    color: white;
+}
+
+.pagination-btn.active {
+    background: var(--accent-color);
+    color: white;
+    pointer-events: none;
+}
+
 /* --- Refined Modern Inventory Cards --- */
 .inventory-item-og {
     background-color: var(--bg-card);
@@ -491,6 +561,20 @@ body.light-theme .inventory-item > p {
     border-radius: var(--radius-md);
     margin-bottom: 16px;
     transition: transform var(--transition-normal);
+}
+
+.inventory-image-placeholder {
+    width: 100%;
+    min-height: 200px;
+    background-color: var(--input-bg);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 12px;
 }
 
 .inventory-item:hover .inventory-image {
@@ -816,8 +900,10 @@ body.light-theme .inventory-item > p {
 }
 
 .ButtonGenericStatus {
-    width: 15%;
-    min-width: 150px;
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    flex: 0 0 220px !important;
     padding: 12px 16px;
     background-color: var(--input-bg);
     border: 1px solid var(--input-border);
@@ -826,6 +912,20 @@ body.light-theme .inventory-item > p {
     font-size: 14px;
     transition: all var(--transition-fast);
     margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+}
+
+.ButtonGenericStatus .insumo-elegido {
+    display: inline-block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
 }
 
 .ButtonGeneric2
@@ -1056,6 +1156,17 @@ body.light-theme .inventory-item > p {
     margin-top: 12px;
     margin-left: -5%;
     border: 1px solid var(--border-color);
+}
+
+.imgholder img {
+    border-radius: 5px;
+    display: block;
+    margin-top: 2rem;
+    width: auto;
+    max-width: 500px;
+    max-height: 400px;
+    margin-bottom: 20px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px, rgba(0, 0, 0, 0.05) 0px 5px 10px;
 }
 
 #imgholder img {
