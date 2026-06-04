@@ -51,13 +51,17 @@
             <a href="main_menu.html" class="nav-logo"><img class="nav-logo-image" style="max-width: 64px; max-height: 64px;" alt="COM2"></a>
             <a href="main_menu.html" class="nav-currently-selected">Inventario</a>
             <a href="pages/registro.html">Registro</a>
+            <div class="nav-user-controls">
+                <span id="user-role">Rol: cargando...</span>
+                <button id="logout-btn" class="nav-logout">Cerrar sesión</button>
+            </div>
         </nav>
         <div id="MainContainer" class="container container-main"> 
                 <div class="container-navbar">
                     <h1 class="titler1" style="margin:0;flex-shrink:0; margin-left: 20px;">Inventario</h1>
                     <div> 
                         <div style="display: flex; flex-direction: row; "> 
-                            <input id="search-input"  type="text" class="SearchBar" placeholder="Buscar por nombre..." style="max-width:320px;margin:0; margin-top: 10px; margin-top: 20px; background-color: white";>
+                            <input id="search-input"  type="text" class="SearchBar" placeholder="Buscar por nombre..." style="max-width:320px;margin:0; margin-top: 10px; margin-top: 20px; background-color: none";>
                             <div class="dropdown"> 
                                 <label for="filter" class="ButtonFilter" style="display: inline-block; align-items: center; max-width: 30px; max-height: 30px;" title="Filtrar por categoría">
                                     <img id="ButtonFilterIMG" class="ButtonFilterImage" width="24px" height="24px">
@@ -84,13 +88,23 @@
                     </div>
                 </div>
                 <div id="inventory-grid" class="inventory-grid2 active"></div>
+                <div id="inventario-pagination" class="pagination-container"></div>
                 <div id="historial" class="history-list"> </div>
+                <div id="historial-pagination" class="pagination-container"></div>
         </div>
 
     </body>
     <script>
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
+
+    let inventoryData = [];
+    let currentInventoryPage = 1;
+    let inventoryPerPage = 20;
+
+    let historialData = [];
+    let currentHistorialPage = 1;
+    let historialPerPage = 10;
 
     const OverlayCreateElementHtml = `
         <button type="button" class="popup-close">×</button>
@@ -194,6 +208,10 @@ document.getElementById("dropdown-content").classList.remove("dropdown-show");
             const permLvl = await response.json();
             console.log(response);
             console.log(permLvl);
+            const userRoleLabel = document.getElementById('user-role');
+            if (userRoleLabel) {
+                userRoleLabel.textContent = permLvl.permsLevel === 'admin' ? 'Rol: Admin' : 'Rol: Usuario común';
+            }
             if (permLvl.success && permLvl.permsLevel === "user"){
                 console.log("bot");
                 window.location.href = "menu_basic.html";
@@ -302,6 +320,111 @@ document.getElementById("dropdown-content").classList.remove("dropdown-show");
         }
     }
 
+    function renderPagination(containerId, currentPage, totalPages, callbackName) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        let html = '';
+        if (currentPage > 1) {
+            html += `<button type="button" class="pagination-btn" onclick="${callbackName}(${currentPage - 1})">Anterior</button>`;
+        }
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button type="button" class="pagination-btn${i === currentPage ? ' active' : ''}" onclick="${callbackName}(${i})">${i}</button>`;
+        }
+        if (currentPage < totalPages) {
+            html += `<button type="button" class="pagination-btn" onclick="${callbackName}(${currentPage + 1})">Siguiente</button>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function renderInventoryPage(page) {
+        const inventoryGrid = document.getElementById('inventory-grid');
+        const pagination = document.getElementById('inventario-pagination');
+        inventoryGrid.innerHTML = '';
+
+        if (!Array.isArray(inventoryData) || inventoryData.length === 0) {
+            inventoryGrid.innerHTML = '<p>No hay insumos cargados todavía.</p>';
+            if (pagination) pagination.innerHTML = '';
+            return;
+        }
+
+        const totalPages = Math.ceil(inventoryData.length / inventoryPerPage);
+        const start = (page - 1) * inventoryPerPage;
+        const pageItems = inventoryData.slice(start, start + inventoryPerPage);
+
+        pageItems.forEach(item => {
+            const itemCard = document.createElement('div');
+            itemCard.className = 'inventory-item';
+            itemCard.dataset.id = item._id;
+            itemCard.innerHTML = `
+                <p>Stock: ${item.unidades}</p>
+                ${item.imagen ? `<img src="${item.imagen}" alt="foto" class="inventory-image">` : `<div class="inventory-image-placeholder">No hay imagen disponible.</div>`}
+
+                <h3 class="itemname">${item.insumo}</h3>
+
+                <small>
+                    Categoría: <br> ${item.categoria}
+                </small> <br>
+                <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-left: 10px;">
+                    <button class="btn-increase">
+                        <img src="media/add_white.svg" alt="Agregar">
+                    </button>
+                    <button class="btn-decrease">
+                        <img src="media/remove_white.svg" alt="Restar">
+                    </button>
+                    <button class="btn-delete">
+                        <img src="media/trash-white.svg" alt="Eliminar">
+                    </button>
+                </div>
+            `;
+
+            const addButton = itemCard.querySelector('.btn-increase');
+            addButton.addEventListener('click', () => {
+                enterEditMode(itemCard, item, "Agregar");
+            });
+
+            const decreaseButton = itemCard.querySelector('.btn-decrease');
+            decreaseButton.addEventListener('click', () => {
+                enterEditMode(itemCard, item, "Quitar");
+            });
+
+            const deleteButton = itemCard.querySelector('.btn-delete');
+            deleteButton.addEventListener('click', async () => {
+                const confirmed = confirm(`¿Eliminar el insumo "${item.insumo}"?`);
+                if (!confirmed) return;
+                try {
+                    const deleteResponse = await fetch('/api/borrarinsumo', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ id: item._id })
+                    });
+                    const deleteResult = await deleteResponse.json();
+                    if (deleteResponse.ok && deleteResult.success) {
+                        await renderInventory("GenericLoad");
+                    } else {
+                        alert('No se pudo eliminar el insumo.');
+                    }
+                } catch (error) {
+                    console.error('Error al borrar:', error);
+                    alert('Ocurrió un error al intentar eliminar el insumo.');
+                }
+            });
+
+            inventoryGrid.appendChild(itemCard);
+        });
+
+        renderPagination('inventario-pagination', page, totalPages, 'goToInventoryPage');
+        currentInventoryPage = page;
+    }
+
+    function goToInventoryPage(page) {
+        renderInventoryPage(page);
+    }
+
     async function renderInventory(insumos) {
 
         const list = document.getElementById('historial');
@@ -320,96 +443,72 @@ document.getElementById("dropdown-content").classList.remove("dropdown-show");
             if (!Array.isArray(insumos) || insumos.length === 0) {
 
                 inventoryGrid.innerHTML = '<p>No hay insumos cargados todavía.</p>';
+                const pagination = document.getElementById('inventario-pagination');
+                if (pagination) pagination.innerHTML = '';
                 return;
             }
 
-            insumos.forEach(item => {
-
-                const itemCard = document.createElement('div');
-
-                itemCard.className = 'inventory-item';
-                itemCard.dataset.id = item._id;
-
-                itemCard.innerHTML = `
-                    <p>Stock: ${item.unidades}</p>
-                    ${item.imagen ? `<img src="${item.imagen}" alt="foto" class="inventory-image">` : ''}
-
-                    <h3 class="itemname">${item.insumo}</h3>
-
-                    <small>
-                        Categoría: <br> ${item.categoria}
-                    </small> <br>
-                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-left: 10px;">
-                        <button class="btn-increase">
-                            <img src="media/add_white.svg" alt="Agregar">
-                        </button>
-
-                        <button class="btn-decrease">
-                            <img src="media/remove_white.svg" alt="Restar">
-                        </button>
-
-                        <button class="btn-delete">
-                            <img src="media/trash-white.svg" alt="Eliminar">
-                        </button>
-                    </div>
-                `;
-
-                const addButton = itemCard.querySelector('.btn-increase');
-
-                addButton.addEventListener('click', () => {
-                    enterEditMode(itemCard, item, "Agregar");
-                });
-
-                const decreaseButton = itemCard.querySelector('.btn-decrease');
-
-                decreaseButton.addEventListener('click', () => {
-                    enterEditMode(itemCard, item, "Quitar");
-                });
-
-                const deleteButton = itemCard.querySelector('.btn-delete');
-
-                deleteButton.addEventListener('click', async () => {
-
-                    const confirmed = confirm(`¿Eliminar el insumo "${item.insumo}"?`);
-
-                    if (!confirmed) return;
-
-                    try {
-
-                        const deleteResponse = await fetch('/api/borrarinsumo', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ id: item._id })
-                        });
-
-                        const deleteResult = await deleteResponse.json();
-
-                        if (deleteResponse.ok && deleteResult.success) {
-
-                            await renderInventory("GenericLoad");
-
-                        } else {
-
-                            alert('No se pudo eliminar el insumo.');
-                        }
-
-                    } catch (error) {
-
-                        console.error('Error al borrar:', error);
-                        alert('Ocurrió un error al intentar eliminar el insumo.');
-                    }
-                });
-
-                inventoryGrid.appendChild(itemCard);
-            });
+            inventoryData = OrdenarTabla(insumos);
+            currentInventoryPage = 1;
+            renderInventoryPage(currentInventoryPage);
 
         } catch (error) {
 
             console.error('Error al cargar los datos:', error);
             inventoryGrid.innerHTML = '<p>Error al conectar con el servidor.</p>';
         }
+    }
+
+    function renderHistorialPage(page) {
+        const list = document.getElementById('historial');
+        const pagination = document.getElementById('historial-pagination');
+        list.innerHTML = '';
+
+        if (!Array.isArray(historialData) || historialData.length === 0) {
+            list.innerHTML = '<p>No hay registros de cambios.</p>';
+            if (pagination) pagination.innerHTML = '';
+            return;
+        }
+
+        const totalPages = Math.ceil(historialData.length / historialPerPage);
+        const start = (page - 1) * historialPerPage;
+        const pageItems = historialData.slice(start, start + historialPerPage);
+
+        let html = `
+            <table class="history-table" style="width:100%; border: 2px solid #444; border-collapse: collapse; border-spacing: 0 20px;">
+                <thead style="border: 1px solid #444;">
+                    <tr >
+                        <th>Insumo</th>
+                        <th>Categoría</th>
+                        <th>Unidades</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        pageItems.forEach(item => {
+            html += `
+                <tr style="border: 1px solid #444; padding: 20px;">
+                    <td class="inventory-registry">${item.insumo}</td>
+                    <td class="inventory-registry">${item.categoria}</td>
+                    <td class="inventory-registry">${item.unidades}</td>
+                    <td class="inventory-registry">${item.accion}</td>
+                    <td class="inventory-registry">${new Date(item.fecha).toLocaleDateString()}</td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+
+        list.innerHTML = html;
+        renderPagination('historial-pagination', page, totalPages, 'goToHistorialPage');
+        currentHistorialPage = page;
+    }
+
+    function goToHistorialPage(page) {
+        renderHistorialPage(page);
     }
 
     async function loadHistorialInventario() {
@@ -424,43 +523,9 @@ document.getElementById("dropdown-content").classList.remove("dropdown-show");
             const response = await fetch('/api/historial-inventario');
             const historial = await response.json();
 
-            let TablaOrdenada = OrdenarTabla(historial);
-
-            if (!Array.isArray(historial) || historial.length === 0) {
-
-                list.innerHTML = '<p>No hay registros de cambios.</p>';
-                return;
-            }
-
-            let html = `
-                <table class="history-table" style="width:100%; border: 2px solid #444; border-collapse: collapse; border-spacing: 0 20px;">
-                    <thead style="border: 1px solid #444;">
-                        <tr >
-                            <th>Insumo</th>
-                            <th>Categoría</th>
-                            <th>Unidades</th>
-                            <th>Tipo</th>
-                            <th>Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            TablaOrdenada.forEach(item => {
-                html += `
-                    <tr style="border: 1px solid #444; padding: 20px;">
-                        <td class="inventory-registry">${item.insumo}</td>
-                        <td class="inventory-registry">${item.categoria}</td>
-                        <td class="inventory-registry">${item.unidades}</td>
-                        <td class="inventory-registry">${item.accion}</td>
-                        <td class="inventory-registry">${new Date(item.fecha).toLocaleDateString()}</td>
-                    </tr>
-                `;
-            });
-
-            html += '</tbody></table>';
-
-            list.innerHTML = html;
+            historialData = OrdenarTabla(historial);
+            currentHistorialPage = 1;
+            renderHistorialPage(currentHistorialPage);
 
         } catch (error) {
 
@@ -651,17 +716,64 @@ document.getElementById("dropdown-content").classList.remove("dropdown-show");
         
     });
 
+    function applySavedTheme() {
+        const savedTheme = localStorage.getItem('theme-mode');
+        if (savedTheme === 'light' || savedTheme === 'dark') {
+            document.body.setAttribute('data-theme', savedTheme);
+        }
+    }
+
+    function toggleTheme() {
+        const nextTheme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', nextTheme);
+        localStorage.setItem('theme-mode', nextTheme);
+    }
+
+    applySavedTheme();
+
+    async function logout() {
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const result = await response.json();
+            if (result.success) {
+                window.location.href = result.redirect || '/';
+            } else {
+                alert('No se pudo cerrar sesión.');
+            }
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+            alert('Error al cerrar sesión.');
+        }
+    }
+
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
+
     const themeBtn = document.createElement('button');
     themeBtn.innerHTML = '🌓';
     themeBtn.className = 'theme-toggle-widget';
     document.body.appendChild(themeBtn);
 
-    themeBtn.addEventListener('click', () => {
-        if (document.body.getAttribute('data-theme') === 'light') {
-            document.body.setAttribute('data-theme', 'dark');
+    const mediaQuery = window.matchMedia('(max-width: 900px)');
+
+    function screenSizeChange(e) {
+        if (e.matches) {
+            inventoryPerPage = 12;
+            historialPerPage = 20;
         } else {
-            document.body.setAttribute('data-theme', 'light');
+            inventoryPerPage = 20;
+            historialPerPage = 50;
         }
-    });
+        renderInventory("GenericLoad")
+    }
+
+    screenSizeChange(window.screen.height);
+    mediaQuery.addEventListener('change', screenSizeChange);   
+    themeBtn.addEventListener('click', toggleTheme);
 </script>
 </html>
