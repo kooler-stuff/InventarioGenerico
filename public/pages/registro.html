@@ -74,24 +74,24 @@
     </head>
 
     <script>
-        function handleFile(file, container) {
-            let SelectedContainer = {
-            1: previewContainer,
-            2: previewContainer2
-            }[container];
-            console.log(container);
-            console.log(SelectedContainer.classList);
-                    if (file && file.type.startsWith("image/")) {
-                        const reader = new FileReader();
-                        reader.onload = function (e) {
-                            SelectedContainer.innerHTML = `<h1>Vista previa de imagen subida:</h1> <img src="${e.target.result}" alt="Uploaded Image">`;
-                            SelectedContainer.querySelector("img").style.display = "block";
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        alert("Please upload a valid image file.");
-                    }
-                }
+        function handleFile(input, previewId) {
+            const file = input.files[0];
+            const SelectedContainer = document.getElementById(previewId);
+            if (!SelectedContainer) {
+                console.warn('Preview container no encontrado:', previewId);
+                return;
+            }
+            if (file && file.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    SelectedContainer.innerHTML = `<h1>Vista previa de imagen subida:</h1> <img src="${e.target.result}" alt="Uploaded Image">`;
+                    SelectedContainer.querySelector("img").style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert("Please upload a valid image file.");
+            }
+        }
         function toggleDropdown(element) {
             console.log(element);
             console.log(element.parentNode);
@@ -104,6 +104,10 @@
             <a href="main_menu.html" class="nav-logo"><img class="nav-logo-image" style="max-width: 64px; max-height: 64px;" alt="COM2"></a>
             <a href="../main_menu.html">Inventario</a>
             <a href="registro.html" class="nav-currently-selected">Registro</a>
+            <div class="nav-user-controls">
+                <span id="user-role">Rol: cargando...</span>
+                <button id="logout-btn" class="nav-logout">Cerrar sesión</button>
+            </div>
         </nav>
         <div class="container container-main" id="MainContainer">
             <div class="container-navbar"> 
@@ -124,18 +128,21 @@
                     <form id="form-pedido" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
                     <div class="dropdown">
                         <label for="ped-insumo" class="ButtonGenericStatus" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
-                            <span class="insumo-elegido">Insumo</span>
+                            <span class="insumo-elegido" name="insumo">Insumo</span>
                         </label> 
-                        <input type="button" onclick="toggleDropdown(this)" class="valor-insumo" id="ped-insumo" name="insumo" style="display: none;">
+                        <input type="button" onclick="toggleDropdown(this)" class="valor-insumo" id="ped-insumo"  style="display: none;">
                             <div id="dropdown-content" class="dropdown-content2">
                                 <input type="text" id="search-input" class="ButtonGeneric" placeholder="Buscar insumo...">
                                 <div id="dropdown-options"> </div>
                             </div>
                         </div>
                         
-                        <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
-                        <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
-                        <label for="ped-imagen" class="ButtonFiles" style="max-width: 32px;" title="Subir imagen"><img id="FileUploadOrdered" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 1)">
+                        <input type="number" id="ped-cantidad" name="cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
+                        <input type="text" id="ped-area" maxlength="40" name="area" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
+                        <label for="ped-imagen" class="ButtonFiles" name="imagen" style="max-width: 32px;" title="Subir imagen">
+                            <img id="FileUploadOrdered" class="ButtonSubmitImage" width="32px" height="32px">
+                        </label>
+                        <input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="handleFile(this, 'imgholder')">
                         <button type="submit" class="ButtonSubmit" style="flex: 1; margin-top: 0px; min-width: 120px; border-radius: 10px; max-height: 50px;">Registrar</button>
                         <div id="spacier" class="form-spacer"></div>
                         <select name="estado" id="ped-estado" class="ButtonGenericStatus" title="Seleccione el estado del pedido">
@@ -149,6 +156,7 @@
                 </div>  
                 
                 <div id="pedidos-grid" class="inventory-grid"></div>
+                <div id="pedidos-pagination" class="pagination-container"></div>
             </div>
 
             <div id="prestados" class="tab-content">
@@ -157,12 +165,13 @@
                     <input type="text" id="pres-insumo" maxlength="300" class="ButtonGeneric" placeholder="Insumo" title="Indique el nombre del insumo" required style="flex: 1; min-width: 150px;">
                     <input type="number" id="pres-cantidad" class="ButtonGeneric" placeholder="Cantidad" title="Indique la cantidad en números" required style="flex: 1; min-width: 100px;">
                     <input type="text" id="pres-area" class="ButtonGeneric" placeholder="Área" title="Seleccione el area a la que se le fué prestado el insumo" required style="flex: 1; min-width: 150px;">
-                    <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUploadLent" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 2)">
+                    <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUploadLent" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*" onchange="handleFile(this, 'imgholder2')">
                     <button type="submit" class="ButtonSubmit" style="flex: 1; margin-top: 0px; min-width: 120px; border-radius: 10px; max-height: 50px;">Registrar</button>    
                 </form>
                 <div id="imgholder2" class="imgholder"> </div>
 
                 <div id="prestados-grid" class="inventory-grid"></div>
+                <div id="prestados-pagination" class="pagination-container"></div>
             </div>
 
             <div id="pedidos-misc" class="tab-content">
@@ -173,11 +182,12 @@
             <div id="historial" class="tab-content">
                 <h2>Historial de Préstamos</h2>
                 <div id="historial-list" class="inventory-list"></div>
+                <div id="historial-pagination" class="pagination-container"></div>
             </div>
         </div>
             <div id="description-sidebar" class="sidebar">
             <div class="sidebar-content">
-                <button type="button" class="sidebar-close" id="sidebar-close">×</button>
+                <button type="button" class="sidebar-close" id="sidebar-close">×me</button>
                 
                 <div class="sidebar-body">
                     <h1 id="sidebar-titulo" class="sidebar-title">Nombre del Producto</h1>
@@ -206,7 +216,42 @@
             const previewContainer = document.getElementById("imgholder");
             const previewContainer2 = document.getElementById("imgholder2");
             const PedidosHolder = document.getElementById("pedidos-holder");
-            let ExtraUploadsCreated = 0; 
+
+            let CurrentPage = "pedidos"
+            let ExtraUploadsCreated = 0;
+
+            let pedidosData = [];
+            let currentPedidosPage = 1;
+            let pedidosPerPage = 20;
+
+            let prestadosData = [];
+            let currentPrestadosPage = 1;
+            let prestadosPerPage = 20;
+
+            let historialData = [];
+            let currentHistorialPage = 1;
+            let historialPerPage = 50;
+
+            function ChoosePageLoad(state){
+                switch(state){
+                        case "pedidos":
+                            loadPedidos("GenericLoad");
+                            currentPage = "pedidos";
+                            break; 
+                        case "prestados":
+                            loadPrestados();
+                            currentPage = "prestados";
+                            break; 
+                        case "historial": 
+                            loadHistorial();
+                            currentPage = "historial";
+                            break;
+                        case "pedidos-misc": 
+                            loadPedidosMisc(); 
+                            currentPage = "pedidos-misc";
+                            break; 
+                    }
+            }
 
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -215,20 +260,7 @@
                     
                     btn.classList.add('active');
                     document.getElementById(btn.dataset.tab).classList.add('active');
-                    switch(btn.dataset.tab){
-                        case "pedidos":
-                            loadPedidos("GenericLoad");
-                            break; 
-                        case "prestados":
-                            loadPrestados();
-                            break; 
-                        case "historial": 
-                            loadHistorial();
-                            break;
-                        case "pedidos-misc": 
-                            loadPedidosMisc(); 
-                            break; 
-                    }
+                    ChoosePageLoad(btn.dataset.tab);
                 });
             });
 
@@ -239,6 +271,10 @@
                     const permLvl = await response.json();
                     console.log(response);
                     console.log(permLvl);
+                    const userRoleLabel = document.getElementById('user-role');
+                    if (userRoleLabel) {
+                        userRoleLabel.textContent = permLvl.permsLevel === 'admin' ? 'Rol: Admin' : 'Rol: Usuario común';
+                    }
                     if (permLvl.success && permLvl.permsLevel === "user"){
                         console.log("bot")
                         window.location.href = "../menu_basic.html";
@@ -252,10 +288,69 @@
                 }
             })
 
+            function CheckAllComplete(table){
+                let Valid = true;
+                for (let i of table) {
+                    const dat = new FormData(i);
+                    
+                    let dataCheck = {
+                        insumo: dat.get('insumo'),
+                        cantidad: parseInt(dat.get('cantidad')),
+                        area: dat.get('area'),
+                        estado: dat.get('estado')
+                    };
+
+                    if (dataCheck.insumo === "" || isNaN(dataCheck.cantidad) || dataCheck.area === "" || dataCheck.estado === "") {
+                        Valid = false;
+                    }
+                }
+                return Valid;
+            }
+
             async function UploadInBulk() {
-                const SeccionPedidos = document.getElementById("pedidos"); 
-                const formularios = SeccionPedidos.querySelectorAll('.formGeneric');
-                
+                const formularios = PedidosHolder.querySelectorAll('.formGeneric');
+                if(formularios.length === 0) {
+                    alert("No hay pedidos para enviar.");
+                    return;
+                }
+                if (!CheckAllComplete(formularios)) {
+                    alert('Por favor, complete todos los campos.');
+                    return;
+                }
+                for (const form of formularios) {
+                    const formData = new FormData(form);
+                    const dropdown = form.querySelector(".dropdown");
+                    const selectedInsumo = dropdown.querySelector(".insumo-elegido").innerText;
+                    const imagen = form.querySelector('input[type="file"]').files[0];
+                    // console.log(dropdown);
+                    // console.log(selectedInsumo);
+                    const dataToSend = new FormData();
+                    dataToSend.append('insumo', selectedInsumo);
+                    dataToSend.append('cantidad', parseInt(formData.get('cantidad')));
+                    dataToSend.append('area', formData.get('area'));
+                    dataToSend.append('estado', formData.get('estado'));
+                    if (imagen) {
+                        dataToSend.append('imagen', imagen);
+                    }
+
+                    console.log(dataToSend);
+
+                    try {
+                        const response = await fetch('/api/pedidos', {
+                            method: 'POST',
+                            body: dataToSend
+                        });
+                        
+                        const result = await response.json();
+                        if (result.success) {
+                            form.parentNode.remove();
+                        }
+                    } catch (error) {
+                        console.error("Error enviando un pedido individual:", error);
+                    }
+                }
+                alert("Todos los pedidos han sido enviados.");
+                location.reload();
             }
 
             async function UploadSingle() {
@@ -370,6 +465,151 @@
                 return TablaOrdenada 
             }
 
+            function renderPagination(containerId, currentPage, totalPages, callbackName) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = '';
+                if (totalPages <= 1) return;
+
+                let html = '';
+                if (currentPage > 1) {
+                    html += `<button type="button" class="pagination-btn" onclick="${callbackName}(${currentPage - 1})">Anterior</button>`;
+                }
+                for (let i = 1; i <= totalPages; i++) {
+                    html += `<button type="button" class="pagination-btn${i === currentPage ? ' active' : ''}" onclick="${callbackName}(${i})">${i}</button>`;
+                }
+                if (currentPage < totalPages) {
+                    html += `<button type="button" class="pagination-btn" onclick="${callbackName}(${currentPage + 1})">Siguiente</button>`;
+                }
+                container.innerHTML = html;
+            }
+
+            function renderPedidosPage(page) {
+                const grid = document.getElementById('pedidos-grid');
+                const pagination = document.getElementById('pedidos-pagination');
+                grid.innerHTML = '';
+                if (!Array.isArray(pedidosData) || pedidosData.length === 0) {
+                    grid.innerHTML = '<p>No hay insumos pedidos.</p>';
+                    if (pagination) pagination.innerHTML = '';
+                    return;
+                }
+
+                const totalPages = Math.ceil(pedidosData.length / pedidosPerPage);
+                const start = (page - 1) * pedidosPerPage;
+                const pageItems = pedidosData.slice(start, start + pedidosPerPage);
+
+                pageItems.forEach(item => {
+                    const card = document.createElement('div');
+                    let estadoClass = 'estado-pendiente';
+                    let botonCompletar = "";
+                    let botonPendiente = "";
+                    let itemId = item._id;
+                    const estadoNormalizado = (item.estado || '').toLowerCase().trim();
+                    if (estadoNormalizado === 'pendiente') {
+                        estadoClass = 'estado-pendiente';
+                        botonCompletar = `<button class="btn-mark-entregado" onclick="changeOrderStatus('Completado', '${itemId}')">  <img src="../media/check.svg" alt="icono"> </button>`;
+                        botonPendiente = `<button class="btn-mark-proceso" onclick="changeOrderStatus('En proceso', '${itemId}')">  <img src="../media/hourglass.svg" width="24" height="24" alt="icono"> </button>`;
+                    } else if (estadoNormalizado === 'en proceso') {
+                        estadoClass = 'estado-en-proceso';
+                        botonCompletar = `<button class="btn-mark-entregado" onclick="changeOrderStatus('Completado', '${itemId}')"> <img src="../media/check.svg" alt="icono"> </button>`;
+                    } else {
+                        estadoClass = 'estado-completado';
+                    }
+
+                    card.className = 'inventory-item';
+                    card.innerHTML = `
+                        <h3>${item.insumo}</h3>
+                        <h3>Cantidad: ${item.cantidad}</h3>
+                        <h4>Área: ${item.area}</h4>
+                        <h5 style="color: #a5a5a5; font-size: 12px;">Fecha: ${new Date(item.fecha).toLocaleDateString()}</h5>
+                        <div style="margin-bottom: 12px;">
+                            <span class="estado-badge ${estadoClass}">${item.estado || 'Pendiente'}</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-left: 10px;">
+                        ${botonCompletar}
+                        ${botonPendiente}
+                        ${item.imagen ? `<button class="view-image-btn" data-image="${item.imagen}"> <img src="../media/pic.svg" alt="foto" width="24" height="24"> </button>` : ''}
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                renderPagination('pedidos-pagination', page, totalPages, 'goToPedidosPage');
+                currentPedidosPage = page;
+            }
+
+            function goToPedidosPage(page) {
+                renderPedidosPage(page);
+            }
+
+            function renderPrestadosPage(page) {
+                const grid = document.getElementById('prestados-grid');
+                const pagination = document.getElementById('prestados-pagination');
+                grid.innerHTML = '';
+                if (!Array.isArray(prestadosData) || prestadosData.length === 0) {
+                    grid.innerHTML = '<p>No hay insumos prestados.</p>';
+                    if (pagination) pagination.innerHTML = '';
+                    return;
+                }
+
+                const totalPages = Math.ceil(prestadosData.length / prestadosPerPage);
+                const start = (page - 1) * prestadosPerPage;
+                const pageItems = prestadosData.slice(start, start + prestadosPerPage);
+
+                pageItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'inventory-item-og';
+                    card.innerHTML = `
+                        <h3>${item.insumo}</h3> <br>
+                        <p>Cantidad: ${item.cantidad}</p>
+                        <small>Área: ${item.area}</small>
+                        <p style="color: #a5a5a5; font-size: 12px;">Prestado: ${new Date(item.fecha).toLocaleDateString()}</p>
+                        ${item.imagen ? `<button class="view-image-btn" data-image="${item.imagen}"> <img src="../media/pic.svg" alt="foto"></button>` : ''}
+                    `;
+                    grid.appendChild(card);
+                });
+
+                renderPagination('prestados-pagination', page, totalPages, 'goToPrestadosPage');
+                currentPrestadosPage = page;
+            }
+
+            function goToPrestadosPage(page) {
+                renderPrestadosPage(page);
+            }
+
+            function renderHistorialPage(page) {
+                const list = document.getElementById('historial-list');
+                const pagination = document.getElementById('historial-pagination');
+                if (!Array.isArray(historialData) || historialData.length === 0) {
+                    list.innerHTML = '<p>No hay registros.</p>';
+                    if (pagination) pagination.innerHTML = '';
+                    return;
+                }
+
+                const totalPages = Math.ceil(historialData.length / historialPerPage);
+                const start = (page - 1) * historialPerPage;
+                const pageItems = historialData.slice(start, start + historialPerPage);
+
+                let html = '<table class="history-table" style="width:100%; border: 2px solid #444; border-collapse: collapse; border-spacing: 0 20px;"><thead><tr><th>Insumo</th><th>Cantidad</th><th>Área</th><th>Tipo</th><th>Fecha</th></tr></thead><tbody>';
+                pageItems.forEach(item => {
+                    html += `<tr style="border-bottom: 1px solid #292229;">
+                            <td class="inventory-registry">${item.insumo}</td>
+                            <td class="inventory-registry">${item.cantidad}</td>
+                            <td class="inventory-registry">${item.area}</td>
+                            <td class="inventory-registry">${item.tipo}</td>
+                            <td class="inventory-registry">${new Date(item.fecha).toLocaleDateString()}</td>
+                        </tr>`;
+                });
+                html += '</tbody></table>';
+                list.innerHTML = html;
+                renderPagination('historial-pagination', page, totalPages, 'goToHistorialPage');
+                currentHistorialPage = page;
+            }
+
+            function goToHistorialPage(page) {
+                renderHistorialPage(page);
+            }
+
             function RemoveBulkUploadInstance(btn){
             const parent = btn.parentNode; 
             const root = parent.parentNode;
@@ -391,9 +631,9 @@
                             </div>
                         </div>
                         
-                        <input type="number" id="ped-cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
-                        <input type="text" id="ped-area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
-                        <label for="ped-imagen" class="ButtonFiles" style="max-width: 32px;" title="Subir imagen"><img id="FileUploadOrdered" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen" name="imagen" accept="image/*" onchange="handleFile(this.files[0], 1)">
+                        <input type="number" name="cantidad" maxlength="10" class="ButtonGeneric" placeholder="Cantidad" required style="flex: 1; min-width: 100px;">
+                        <input type="text" name="area" maxlength="40" class="ButtonGeneric" placeholder="Área" required style="flex: 1; min-width: 150px;">
+                        <label for="ped-imagen${ExtraUploadsCreated}" class="ButtonFiles" style="max-width: 32px;" title="Subir imagen"><img class="FileUploadOrdered ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen${ExtraUploadsCreated}" name="imagen" accept="image/*" onchange="handleFile(this, 'preview-${ExtraUploadsCreated}')">
                         <button type="submit" class="ButtonSubmit" style="flex: 1; margin-top: 0px; min-width: 120px; border-radius: 10px; max-height: 50px;">Registrar</button>
                         <div id="spacier" class="form-spacer"></div>
                         <select name="estado" id="ped-estado" class="ButtonGenericStatus" title="Seleccione el estado del pedido">
@@ -406,11 +646,20 @@
                     </form>
                     `;
                 const button = BasicForm.querySelector(".valor-insumo");
+                const enviar = BasicForm.querySelector(".ButtonSubmit"); 
                 const dropdown = BasicForm.querySelector(".dropdown-options");
                 button.addEventListener("click", async() => {
                     await fetchInsumos(dropdown);
                 });
+                enviar.addEventListener("click", async (e) => {
+                    e.preventDefault();
+                    UploadInBulk();
+                });
                 PedidosHolder.appendChild(BasicForm);
+                const previewDiv = document.createElement('div');
+                previewDiv.id = "preview-" + ExtraUploadsCreated;
+                previewDiv.className = "imgholder";
+                PedidosHolder.appendChild(previewDiv);
                 console.log("extraForm"+ExtraUploadsCreated);
                 BasicForm.dataset.id = "extraForm"+ExtraUploadsCreated;
                 ExtraUploadsCreated += 1; 
@@ -418,66 +667,26 @@
 
             async function loadPedidos(insumos) {
                 const grid = document.getElementById('pedidos-grid');
+                const pagination = document.getElementById('pedidos-pagination');
                 grid.innerHTML = '';
+                if (pagination) pagination.innerHTML = '';
                 previewContainer.innerHTML = "";
                 previewContainer2.innerHTML = "";
+
                 if (insumos === "GenericLoad") {
                     const response = await fetch('/api/pedidos');
                     insumos = await response.json();
-                }   
+                }
+
                 if (!Array.isArray(insumos) || insumos.length === 0) {
                     grid.innerHTML = '<p>No hay pedidos cargados todavía.</p>';
                     return;
                 }
+
                 try {
-                    const response = await fetch('/api/pedidos');
-                    const pedidos = await response.json();
-                    
-                    if (!Array.isArray(pedidos) || pedidos.length === 0) {
-                        grid.innerHTML = '<p>No hay insumos pedidos.</p>';
-                        return;
-                    }
-
-                    const Ordenada = OrdenarTabla(pedidos)
-
-                    Ordenada.forEach(item => {
-                        const card = document.createElement('div');
-
-                        let estadoClass = 'estado-pendiente';
-                        let botonCompletar = "";
-                        let botonPendiente = "";
-                        let itemId = item._id;
-                        const estadoNormalizado = (item.estado || '').toLowerCase().trim();
-                        // console.log(estadoNormalizado);
-                        if (estadoNormalizado === 'pendiente') {
-                            estadoClass = 'estado-pendiente';
-                            botonCompletar = `<button class="btn-mark-entregado" onclick="changeOrderStatus('Completado', '${itemId}')">  <img src="../media/check.svg" alt="icono"> </button>`;
-                            botonPendiente = `<button class="btn-mark-proceso" onclick="changeOrderStatus('En proceso', '${itemId}')">  <img src="../media/hourglass.svg" width="24" height="24" alt="icono"> </button>`;
-                        } else if (estadoNormalizado === 'en proceso') {
-                            estadoClass = 'estado-en-proceso';
-                            botonCompletar = `<button class="btn-mark-entregado" onclick="changeOrderStatus('Completado', '${itemId}')"> <img src="../media/check.svg" alt="icono"> </button>`;
-                        } else {
-                            estadoClass = 'estado-completado';
-                        }
-
-                        card.className = 'inventory-item';
-                             // <h3>${item._id}</h3> asi le sacas la id 
-                        card.innerHTML = `
-                            <h3>${item.insumo}</h3>
-                            <h3>Cantidad: ${item.cantidad}</h3>
-                            <h4>Área: ${item.area}</h4>
-                            <h5 style="color: #a5a5a5; font-size: 12px;">Fecha: ${new Date(item.fecha).toLocaleDateString()}</h5>
-                            <div style="margin-bottom: 12px;">
-                                <span class="estado-badge ${estadoClass}">${item.estado || 'Pendiente'}</span>
-                            </div>
-                            <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-left: 10px;">
-                            ${botonCompletar}
-                            ${botonPendiente}
-                            ${item.imagen ? `<button class="view-image-btn" data-image="${item.imagen}"> <img src="../media/pic.svg" alt="foto" width="24" height="24"> </button>` : ''}
-                            </div>
-                        `;
-                        grid.appendChild(card);
-                    });
+                    pedidosData = OrdenarTabla(insumos);
+                    currentPedidosPage = 1;
+                    renderPedidosPage(currentPedidosPage);
                 } catch (error) {
                     console.error('Error al cargar pedidos:', error);
                     grid.innerHTML = '<p>Error al conectar.</p>';
@@ -545,7 +754,9 @@
             }
             async function loadPrestados() {
                 const grid = document.getElementById('prestados-grid');
+                const pagination = document.getElementById('prestados-pagination');
                 grid.innerHTML = '';
+                if (pagination) pagination.innerHTML = '';
                 previewContainer.innerHTML = "";
                 previewContainer2.innerHTML = "";
                 try {
@@ -557,20 +768,9 @@
                         return;
                     }
 
-                    const Ordenada = OrdenarTabla(prestados)
-
-                    Ordenada.forEach(item => {
-                        const card = document.createElement('div');
-                        card.className = 'inventory-item-og';
-                        card.innerHTML = `
-                            <h3>${item.insumo}</h3> <br>
-                            <p>Cantidad: ${item.cantidad}</p>
-                            <small>Área: ${item.area}</small>
-                            <p style="color: #a5a5a5; font-size: 12px;">Prestado: ${new Date(item.fecha).toLocaleDateString()}</p>
-                            ${item.imagen ? `<button class="view-image-btn" data-image="${item.imagen}"> <img src="../media/pic.svg" alt="foto"></button>` : ''}
-                        `;
-                        grid.appendChild(card);
-                    });
+                    prestadosData = OrdenarTabla(prestados);
+                    currentPrestadosPage = 1;
+                    renderPrestadosPage(currentPrestadosPage);
                 } catch (error) {
                     console.error('Error al cargar prestados:', error);
                     grid.innerHTML = '<p>Error al conectar.</p>';
@@ -579,9 +779,10 @@
 
             async function loadHistorial() {
                 const list = document.getElementById('historial-list');
+                const pagination = document.getElementById('historial-pagination');
                 list.innerHTML = '';
+                if (pagination) pagination.innerHTML = '';
                 try {
-                    
                     const response = await fetch('/api/historial');
                     const historial = await response.json();
                     if (!Array.isArray(historial) || historial.length === 0) {
@@ -589,20 +790,9 @@
                         return;
                     }
 
-                    let html = '<table class="history-table" style="width:100%; border: 2px solid #444; border-collapse: collapse; border-spacing: 0 20px;"><thead><tr><th>Insumo</th><th>Cantidad</th><th>Área</th><th>Tipo</th><th>Fecha</th></tr></thead><tbody>';
-                    const Ordenada = OrdenarTabla(historial)
-
-                    Ordenada.forEach(item => {
-                        html += `<tr style="border-bottom: 1px solid #292229;">
-                            <td class="inventory-registry">${item.insumo}</td>
-                            <td class="inventory-registry">${item.cantidad}</td>
-                            <td class="inventory-registry">${item.area}</td>
-                            <td class="inventory-registry">${item.tipo}</td>
-                            <td class="inventory-registry">${new Date(item.fecha).toLocaleDateString()}</td>
-                        </tr>`;
-                    });
-                    html += '</tbody></table>';
-                    list.innerHTML = html;
+                    historialData = OrdenarTabla(historial);
+                    currentHistorialPage = 1;
+                    renderHistorialPage(currentHistorialPage);
                 } catch (error) {
                     console.error('Error al cargar historial:', error);
                     list.innerHTML = '<p>Error al conectar.</p>';
@@ -744,7 +934,9 @@
                 const searchInput = mainGrid.querySelector('.ButtonGeneric');
                 const optionsGrid = dropdown;
 
-                renderOptions(insumos, optionsGrid);
+                const insumosLoad = insumos.slice(0, 10)
+
+                renderOptions(insumosLoad, optionsGrid);
 
                 searchInput.addEventListener('input', () => {
                     const filter = searchInput.value.toLowerCase();
@@ -754,7 +946,7 @@
                             .toLowerCase()
                             .includes(filter)
                     );
-
+                    const filteredLoad = filtered.slice(0, 10)
                     renderOptions(filtered, optionsGrid);
                 });
             }
@@ -763,18 +955,69 @@
                 const grid = document.getElementById('dropdown-options');
                 await fetchInsumos(grid);
             });
+            function applySavedTheme() {
+                const savedTheme = localStorage.getItem('theme-mode');
+                if (savedTheme === 'light' || savedTheme === 'dark') {
+                    document.body.setAttribute('data-theme', savedTheme);
+                }
+            }
+
+            function toggleTheme() {
+                const nextTheme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                document.body.setAttribute('data-theme', nextTheme);
+                localStorage.setItem('theme-mode', nextTheme);
+            }
+
+            applySavedTheme();
+
             const themeBtn = document.createElement('button');
             themeBtn.innerHTML = '🌓';
             themeBtn.className = 'theme-toggle-widget';
             document.body.appendChild(themeBtn);
 
-            themeBtn.addEventListener('click', () => {
-                if (document.body.getAttribute('data-theme') === 'light') {
-                    document.body.setAttribute('data-theme', 'dark');
-                } else {
-                    document.body.setAttribute('data-theme', 'light');
+            themeBtn.addEventListener('click', toggleTheme);
+
+            async function logout() {
+                try {
+                    const response = await fetch('/logout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        window.location.href = result.redirect || '/';
+                    } else {
+                        alert('No se pudo cerrar sesión.');
+                    }
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                    alert('Error al cerrar sesión.');
                 }
-            });
+            }
+
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', logout);
+            }
+
+            const mediaQuery = window.matchMedia('(max-width: 900px)');
+
+            function screenSizeChange(e) {
+                if (e.matches) {
+                    pedidosPerPage = 12;
+                    prestadosPerPage = 12;
+                    historialPerPage = 25;
+                } else {
+                    pedidosPerPage = 20;
+                    prestadosPerPage = 20;
+                    historialPerPage = 50;
+                }
+                ChoosePageLoad(currentPage);
+            }
+
+            // Register listener for changes
+            mediaQuery.addEventListener('change', screenSizeChange);
+            currentPage = "pedidos";
             document.addEventListener('DOMContentLoaded', loadPedidos);
         </script>
 </html>
