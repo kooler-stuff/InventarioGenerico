@@ -131,7 +131,19 @@ cambiados logos para adaptarse a modo oscuro/claro
 hay que agregar un boton de cerrar sesion en algun punto de la vida ok??????
 y quizas ver en que rol estas logeado pq asi es la q va o algo supongoooo asi piden
 
--- lista ultima vez actualizada 03/06
+04/06: 
+
+Subida de imagenes en pedidos en masa solucionados y funcionales.
+Implementado: 
+Paginación para evitar sobrecarga en la pagina.
+Detalles menores de diseño
+Boton para cerrar sesión y ver rol en la pagina.
+y asi y asi y asi
+
+implementar React
+implementar hash (dbcript)
+
+-- lista ultima vez actualizada 04/06
 
   if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
     return res.status(401).json({ success: false, message: "No autorizado"});

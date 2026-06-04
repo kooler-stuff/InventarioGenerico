@@ -322,6 +322,7 @@ app.get('/api/pedidos', async (req, res) => {
 
 app.post('/api/pedidos', uploadOrders.single('imagen'), async (req, res) => {
   try {
+    // console.log(req.body);
     const { insumo, cantidad, area, estado } = req.body;
     const imagen = req.file ? `/media_images/pedidos/${req.file.filename}` : undefined;
 
@@ -330,6 +331,7 @@ app.post('/api/pedidos', uploadOrders.single('imagen'), async (req, res) => {
     await Historial.create({ insumo, cantidad, area, tipo: 'Pedido' });
     res.json({ success: true, data: nuevoPedido });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ success: false, message: error.message });
   }
 });
