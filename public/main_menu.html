@@ -115,7 +115,7 @@
                 <div class="form-group">
                     <label>Insumo:</label> <br>
                     
-                    <input type="text" id="insumo" class="ButtonGeneric" placeholder="Ej: Resma A4" required>
+                    <input type="text" id="insumo" class="ButtonGeneric" placeholder="Ej: Resma A4" required maxlength="120";>
                 </div>
 
                 <div>
@@ -367,7 +367,7 @@ document.getElementById("dropdown-content").classList.remove("dropdown-show");
                 <small>
                     Categoría: <br> ${item.categoria}
                 </small> <br>
-                <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-left: 10px;">
+                <div class="item-actions">
                     <button class="btn-increase">
                         <img src="media/add_white.svg" alt="Agregar">
                     </button>

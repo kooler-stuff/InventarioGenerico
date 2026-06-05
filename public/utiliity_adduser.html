@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="./styles/MainStyle.css">
+        <style>
+        </style>
+        <link rel="icon" href="/media/icon.ico">
+        <title>Gestor de inventario COM</title>
+    </head>
+
+    <body data-theme="dark" style="overflow-y:hidden;">
+        <div class="container-index">
+            <img class="logo" src="/media/COM_Logo.png" alt="Logo" style="width:130px; height: auto;">
+            <br><br><br><br>
+            <h1 class="title_login" style="color: rgb(255, 255, 255);">Ingrese su cuenta</h1>
+            <br><br>
+            <form action="/addUser" method="POST" class="login-form">
+                <input class="ButtonGeneric" type="text" id="usuario" name="usuario" placeholder="Usuario" required>  <br>
+                <input class="ButtonGeneric" type="password" id = "contraseña" name="contraseña" placeholder="Contraseña" required> <br>
+                <select name="perms" id="user-role" class="ButtonGenericDesc">
+                    <option value="admin"> Administrador </option>
+                    <option value="user"> Usuario </option>
+                </select>
+                <button class="ButtonSubmit" type="submit" value="LogIn">Crear usuario </button> <!-- tampoco hacia falta inventar tanto a q si-->
+            </form>
+        </div>
+    </body>
+    <script>  
+        const form = document.querySelector('form');
+        
+        form.addEventListener('addUser', async (e) => {
+            e.preventDefault(); // IMPORTANTE: Evita que la página se recargue o cambie a /auth
+
+            const formData = new URLSearchParams(new FormData(form));
+            
+            try {
+            const response = await fetch('/addUser', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Usuario creado correctamente!")
+            } else {
+                /* // en caso de q convenga usar div pre existente o algo yo q se 
+                const divElement = document.querySelector('.WarningMsg');
+                divElement.textContent = 'Mensaje de Error!!!';
+                */               
+                let errorDiv = document.getElementById('error-message');
+                if (!errorDiv) {
+                errorDiv = document.createElement('p');
+                errorDiv.id = 'error-message';
+                errorDiv.style.color = '#ffffff';
+                errorDiv.style.margin = '0';
+                errorDiv.style.overflowWrap = 'break-word'; 
+                errorDiv.style.width = '100%';
+                errorDiv.style.fontSize = '20px';
+                errorDiv.style.padding = '-45px';
+                form.appendChild(errorDiv);
+                }
+                errorDiv.innerText = result.message;
+            }
+            } catch (err) {
+                console.error("Error en la conexión"); // gracias normi ya lo mataste
+            }
+        });
+        document.addEventListener("DOMContentLoaded", async (event) => {
+            document.getElementById("MainContainer").style.display = "none";
+            try { 
+                const response = await fetch('/verify');
+                const permLvl = await response.json();
+                console.log(response);
+                console.log(permLvl);
+                const userRoleLabel = document.getElementById('user-role');
+                if (userRoleLabel) {
+                    userRoleLabel.textContent = permLvl.permsLevel === 'admin' ? 'Rol: Admin' : 'Rol: Usuario común';
+                }
+                if (permLvl.success && permLvl.permsLevel === "user"){
+                    console.log("bot");
+                    window.location.href = "menu_basic.html";
+                } else {
+                    document.getElementById("MainContainer").style.display = "block";
+                    console.log("ok");
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })
+    </script>
+</html>
