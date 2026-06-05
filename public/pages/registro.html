@@ -525,7 +525,7 @@
                         <div style="margin-bottom: 12px;">
                             <span class="estado-badge ${estadoClass}">${item.estado || 'Pendiente'}</span>
                         </div>
-                        <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-left: 10px;">
+                        <div class="item-actions">
                         ${botonCompletar}
                         ${botonPendiente}
                         ${item.imagen ? `<button class="view-image-btn" data-image="${item.imagen}"> <img src="../media/pic.svg" alt="foto" width="24" height="24"> </button>` : ''}
@@ -732,7 +732,7 @@
                             <div style="margin-bottom: 12px;">
                                 <span class="estado-badge ${estadoClass}">${item.estado || 'Pendiente'}</span>
                             </div>
-                            <div style="display: flex; gap: 32px; justify-content: center; align-items: center; margin-left: 10px;">
+                            <div class="item-actions">
                             ${botonCompletar}
                             <button class="buttondesc view-sidebar-btn" 
                                     data-insumo="${item.insumo}" 
