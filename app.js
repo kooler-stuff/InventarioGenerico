@@ -20,6 +20,9 @@ const {promisify} = require("util");
 
 const UnlinkAsync = promisify(fs.unlink)
 
+const bcrypt = require('bcrypt');
+const saltRounds = 8;
+
 const storagePrestados = multer.diskStorage({
   destination: (req, file, cb) => cb(null, path.join(__dirname, 'media_images', 'prestados')),
   filename: (req, file, cb) => {
@@ -44,14 +47,36 @@ const storageInventory = multer.diskStorage({
   }
 });
 
+function HashPswrd(text){
+  bcrypt.hash(text, saltRounds, function(err, hash){
+    if (err){
+        console.log(err);
+    }
+    console.log(hash);
+    return hash;
+  });
+}
+
+function CheckPswrd(plain, hashed){
+  bcrypt.compare(plain, hashed, function(err, res){
+    if (err){
+      console.log(err);
+      return false;
+    }
+    if (res){
+      return true;
+    } else {
+      return false;
+    }
+  });
+}
+
 const uploadLent = multer({ storage: storagePrestados });
 const uploadOrders = multer({ storage: storagePedidos });
 const uploadItems = multer({storage: storageInventory });
 
 const app = express();
 const port = 3000;
-
-
 
 // BD
 mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/inventario_com')
@@ -250,8 +275,16 @@ app.get('/api/historial-inventario', async (req, res) => {
 
 app.post("/addUser", async (req, res)=> {
   try {
-    const {usuario, contraseña} = req.body;
-    const nuevoUser = new Usuarios({usuario, contraseña});
+    const {usuario, contraseña, perms} = req.body;
+    const hashed = await bcrypt.hash(contraseña, saltRounds);
+    if (hashed === false){
+      console.log("Error acaa!!!");
+      res.status(400).json({ success: false, message: "Fallo al registrar."});
+      return; 
+    }
+    console.log(req.body);
+    console.log(hashed);
+    const nuevoUser = new Usuarios({usuario: usuario, contraseña: hashed, acceso: perms});
     await nuevoUser.save();
     res.json({ success: true, data: nuevoUser });
   } catch (error) {
@@ -266,21 +299,34 @@ app.post('/auth', async (req, res) => {
         usuario: usuario
       });
       const usss = await Usuarios.find();
-      console.log(usss);
-      console.log(req.body);
+      // console.log(usss);
+      // console.log(req.body);
+      /*
       if (!user){
         console.log("no usuario existe");
         res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
         return;
       } 
-      if (user.contraseña !== contraseña) {
-        console.log("Usuario existe, contra invalida.");
+      */ 
+      const ContraValida = await bcrypt.compare(contraseña, user.contraseña);
+      /* 
+      console.log(ContraValida);
+      console.log(contraseña);
+      console.log(user.contraseña);
+      */ 
+      if (!user){
+        console.log("Usuario no existe.");
         res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
         return;
       }
-      console.log(user["acceso"]);
+       if (!ContraValida) {
+        console.log("Usuario existe, contra invalida.");
+        res.status(401).json({ success: false, message: 'Usuario o contraseña \n incorrectos.' });
+        return;
+       }
+      // console.log(user["acceso"]);
       let permslevel = user["acceso"]; 
-      console.log(permslevel);
+      // console.log(permslevel);
       req.session.authenticated = true;
       req.session.permissionLevel = permslevel;
       if (permslevel != "admin"){ 

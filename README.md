@@ -143,7 +143,14 @@ y asi y asi y asi
 implementar React
 implementar hash (dbcript)
 
--- lista ultima vez actualizada 04/06
+05/06: 
+
+Implementado hasheo de contraseña. 
+Arreglado botones no poniendose abajo de todo en sus contenedores.
+tocara pasarlo a react, pero ni idea como aun no cacho como es
+que mal dia
+
+-- lista ultima vez actualizada 05/06
 
   if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
     return res.status(401).json({ success: false, message: "No autorizado"});
