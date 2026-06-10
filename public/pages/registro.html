@@ -93,9 +93,12 @@
             }
         }
         function toggleDropdown(element) {
-            console.log(element);
-            console.log(element.parentNode);
-            element.parentNode.querySelector(".dropdown-content2").classList.toggle("dropdown-show");
+            const dropdown = element.classList.contains('dropdown') ? element : element.closest('.dropdown');
+            if (!dropdown) return;
+            const content = dropdown.querySelector('.dropdown-content2');
+            if (content) {
+                content.classList.toggle('dropdown-show');
+            }
         }
     </script>
 
@@ -130,10 +133,11 @@
                         <label for="ped-insumo" class="ButtonGenericStatus" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
                             <span class="insumo-elegido" name="insumo">Insumo</span>
                         </label> 
+                        <input type="hidden" name="insumo" class="insumo-hidden" id="ped-insumo-hidden">
                         <input type="button" onclick="toggleDropdown(this)" class="valor-insumo" id="ped-insumo"  style="display: none;">
                             <div id="dropdown-content" class="dropdown-content2">
                                 <input type="text" id="search-input" class="ButtonGeneric" placeholder="Buscar insumo...">
-                                <div id="dropdown-options"> </div>
+                                <div class="dropdown-options"> </div>
                             </div>
                         </div>
                         
@@ -150,7 +154,7 @@
                             <option value="En proceso">En proceso</option>
                             <option value="Completado">Completado</option>
                         </select>
-                        <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img class="AddOrderImage"> </button>   
+                        <button type="button" onclick="AddBulkUploadInstance('pedido')" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img class="AddOrderImage"> </button>   
                     </form>
                     <div id="imgholder" class="imgholder"> </div>
                 </div>  
@@ -161,14 +165,29 @@
 
             <div id="prestados" class="tab-content">
                 <h2>Insumos Prestados</h2>
-                <form id="form-prestado" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
-                    <input type="text" id="pres-insumo" maxlength="300" class="ButtonGeneric" placeholder="Insumo" title="Indique el nombre del insumo" required style="flex: 1; min-width: 150px;">
-                    <input type="number" id="pres-cantidad" class="ButtonGeneric" placeholder="Cantidad" title="Indique la cantidad en números" required style="flex: 1; min-width: 100px;">
-                    <input type="text" id="pres-area" class="ButtonGeneric" placeholder="Área" title="Seleccione el area a la que se le fué prestado el insumo" required style="flex: 1; min-width: 150px;">
-                    <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUploadLent" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*" onchange="handleFile(this, 'imgholder2')">
-                    <button type="submit" class="ButtonSubmit" style="flex: 1; margin-top: 0px; min-width: 120px; border-radius: 10px; max-height: 50px;">Registrar</button>    
-                </form>
-                <div id="imgholder2" class="imgholder"> </div>
+                <div id="prestados-holder">
+                    <form id="form-prestado" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
+                        <div class="dropdown">
+                            <label for="pres-insumo" class="ButtonGenericStatus" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
+                                <span class="insumo-elegido" name="insumo">Insumo</span>
+                            </label> 
+                            <input type="hidden" name="insumo" class="insumo-hidden" id="pres-insumo-hidden">
+                            <input type="button" onclick="toggleDropdown(this)" class="valor-insumo" id="pres-insumo"  style="display: none;">
+                                <div id="dropdown-content" class="dropdown-content2">
+                                    <input type="text" id="search-input" class="ButtonGeneric" placeholder="Buscar insumo...">
+                                    <div class="dropdown-options"> </div>
+                                </div>
+                        </div>
+                        <input type="number" id="pres-cantidad" class="ButtonGeneric" placeholder="Cantidad" title="Indique la cantidad en números" required style="flex: 1; min-width: 100px;">
+                        <input type="text" id="pres-area" class="ButtonGeneric" placeholder="Área" title="Seleccione el area a la que se le fué prestado el insumo" required style="flex: 1; min-width: 150px;">
+                        <label for="pres-imagen" class="ButtonFiles" style="flex: 1; align-items: center; max-width: 32px;" title="Subir imagen"><img src="../media/clip.svg" id="FileUploadLent" class="ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="pres-imagen" name="imagen" accept="image/*" onchange="handleFile(this, 'imgholder2')">
+                        <button type="submit" class="ButtonSubmit" style="flex: 1; margin-top: 0px; min-width: 120px; border-radius: 10px; max-height: 50px;">Registrar</button>    
+                        <div id="spacier" class="form-spacer"></div>
+                        <button type="button" onclick="AddBulkUploadInstance('prestado')" title="Añadir otro préstamo..." id="addInstanceBtn" class="formAddBtn"> <img class="AddOrderImage"> </button>
+                    </form>
+                    <div id="imgholder2" class="imgholder"> </div>
+                </div>
+                
 
                 <div id="prestados-grid" class="inventory-grid"></div>
                 <div id="prestados-pagination" class="pagination-container"></div>
@@ -187,7 +206,7 @@
         </div>
             <div id="description-sidebar" class="sidebar">
             <div class="sidebar-content">
-                <button type="button" class="sidebar-close" id="sidebar-close">×me</button>
+                <button type="button" class="sidebar-close" id="sidebar-close">×</button>
                 
                 <div class="sidebar-body">
                     <h1 id="sidebar-titulo" class="sidebar-title">Nombre del Producto</h1>
@@ -216,6 +235,7 @@
             const previewContainer = document.getElementById("imgholder");
             const previewContainer2 = document.getElementById("imgholder2");
             const PedidosHolder = document.getElementById("pedidos-holder");
+            const PrestadosHolder = document.getElementById("prestados-holder");
 
             let CurrentPage = "pedidos"
             let ExtraUploadsCreated = 0;
@@ -302,15 +322,25 @@
 
                     if (dataCheck.insumo === "" || isNaN(dataCheck.cantidad) || dataCheck.area === "" || dataCheck.estado === "") {
                         Valid = false;
+                        console.log(dataCheck);
                     }
                 }
                 return Valid;
             }
 
-            async function UploadInBulk() {
-                const formularios = PedidosHolder.querySelectorAll('.formGeneric');
+            async function UploadInBulk(section) {
+                let TargetHolder = null;
+                if (section === "pedido") {
+                    TargetHolder = PedidosHolder;
+                } else if (section === "prestado") {
+                    TargetHolder = PrestadosHolder;
+                } else {
+                    alert("Sección no válida para carga masiva.");
+                    return;
+                }
+                const formularios = TargetHolder.querySelectorAll('.formGeneric');
                 if(formularios.length === 0) {
-                    alert("No hay pedidos para enviar.");
+                    alert("No hay " + (section === "pedido" ? "pedidos" : "préstamos") + " para enviar.");
                     return;
                 }
                 if (!CheckAllComplete(formularios)) {
@@ -336,7 +366,7 @@
                     console.log(dataToSend);
 
                     try {
-                        const response = await fetch('/api/pedidos', {
+                        const response = await fetch(`/api/${section === "pedido" ? "pedidos" : "prestados"}`, {
                             method: 'POST',
                             body: dataToSend
                         });
@@ -346,34 +376,35 @@
                             form.parentNode.remove();
                         }
                     } catch (error) {
-                        console.error("Error enviando un pedido individual:", error);
+                        console.error(`Error enviando un ${section === "pedido" ? "pedido" : "préstamo"} individual:`, error);
                     }
                 }
-                alert("Todos los pedidos han sido enviados.");
+                alert(`Todos los ${section === "pedido" ? "pedidos" : "préstamos"} han sido enviados.`);
                 location.reload();
             }
 
-            async function UploadSingle() {
+            async function UploadSingle(section) {
                 try {
                     const formData = new FormData();
-                    formData.append('insumo', document.getElementById('ped-insumo').value);
-                    formData.append('cantidad', parseInt(document.getElementById('ped-cantidad').value));
-                    formData.append('area', document.getElementById('ped-area').value);
-                    formData.append('estado', document.getElementById('ped-estado').value);
-                    const imagenFile = document.getElementById('ped-imagen').files[0];
+                    const insumoValue = document.getElementById(`${section}-insumo-hidden`)?.value || document.querySelector(`#form-${section} .insumo-elegido`)?.innerText;
+                    formData.append('insumo', insumoValue);
+                    formData.append('cantidad', parseInt(document.getElementById(`${section}-cantidad`).value));
+                    formData.append('area', document.getElementById(`${section}-area`).value);
+                    formData.append('estado', document.getElementById(`${section}-estado`).value);
+                    const imagenFile = document.getElementById(`${section}-imagen`).files[0];
                     if (imagenFile) {
                         formData.append('imagen', imagenFile);
                     }
                     console.log(formData);
 
-                    const response = await fetch('/api/pedidos', {
+                    const response = await fetch(`/api/${section === "pedido" ? "pedidos" : "prestados"}`, {
                         method: 'POST',
                         body: formData
                     });
                     const result = await response.json();
                     if (result.success) {
-                        document.getElementById('form-pedido').reset();
-                        loadPedidos("GenericLoad");                
+                        document.getElementById(`form-${section}`).reset();
+                        section === "pedido" ? loadPedidos("GenericLoad") : loadPrestados();
                     } else {
                         alert('Error al registrar.');
                     }
@@ -386,39 +417,19 @@
             document.getElementById('form-pedido').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (ExtraUploadsCreated === 0) {
-                    UploadSingle();
+                    UploadSingle("pedido");
                     return;
                 } 
-                UploadInBulk();               
+                UploadInBulk("pedido");               
             });
 
             document.getElementById('form-prestado').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                try {
-                    const formData = new FormData();
-                    formData.append('insumo', document.getElementById('pres-insumo').value);
-                    formData.append('cantidad', parseInt(document.getElementById('pres-cantidad').value));
-                    formData.append('area', document.getElementById('pres-area').value);
-                    const imagenFile = document.getElementById('pres-imagen').files[0];
-                    if (imagenFile) {
-                        formData.append('imagen', imagenFile);
-                    }
-
-                    const response = await fetch('/api/prestados', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                        document.getElementById('form-prestado').reset();
-                        loadPrestados();
-                    } else {
-                        alert('Error al registrar.');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error al conectar.');
-                }
+                if (ExtraUploadsCreated === 0) {
+                    UploadSingle("prestado");
+                    return;
+                } 
+                UploadInBulk("prestado");   
             });
 
             async function changeOrderStatus(status, id) {
@@ -444,7 +455,7 @@
                 }
             }
 
-                        async function fetchInsumos(grid) {
+            async function fetchInsumos(grid) {
                 try {
                     const response = await fetch('/api/insumo');
                     const insumos = await response.json();
@@ -616,17 +627,30 @@
             root.remove();
         }
 
-            function AddBulkUploadInstance(){
+            function AddBulkUploadInstance(section){
+                const isPedido = section === "pedido";
+                const uniqueId = `insumo-selector-${ExtraUploadsCreated}-${section}`;
+                const hiddenId = `insumo-hidden-${ExtraUploadsCreated}-${section}`;
+                const estadoSelect = isPedido ? `
+                        <select name="estado" class="ButtonGenericStatus" title="Seleccione el estado del pedido">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En proceso">En proceso</option>
+                            <option value="Completado">Completado</option>
+                        </select>
+                ` : '';
+                const addTitle = isPedido ? 'Añadir otro pedido...' : 'Añadir otro préstamo...';
+
                 const BasicForm = document.createElement('div');
                     BasicForm.innerHTML = `
-                    <form id="form-pedido${ExtraUploadsCreated}" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
+                    <form id="form-${section}${ExtraUploadsCreated}" class="formGeneric" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" enctype="multipart/form-data">
                          <div class="dropdown">
-                        <label for="ped-insumo${ExtraUploadsCreated}" class="ButtonGeneric" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
+                        <label for="${uniqueId}" class="ButtonGeneric" placeholder="Insumo" required style="display: inline-block; flex: 1; min-width: 150px;">
                             <span class="insumo-elegido">Insumo</span>
                         </label> 
-                        <input type="button" onclick="toggleDropdown(this)" class="valor-insumo" id="ped-insumo${ExtraUploadsCreated}" name="insumo" style="display: none;">
-                            <div id="dropdown-content" class="dropdown-content2">
-                                <input type="text" id="search-input" class="ButtonGeneric" placeholder="Buscar insumo...">
+                        <input type="hidden" name="insumo" class="insumo-hidden" id="${hiddenId}">
+                        <input type="button" onclick="toggleDropdown(this)" class="valor-insumo" id="${uniqueId}" style="display: none;">
+                            <div class="dropdown-content2">
+                                <input type="text" class="ButtonGeneric" placeholder="Buscar insumo...">
                                 <div class="dropdown-options"> </div>
                             </div>
                         </div>
@@ -636,13 +660,9 @@
                         <label for="ped-imagen${ExtraUploadsCreated}" class="ButtonFiles" style="max-width: 32px;" title="Subir imagen"><img class="FileUploadOrdered ButtonSubmitImage" width="32px" height="32px"></label><input type="file" id="ped-imagen${ExtraUploadsCreated}" name="imagen" accept="image/*" onchange="handleFile(this, 'preview-${ExtraUploadsCreated}')">
                         <button type="submit" class="ButtonSubmit" style="flex: 1; margin-top: 0px; min-width: 120px; border-radius: 10px; max-height: 50px;">Registrar</button>
                         <div id="spacier" class="form-spacer"></div>
-                        <select name="estado" id="ped-estado" class="ButtonGenericStatus" title="Seleccione el estado del pedido">
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="En proceso">En proceso</option>
-                            <option value="Completado">Completado</option>
-                        </select>
-                        <button type="button" onclick="AddBulkUploadInstance()" title="Añadir otro pedido..." id="addInstanceBtn" class="formAddBtn"> <img class="AddOrderImage"> </button>   
-                        <button type="button" onclick="RemoveBulkUploadInstance(this)" title="Eliminar Pedido" id="removeInstanceBtn" class="formAddBtn"> <img class="RemoveOrderImage"> </button> 
+                        ${estadoSelect}
+                        <button type="button" onclick="AddBulkUploadInstance('${section}')" title="${addTitle}" class="formAddBtn"> <img class="AddOrderImage"> </button>   
+                        <button type="button" onclick="RemoveBulkUploadInstance(this)" title="Eliminar Pedido" class="formAddBtn"> <img class="RemoveOrderImage"> </button> 
                     </form>
                     `;
                 const button = BasicForm.querySelector(".valor-insumo");
@@ -653,13 +673,14 @@
                 });
                 enviar.addEventListener("click", async (e) => {
                     e.preventDefault();
-                    UploadInBulk();
+                    UploadInBulk(section);
                 });
-                PedidosHolder.appendChild(BasicForm);
+                let targetHolder = section === "pedido" ? PedidosHolder : PrestadosHolder;
+                targetHolder.appendChild(BasicForm);
                 const previewDiv = document.createElement('div');
                 previewDiv.id = "preview-" + ExtraUploadsCreated;
                 previewDiv.className = "imgholder";
-                PedidosHolder.appendChild(previewDiv);
+                targetHolder.appendChild(previewDiv);
                 console.log("extraForm"+ExtraUploadsCreated);
                 BasicForm.dataset.id = "extraForm"+ExtraUploadsCreated;
                 ExtraUploadsCreated += 1; 
@@ -907,37 +928,32 @@
                     `;
                     const btn = card.querySelector('button');
                         btn.addEventListener('click', () => {
-                            const mainGrid = grid.parentNode.parentNode;
-                            var GridLabel = mainGrid.querySelector('label[for="ped-insumo"]');
-                            if (!GridLabel){
-                                GridLabel = mainGrid.querySelector('.valor-insumo');
-                            };
-                            var elegido = GridLabel.querySelector('.insumo-elegido');
-                            if (!elegido){
-                                var btnGeneric = mainGrid.querySelector(".ButtonGeneric");
-                                console.log(btnGeneric);
-                                elegido = btnGeneric.querySelector('.insumo-elegido');
+                            const dropdown = grid.closest('.dropdown');
+                            const elegido = dropdown.querySelector('.insumo-elegido');
+                            const hiddenInput = dropdown.querySelector('.insumo-hidden');
+                            const selectedValue = item.insumo || item.objeto_specifico || '';
+
+                            if (elegido) {
+                                elegido.innerText = selectedValue;
+                            }
+                            if (hiddenInput) {
+                                hiddenInput.value = selectedValue;
                             }
 
-                            console.log(mainGrid);
-                            elegido.innerText = item.insumo || item.objeto_specifico;
-                            mainGrid.querySelector('.valor-insumo').value = item.insumo || item.objeto_specifico;
-                            toggleDropdown(mainGrid);
+                            toggleDropdown(dropdown);
                         });
                     grid.appendChild(card);
                 });
             }
             function initializeDropdown(dropdown, insumos) {
-                const mainGrid = dropdown.parentNode;
-                // console.log(mainGrid);
-                // console.log(dropdown);
-                const searchInput = mainGrid.querySelector('.ButtonGeneric');
+                const searchInput = dropdown.querySelector('.dropdown-content2 .ButtonGeneric');
                 const optionsGrid = dropdown;
 
-                const insumosLoad = insumos.slice(0, 10)
+                const insumosLoad = insumos.slice(0, 10);
 
                 renderOptions(insumosLoad, optionsGrid);
 
+                if (!searchInput) return;
                 searchInput.addEventListener('input', () => {
                     const filter = searchInput.value.toLowerCase();
 
@@ -946,14 +962,15 @@
                             .toLowerCase()
                             .includes(filter)
                     );
-                    const filteredLoad = filtered.slice(0, 10)
                     renderOptions(filtered, optionsGrid);
                 });
             }
 
             document.addEventListener('DOMContentLoaded', async () => {
-                const grid = document.getElementById('dropdown-options');
-                await fetchInsumos(grid);
+                const grid = document.querySelectorAll('.dropdown-options');
+                for (const g of grid) {
+                    await fetchInsumos(g);
+                }
             });
             function applySavedTheme() {
                 const savedTheme = localStorage.getItem('theme-mode');
