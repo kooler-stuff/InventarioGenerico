@@ -146,11 +146,6 @@ body {
 .navbar .nav-logo img {
     height: 36px;
     width: auto;
-    transition: transform var(--transition-fast);
-}
-
-.navbar .nav-logo img:hover {
-    transform: scale(1.04);
 }
 
 .navbar a {
