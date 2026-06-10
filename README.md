@@ -14,6 +14,9 @@ para nota personal, este proyecto esta usando:
 - ENV (06/05)
 - BabelJS (06/05 implementado pero no lo estamos usando realmente?)
 - CORS (06/05 instalado aun no se implemento??) (12/05 utilizandose)
+- multer
+- BCrypt 
+- react ??? 
 
 falta preparar:
 
@@ -150,7 +153,22 @@ Arreglado botones no poniendose abajo de todo en sus contenedores.
 tocara pasarlo a react, pero ni idea como aun no cacho como es
 que mal dia
 
--- lista ultima vez actualizada 05/06
+09/06: 
+
+Primera pantalla funcional frontend para el port a react, pero dios sabe como hacer q tenga funcionalidad el backend, todo el dia bailando intentando hacer que funque eh?
+https://www.youtube.com/watch?v=hnCDdOgapWU&t=2s 
+
+10/06: 
+
+conectado react a backend ok
+
+Funcional ahora subido en masa en sección prestados
+Selector de insumos (opciones fijas segun inventario) aplicado a prestados
+bien bien bien
+Para seguir, supongo que hemos de usar react router? 
+para moverse entre pags en la version react, por supuestto
+
+-- lista ultima vez actualizada 10/06
 
   if (req.session.permissionLevel === "user" && !allowedGenericUserPaths.includes(req.path)){
     return res.status(401).json({ success: false, message: "No autorizado"});
